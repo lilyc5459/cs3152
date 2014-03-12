@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Backgrounds\" />
     <Folder Include="Characters\" />
     <Folder Include="Environment\" />
   </ItemGroup>

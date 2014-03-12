@@ -16,13 +16,20 @@ namespace Pathogenesis
     /// </summary>
     public class GameEngine : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        // Used to draw the game onto the screen (VIEW CLASS)
+        protected GameCanvas canvas;
+
+        // Used to load the sounds and graphics (CONTROLLER CLASS)
+        protected ContentManager content;
 
         public GameEngine()
         {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            // Tell the program to load all files relative to the "Content" directory.
+            content = new ContentManager(Services);
+            content.RootDirectory = "Content";
+            canvas = new GameCanvas(this);
         }
 
         /// <summary>
@@ -48,6 +55,7 @@ namespace Pathogenesis
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
         }
 
         /// <summary>
