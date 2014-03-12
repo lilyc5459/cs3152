@@ -433,10 +433,10 @@ namespace Pathogenesis
         /// <param name='content'>
         /// Reference to global content manager.
         /// </param>
-        public void LoadContent(ContentManager content)
+        public void LoadContent(ContentFactory factory)
         {
             // Load sprite font
-            font = content.Load<SpriteFont>("Shared\\PhysicsFont");
+            font = factory.getFont();
         }
 
         /// <summary>

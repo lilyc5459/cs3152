@@ -16,20 +16,21 @@ namespace Pathogenesis
     /// </summary>
     public class GameEngine : Microsoft.Xna.Framework.Game
     {
+        #region Fields
         SpriteBatch spriteBatch;
 
         // Used to draw the game onto the screen (VIEW CLASS)
         protected GameCanvas canvas;
 
-        // Used to load the sounds and graphics (CONTROLLER CLASS)
-        protected ContentManager content;
+        // Used to load content and create game objects
+        protected ContentFactory factory;
+        #endregion
 
+        #region Initialization
         public GameEngine()
         {
-            // Tell the program to load all files relative to the "Content" directory.
-            content = new ContentManager(Services);
-            content.RootDirectory = "Content";
             canvas = new GameCanvas(this);
+            factory = new ContentFactory(new ContentManager(Services));
         }
 
         /// <summary>
@@ -40,8 +41,8 @@ namespace Pathogenesis
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            factory.LoadAllContent();
+            canvas.Initialize(this);
             base.Initialize();
         }
 
@@ -54,8 +55,7 @@ namespace Pathogenesis
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
-
+            canvas.LoadContent(factory);
         }
 
         /// <summary>
@@ -64,9 +64,11 @@ namespace Pathogenesis
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            factory.UnloadAll();
         }
+    #endregion
 
+        #region Update Functions
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -78,7 +80,6 @@ namespace Pathogenesis
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -89,11 +90,11 @@ namespace Pathogenesis
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            canvas.Reset();
 
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
+        #endregion
     }
 }
