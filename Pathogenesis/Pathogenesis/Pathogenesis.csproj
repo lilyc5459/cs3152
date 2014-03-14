@@ -107,11 +107,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContentFactory.cs" />
-    <Compile Include="GameCanvas.cs" />
-    <Compile Include="GameEntity.cs" />
-    <Compile Include="GameUnit.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="View\Camera.cs" />
+    <Compile Include="Controllers\CollisionController.cs" />
+    <Compile Include="Controllers\ContentFactory.cs" />
+    <Compile Include="View\GameCanvas.cs" />
+    <Compile Include="Models\GameEntity.cs" />
+    <Compile Include="Models\GameUnit.cs" />
+    <Compile Include="Controllers\GameUnitController.cs" />
+    <Compile Include="Controllers\InputController.cs" />
+    <Compile Include="Controllers\LevelController.cs" />
+    <Compile Include="Models\Pickup.cs" />
+    <Compile Include="Controllers\ItemController.cs" />
+    <Compile Include="Models\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="GameEngine.cs" />

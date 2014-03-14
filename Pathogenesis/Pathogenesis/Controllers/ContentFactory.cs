@@ -80,33 +80,40 @@ namespace Pathogenesis
 
         #region Instantiation functions
             // Returns an instance of Player
-            public Player createPlayer()
+            public Player createPlayer(Vector2 pos)
             {
-                return new Player(textures[MAINPLAYER]);
+                Player p = new Player(textures[MAINPLAYER]);
+                p.placeAt(pos);
+                return p;
             }
         
-            // Returns an instance of an enemy of the given type
-            public GameUnit createEnemy(UnitType type)
+            // Returns an instance of a unit of the given type and faction
+            public GameUnit createUnit(UnitType type, UnitFaction faction, Vector2 pos)
             {
                 GameUnit enemy;
                 switch (type)
                 {
                     case UnitType.TANK:
-                        enemy = new GameUnit(textures[ENEMY_TANK], type, UnitFaction.ENEMY);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY? textures[ALLY_TANK] : textures[ENEMY_TANK], type, faction);
                         break;
                     case UnitType.RANGED:
-                        enemy = new GameUnit(textures[ENEMY_RANGED], type, UnitFaction.ENEMY);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_RANGED] : textures[ENEMY_RANGED], type, faction);
                         break;
                     case UnitType.FLYING:
-                        enemy = new GameUnit(textures[ENEMY_FLYING], type, UnitFaction.ENEMY);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING], type, faction);
                         break;
                     default:
                         enemy = null;
                         break;
                 }
+                if (enemy != null)
+                {
+                    enemy.placeAt(pos);
+                }
                 return enemy;
             }
 
+            // Returns the game font
             public SpriteFont getFont()
             {
                 return font;

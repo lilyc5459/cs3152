@@ -498,11 +498,12 @@ namespace Pathogenesis
             Debug.Assert(state == DrawState.SpritePass, "Drawing state is invalid (expected SpritePass)");
 
             // Re-center the object.
-            position.X -= image.Width / 2;
-            position.Y -= image.Height / 2;
+            position.X -= GameUnit.UNIT_SIZE / 2;
+            position.Y -= GameUnit.UNIT_SIZE / 2;
 
             // Draw it.
-            spriteBatch.Draw(image, position, tint);
+            //spriteBatch.Draw(image, position, tint);
+            spriteBatch.Draw(image, new Rectangle((int)position.X, (int)position.Y, GameUnit.UNIT_SIZE, GameUnit.UNIT_SIZE), tint);
         }
 
         /// <summary>
@@ -784,7 +785,6 @@ namespace Pathogenesis
         #endregion
 
         #endregion
-
     }
 
 }

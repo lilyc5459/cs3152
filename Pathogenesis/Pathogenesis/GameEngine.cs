@@ -24,6 +24,19 @@ namespace Pathogenesis
 
         // Used to load content and create game objects
         protected ContentFactory factory;
+
+        // Game camera, position determines portion of map drawn on screen
+        protected Camera camera;
+
+        // Game operation controllers
+        protected InputController input_controller;
+        protected CollisionController collision_controller;
+
+        // Game entity controllers
+        protected GameUnitController unit_controller;
+        protected ItemController item_controller;
+        protected LevelController level_controller;
+
         #endregion
 
         #region Initialization
@@ -31,6 +44,14 @@ namespace Pathogenesis
         {
             canvas = new GameCanvas(this);
             factory = new ContentFactory(new ContentManager(Services));
+            camera = new Camera();
+
+            input_controller = new InputController();
+            collision_controller = new CollisionController();
+
+            unit_controller = new GameUnitController();
+            item_controller = new ItemController();
+            level_controller = new LevelController();
         }
 
         /// <summary>
@@ -91,8 +112,14 @@ namespace Pathogenesis
         protected override void Draw(GameTime gameTime)
         {
             canvas.Reset();
-
-
+            canvas.BeginSpritePass(BlendState.AlphaBlend);
+            GameUnit e = factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, new Vector2(0, 0));
+            e.draw(canvas);
+            Player p = factory.createPlayer(new Vector2(200, 200));
+            p.draw(canvas);
+            GameUnit a = factory.createUnit(UnitType.TANK, UnitFaction.ALLY, new Vector2(100, 100));
+            a.draw(canvas);
+            canvas.EndSpritePass();
             base.Draw(gameTime);
         }
         #endregion

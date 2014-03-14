@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 
 namespace Pathogenesis
 {
@@ -43,6 +45,8 @@ namespace Pathogenesis
     /// </remarks>
     public class GameUnit : GameEntity
     {
+        public const int UNIT_SIZE = 40;
+
         private UnitType type;
         private UnitFaction faction;
 
@@ -60,6 +64,12 @@ namespace Pathogenesis
         private void InitStats()
         {
             // TODO load stats from a config file
+        }
+
+        public void draw(GameCanvas canvas)
+        {
+            // test
+            canvas.DrawSprite(texture, Color.White, pos);
         }
     }
 }

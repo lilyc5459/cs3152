@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Pathogenesis
 {
     public class GameEntity
     {
-        protected int x, y;
-        protected int screen_x, screen_y;
+        protected Vector2 pos;
+        protected Vector2 screen_pos;
 
         protected Texture2D texture;
 
@@ -18,10 +19,9 @@ namespace Pathogenesis
             this.texture = texture;
         }
 
-        public void placeAt(int x, int y)
+        public void placeAt(Vector2 pos)
         {
-            this.x = x;
-            this.y = y;
+            this.pos = pos;
         }
     }
 }
