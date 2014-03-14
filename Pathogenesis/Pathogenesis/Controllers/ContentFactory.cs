@@ -83,7 +83,7 @@ namespace Pathogenesis
             public Player createPlayer(Vector2 pos)
             {
                 Player p = new Player(textures[MAINPLAYER]);
-                p.placeAt(pos);
+                p.Position = pos;
                 return p;
             }
         
@@ -108,7 +108,7 @@ namespace Pathogenesis
                 }
                 if (enemy != null)
                 {
-                    enemy.placeAt(pos);
+                    enemy.Position = pos;
                 }
                 return enemy;
             }

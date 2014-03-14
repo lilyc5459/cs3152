@@ -35,6 +35,7 @@ namespace Pathogenesis
         ALLY,       // Fights for the player
         ENEMY      // Fights against player
     };
+
 #endregion
 
     /// <summary>
@@ -45,18 +46,33 @@ namespace Pathogenesis
     /// </remarks>
     public class GameUnit : GameEntity
     {
+        // Constants
         public const int UNIT_SIZE = 40;
 
-        private UnitType type;
-        private UnitFaction faction;
+        #region Properties
+        // Unit movement data
+        public Vector2 Vel { get; set; }
+        public Vector2 Target { get; set; }
+        public Vector2 NextMove { get; set; }
+        public int Accel { get; set; }
+
+        // Unit type data
+        public UnitType Type { get; set; }
+        public UnitFaction Faction { get; set; }
 
         // Unit stat fields
-        private int attack, defense, speed, range, attack_speed;
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int Speed { get; set; }
+        public int Range { get; set; }
+        public int AttackSpeed { get; set; }
+        #endregion
 
+        #region Initialization
         public GameUnit(Texture2D texture, UnitType type, UnitFaction faction) : base(texture)
         {
-            this.type = type;
-            this.faction = faction;
+            Type = type;
+            Faction = faction;
 
             InitStats();
         }
@@ -65,11 +81,17 @@ namespace Pathogenesis
         {
             // TODO load stats from a config file
         }
+        #endregion
 
-        public void draw(GameCanvas canvas)
+        public bool HasTarget()
+        {
+            return Target.X >= 0 && Target.Y >= 0;
+        }
+
+        public void Draw(GameCanvas canvas)
         {
             // test
-            canvas.DrawSprite(texture, Color.White, pos);
+            canvas.DrawSprite(Texture, Color.White, Position);
         }
     }
 }

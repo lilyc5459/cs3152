@@ -7,5 +7,11 @@ namespace Pathogenesis.Models
 {
     public class Level
     {
+        public Map Map { get; set; }
+
+        public Level()
+        {
+
+        }
     }
 }

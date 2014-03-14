@@ -11,32 +11,45 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Pathogenesis
 {
+    #region Enum
+    /*
+     * Possible game states
+     */ 
+    public enum GameState
+    {
+        MAIN_MENU,  // Player is at the main menu
+        IN_GAME,    // Player is playing the game
+        PAUSED      // Player has activated the pause menu
+    }
+    #endregion
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class GameEngine : Microsoft.Xna.Framework.Game
     {
         #region Fields
-        SpriteBatch spriteBatch;
+        private SpriteBatch spriteBatch;
 
         // Used to draw the game onto the screen (VIEW CLASS)
-        protected GameCanvas canvas;
+        private GameCanvas canvas;
 
         // Used to load content and create game objects
-        protected ContentFactory factory;
+        private ContentFactory factory;
 
         // Game camera, position determines portion of map drawn on screen
-        protected Camera camera;
+        private Camera camera;
 
         // Game operation controllers
-        protected InputController input_controller;
-        protected CollisionController collision_controller;
+        private InputController input_controller;
+        private CollisionController collision_controller;
 
         // Game entity controllers
-        protected GameUnitController unit_controller;
-        protected ItemController item_controller;
-        protected LevelController level_controller;
+        private GameUnitController unit_controller;
+        private ItemController item_controller;
+        private LevelController level_controller;
 
+        private GameState game_state;
         #endregion
 
         #region Initialization
@@ -64,6 +77,9 @@ namespace Pathogenesis
         {
             factory.LoadAllContent();
             canvas.Initialize(this);
+
+            // Game starts at the main menu
+            game_state = GameState.MAIN_MENU;
             base.Initialize();
         }
 
@@ -100,7 +116,15 @@ namespace Pathogenesis
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
+            
+            input_controller.Update(game_state);    // Receive and process input
+            if (game_state == GameState.IN_GAME)
+            {
+                unit_controller.Update();           // Process and update all units
+                collision_controller.Update(        // Process and handle collisions
+                    unit_controller.Units, level_controller.CurLevel);
+                level_controller.Update();          // Process level environment logic
+            }
 
             base.Update(gameTime);
         }
@@ -114,11 +138,11 @@ namespace Pathogenesis
             canvas.Reset();
             canvas.BeginSpritePass(BlendState.AlphaBlend);
             GameUnit e = factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, new Vector2(0, 0));
-            e.draw(canvas);
+            e.Draw(canvas);
             Player p = factory.createPlayer(new Vector2(200, 200));
-            p.draw(canvas);
+            p.Draw(canvas);
             GameUnit a = factory.createUnit(UnitType.TANK, UnitFaction.ALLY, new Vector2(100, 100));
-            a.draw(canvas);
+            a.Draw(canvas);
             canvas.EndSpritePass();
             base.Draw(gameTime);
         }
