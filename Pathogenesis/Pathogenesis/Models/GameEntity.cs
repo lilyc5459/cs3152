@@ -10,6 +10,8 @@ namespace Pathogenesis
     public class GameEntity
     {
         #region Properties
+        public int ID { get; set; }
+
         // Positioning
         public Vector2 Position { get; set; }
         public Vector2 Screen_pos { get; set; }

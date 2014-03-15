@@ -11,7 +11,7 @@ namespace Pathogenesis
     {
         #region Fields
             private Vector2 offset;		    // How much did we move (x,y)   [Game]
-            private bool convertPressed;	// Convert pressed              [Game]
+            private bool convertPressed {get;set;}	// Convert pressed              [Game]
             private bool rallyPressed;		// Rally pressed                [Game]
             private bool pausePressed;      // Pause pressed                [Game/Menu]
 

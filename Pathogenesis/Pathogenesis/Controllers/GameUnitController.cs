@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Models;
+using EpPathFinding;
 
 namespace Pathogenesis
 {
@@ -19,15 +20,19 @@ namespace Pathogenesis
         #endregion
 
         // A list of all the units currently in the game
-        public ArrayList Units { get; set; }
+        public List<GameUnit> Units { get; set; }
 
         // The player object
         public Player Player { get; set; }
 
+        // Random number generator. Must use the same instance or number generated in quick succession will be the same
+        private Random rand;
+
         #region Initialization
         public GameUnitController()
         {
-            Units = new ArrayList();
+            Units = new List<GameUnit>();
+            rand = new Random();
         }
 
         /*
@@ -35,6 +40,7 @@ namespace Pathogenesis
          */
         public void AddUnit(GameUnit unit)
         {
+            unit.ID = Units.Count;
             Units.Add(unit);
         }
         #endregion
@@ -42,9 +48,12 @@ namespace Pathogenesis
         #region Update
         /*
          * Updates all game units
-         */ 
-        public void Update(Level level)
+         */
+        public void Update(Level level, InputController input_controller)
         {
+            // Process player input
+            CheckPlayerInput();
+
             // Set the next move for each unit
             foreach (GameUnit unit in Units)
             {
@@ -56,6 +65,11 @@ namespace Pathogenesis
             {
                 moveUnit(unit);
             }
+        }
+
+        private void CheckPlayerInput()
+        {
+
         }
         #endregion
 
@@ -74,6 +88,10 @@ namespace Pathogenesis
                 {
                     case UnitType.TANK:
                         // tank AI
+                        //unit.Target = Player.Position;
+                        JumpPointParam jpParam = new JumpPointParam(level.Map,
+                            new GridPos((int)unit.Position.X, (int)unit.Position.Y),
+                            new GridPos((int)unit.Target.X, (int)unit.Target.Y));
                         break;
                     case UnitType.RANGED:
                         // ranged AI
@@ -86,26 +104,25 @@ namespace Pathogenesis
                         break;
                 }
             }
-            else
+            else if(rand.NextDouble() < 0.05)
             {
                 // Random walk
-                //unit.Target
-                
+                unit.Target = new Vector2(rand.Next(level.Width), rand.Next(level.Height));
             }
 
             if(unit.HasTarget())
             {
                 // Calculate direction of acceleration
                 Vector2 vel = unit.Vel;
-                float x_mod = unit.Accel * (unit.Target.X - unit.Position.X) > 0? 1 : -1;
-                float y_mod = unit.Accel * (unit.Target.Y - unit.Position.Y) > 0? 1 : -1;
+                float x_mod = unit.Accel * ((unit.Target.X - unit.Position.X) > 0? 1 : -1);
+                float y_mod = unit.Accel * ((unit.Target.Y - unit.Position.Y) > 0? 1 : -1);
                 vel += new Vector2(x_mod, y_mod);
 
                 // Clamp values to max speeds
                 vel.X = MathHelper.Clamp(vel.X, -unit.Speed, unit.Speed);
                 vel.Y = MathHelper.Clamp(vel.Y, -unit.Speed, unit.Speed);
                 unit.Vel = vel;
-            }   
+            }
         }
 
         /*
@@ -114,6 +131,14 @@ namespace Pathogenesis
         private void moveUnit(GameUnit unit)
         {
             unit.Position += unit.Vel;
+            //unit.Position = unit.Target; //TESTs
+            // Damping
+            Vector2 vel = unit.Vel;
+            if (vel.X < 0) vel.X++;
+            else if (vel.X > 0) vel.X--;
+            if (vel.Y < 0) vel.Y++;
+            else if (vel.Y > 0) vel.Y++;
+            unit.Vel = vel;
         }
 
         #endregion

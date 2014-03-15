@@ -10,13 +10,14 @@ namespace Pathogenesis.Models
         // Map layout of this level
         public Map Map { get; set; }
 
-        // Dimensions
+        // Dimensions in pixels
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public Level()
+        public Level(int width, int height)
         {
-
+            Width = width;
+            Height = height;
         }
     }
 }

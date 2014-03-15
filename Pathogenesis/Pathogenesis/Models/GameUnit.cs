@@ -21,7 +21,8 @@ namespace Pathogenesis
         TANK,       // High defense, slow
         RANGED,     // High speed, low defense, ranged attack
         FLYING,     // Can fly
-        PLAYER      // Controlled by player, able to use player powers
+        PLAYER,     // Controlled by player, able to use player powers
+        BOSS
     };
 
     /// <summary>
@@ -53,6 +54,7 @@ namespace Pathogenesis
         // Unit movement data
         public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
+        private Vector2 target;
         public Vector2 NextMove { get; set; }
         public int Accel { get; set; }
 
@@ -73,13 +75,22 @@ namespace Pathogenesis
         {
             Type = type;
             Faction = faction;
+            Target = new Vector2(-1, -1);
+            NextMove = new Vector2(-1, -1);
 
             InitStats();
+
+            target = new Vector2(-1, -1);
         }
 
+        public void setTarget(Vector2 targ) { target = targ; }
+        public Vector2 getTarget() { return target; }
         private void InitStats()
         {
             // TODO load stats from a config file
+            // Test
+            Speed = 20;
+            Accel = 5;
         }
         #endregion
 

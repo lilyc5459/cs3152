@@ -116,15 +116,32 @@ namespace Pathogenesis
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-            
+
             input_controller.Update(game_state);    // Receive and process input
-            if (game_state == GameState.IN_GAME)
+            switch (game_state)
             {
-                level_controller.Update();          // Process level environment logic
-                unit_controller.Update(             // Process and update all units
-                    level_controller.CurLevel);           
-                collision_controller.Update(        // Process and handle collisions
-                    unit_controller.Units, level_controller.CurLevel);
+                case GameState.MAIN_MENU:
+                    // for now
+                    game_state = GameState.IN_GAME;
+                    break;
+                case GameState.IN_GAME:
+                    // Remove later
+                    Random rand = new Random();
+                    if (rand.NextDouble() < 0.05)
+                    {
+                        unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
+                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                    }
+                    //
+
+                    level_controller.Update();          // Process level environment logic
+                    unit_controller.Update(             // Process and update all units
+                        level_controller.CurLevel, input_controller);
+                    collision_controller.Update(        // Process and handle collisions
+                        unit_controller.Units, level_controller.CurLevel);
+                    break;
+                case GameState.PAUSED:
+                    break;
             }
 
             base.Update(gameTime);
@@ -138,12 +155,11 @@ namespace Pathogenesis
         {
             canvas.Reset();
             canvas.BeginSpritePass(BlendState.AlphaBlend);
-            GameUnit e = factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, new Vector2(0, 0));
-            e.Draw(canvas);
-            Player p = factory.createPlayer(new Vector2(200, 200));
-            p.Draw(canvas);
-            GameUnit a = factory.createUnit(UnitType.TANK, UnitFaction.ALLY, new Vector2(100, 100));
-            a.Draw(canvas);
+
+            foreach(GameUnit unit in unit_controller.Units) {
+                unit.Draw(canvas);
+            }
+
             canvas.EndSpritePass();
             base.Draw(gameTime);
         }

@@ -15,30 +15,39 @@ namespace Pathogenesis
          * higher resolution collision optimization, but too small means
          * some collisions won't be detected.
          */
-        private const int CELLS_WIDTH = 20;
-        private const int CELLS_HEIGHT = 20;
+        private const int CELLS_GRID_WIDTH = 20;
+        private const int CELLS_GRID_HEIGHT = 20;
 
         // Collisions cell structures
         private ArrayList[,] cellGrid;
 
         public CollisionController()
         {
-            
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+
         }
 
         /*
          * Calculates and processes all collisions that occur,
          * using the collision cell optimization structure
          */ 
-        public void Update(ArrayList units, Level level)
+        public void Update(List<GameUnit> units, Level level)
         {
             // Clear collision cells
-            cellGrid = new ArrayList[CELLS_HEIGHT, CELLS_WIDTH];
+            cellGrid = new ArrayList[CELLS_GRID_HEIGHT, CELLS_GRID_WIDTH];
 
             foreach (GameUnit unit in units)
             {
-                cellGrid[(int)unit.Position.Y / CELLS_HEIGHT,
-                         (int)unit.Position.X / CELLS_WIDTH].Add(unit);
+                int x = (int)MathHelper.Clamp(unit.Position.Y / (level.Height/CELLS_GRID_HEIGHT), 0, CELLS_GRID_WIDTH-1);
+                int y = (int)MathHelper.Clamp(unit.Position.X / (level.Width/CELLS_GRID_WIDTH), 0, CELLS_GRID_HEIGHT-1);
+                if(cellGrid[y,x] == null) {
+                    cellGrid[y,x] = new ArrayList();
+                }
+                cellGrid[y,x].Add(unit);
             }
         }
     }

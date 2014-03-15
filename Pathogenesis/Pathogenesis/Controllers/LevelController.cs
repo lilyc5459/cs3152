@@ -10,6 +10,12 @@ namespace Pathogenesis
     {
         public Level CurLevel { get; set; }
 
+        public LevelController()
+        {
+            //Test
+            CurLevel = new Level(800, 640);
+        }
+
         public void Update()
         {
             // Update level logic here
