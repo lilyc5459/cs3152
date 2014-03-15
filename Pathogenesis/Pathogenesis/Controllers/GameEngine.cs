@@ -62,9 +62,9 @@ namespace Pathogenesis
             input_controller = new InputController();
             collision_controller = new CollisionController();
 
+            level_controller = new LevelController();
             unit_controller = new GameUnitController();
             item_controller = new ItemController();
-            level_controller = new LevelController();
         }
 
         /// <summary>
@@ -120,10 +120,11 @@ namespace Pathogenesis
             input_controller.Update(game_state);    // Receive and process input
             if (game_state == GameState.IN_GAME)
             {
-                unit_controller.Update();           // Process and update all units
+                level_controller.Update();          // Process level environment logic
+                unit_controller.Update(             // Process and update all units
+                    level_controller.CurLevel);           
                 collision_controller.Update(        // Process and handle collisions
                     unit_controller.Units, level_controller.CurLevel);
-                level_controller.Update();          // Process level environment logic
             }
 
             base.Update(gameTime);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Pathogenesis.Models;
 
 namespace Pathogenesis
 {
@@ -13,11 +14,15 @@ namespace Pathogenesis
      */ 
     public class GameUnitController
     {
+        #region Constants
+        public const int ENEMY_CHASE_RANGE = 300;   // Distance at which an enemy will start chasing the player
+        #endregion
+
         // A list of all the units currently in the game
         public ArrayList Units { get; set; }
 
         // The player object
-        public Player player { get; set; }
+        public Player Player { get; set; }
 
         #region Initialization
         public GameUnitController()
@@ -38,12 +43,12 @@ namespace Pathogenesis
         /*
          * Updates all game units
          */ 
-        public void Update()
+        public void Update(Level level)
         {
             // Set the next move for each unit
             foreach (GameUnit unit in Units)
             {
-                setNextMove(unit);
+                setNextMove(unit, level);
             }
 
             // Apply the next move for each unit
@@ -60,23 +65,32 @@ namespace Pathogenesis
          * Determine the next move for this unit with
          * targeting specific to each unit type AI
          */ 
-        public void setNextMove(GameUnit unit)
+        public void setNextMove(GameUnit unit, Level level)
         {
             // Select target
-            switch (unit.Type)
+            if (Player != null && Player.Exists && Player.inRange(unit, ENEMY_CHASE_RANGE))
             {
-                case UnitType.TANK:
-                    // tank AI
-                    break;
-                case UnitType.RANGED:
-                    // ranged AI
-                    break;
-                case UnitType.FLYING:
-                    // flying AI
-                    break;
-                default:
-                    // Player case, do nothing
-                    break;
+                switch (unit.Type)
+                {
+                    case UnitType.TANK:
+                        // tank AI
+                        break;
+                    case UnitType.RANGED:
+                        // ranged AI
+                        break;
+                    case UnitType.FLYING:
+                        // flying AI
+                        break;
+                    default:
+                        // Player case, do nothing
+                        break;
+                }
+            }
+            else
+            {
+                // Random walk
+                //unit.Target
+                
             }
 
             if(unit.HasTarget())
