@@ -10,27 +10,17 @@ namespace Pathogenesis
     public class InputController
     {
         #region Fields
-            private Vector2 offset;		    // How much did we move (x,y)   [Game]
             private bool convertPressed;	// Convert pressed              [Game]
             private bool rallyPressed;		// Rally pressed                [Game]
-            private bool pausePressed;      // Pause pressed                [Game/Menu]
-
-            private bool menuLeftPressed;   // Left is pressed              [Menu]
-            private bool menuRightPressed;  // Right is pressed             [Menu]     
-            private bool menuUpPressed;     // Up is pressed                [Menu] 
-            private bool menuDownPressed;   // Down is pressed              [Menu]
-            private bool menuEnterPressed;  // Enter is pressed             [Menu]
+            private bool pausePressed;      // Pause pressed                [Menu/Game]
+            private bool leftPressed;   // Left is pressed                  [Menu/Game]
+            private bool rightPressed;  // Right is pressed                 [Menu/Game]     
+            private bool upPressed;     // Up is pressed                    [Menu/Game]
+            private bool downPressed;   // Down is pressed                  [Menu/Game]
+            private bool enterPressed;  // Enter is pressed                 [Menu/Game]
         #endregion
 
         #region Properties (READ-ONLY)
-            /// <summary>
-            /// The amount of sideways movement. (x,y) ---> -1 = left, 1 = right, 0 = still, -1 = up, 1= = down, 0 =still
-            /// </summary>
-            public Vector2 Movement
-            {
-                get { return offset; }
-            }
-
             /// <summary>
             /// Whether the rally button is pressed.
             /// </summary>
@@ -60,39 +50,39 @@ namespace Pathogenesis
             /// </summary>
             public bool Enter
             {
-                get { return menuEnterPressed; }
+                get { return enterPressed; }
             }
 
             /// <summary>
             /// Whether the left button was pressed.
             /// </summary>
-            public bool MenuLeft
+            public bool Left
             {
-                get { return menuLeftPressed; }
+                get { return leftPressed; }
             }
 
             /// <summary>
             /// Whether the right button was pressed.
             /// </summary>
-            public bool MenuRight
+            public bool Right
             {
-                get { return menuRightPressed; }
+                get { return rightPressed; }
             }
 
             /// <summary>
             /// Whether the up button was pressed.
             /// </summary>
-            public bool MenuUp
+            public bool Up
             {
-                get { return menuUpPressed; }
+                get { return upPressed; }
             }
 
             /// <summary>
             /// Whether the down button was pressed.
             /// </summary>
-            public bool MenuDown
+            public bool Down
             {
-                get { return menuDownPressed; }
+                get { return downPressed; }
             }
         #endregion
 
@@ -112,47 +102,26 @@ namespace Pathogenesis
                 convertPressed = keyboard.IsKeyDown(Keys.Space);
                 rallyPressed = keyboard.IsKeyDown(Keys.E);
                 pausePressed = keyboard.IsKeyDown(Keys.Escape);
-                menuEnterPressed = keyboard.IsKeyDown(Keys.Enter);
+                enterPressed = keyboard.IsKeyDown(Keys.Enter);
 
-                offset = new Vector2(0,0);
                 if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
                 {
-                    offset.X += 1.0f;
-                    menuRightPressed = true;
+                    rightPressed = true;
                 }
                 if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
                 {
-                    offset.X -= 1.0f;
-                    menuLeftPressed = true;
+                    leftPressed = true;
                 }
                 if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
                 {
-                    offset.Y -= 1.0f;
-                    menuUpPressed = true;
+                    upPressed = true;
                 }
                 if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down))
                 {
-                    offset.Y += 1.0f;
-                    menuDownPressed = true;
+                    downPressed = true;
                 }
             }
         #endregion
 
-
-        public void Update(GameState game_state)
-        {
-            // Check for input
-            switch (game_state)
-            {
-                case GameState.MAIN_MENU:
-                    // handle menu inputs here
-                    break;
-                case GameState.IN_GAME:
-                    break;
-                case GameState.PAUSED:
-                    // handle pause menu inputs here
-                    break;
-            }
-        }
     }
 }
