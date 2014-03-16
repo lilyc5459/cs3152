@@ -37,9 +37,12 @@ namespace Pathogenesis.Models
 
         public Map(int width, int height) : base(width, height)
         {
-            tiles = new int[height, width];
+            tiles = new int[height/TILE_SIZE, width/TILE_SIZE];
             Width = width;
             Height = height;
+
+            //test
+            setTiles(tiles);
         }
 
         public void setTiles(int[,] tiles)
@@ -47,7 +50,7 @@ namespace Pathogenesis.Models
             this.tiles = tiles;
             for (int i = 0; i < tiles.GetLength(0); i++)
             {
-                for (int j = 0; i < tiles.GetLength(1); j++)
+                for (int j = 0; j < tiles.GetLength(1); j++)
                 {
                     if (tiles[i, j] != 1)
                     {

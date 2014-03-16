@@ -56,7 +56,7 @@ namespace Pathogenesis
         public Vector2 Target { get; set; }
         private Vector2 target;
         public Vector2 NextMove { get; set; }
-        public int Accel { get; set; }
+        public float Accel { get; set; }
 
         // Unit type data
         public UnitType Type { get; set; }
@@ -89,8 +89,15 @@ namespace Pathogenesis
         {
             // TODO load stats from a config file
             // Test
-            Speed = 20;
-            Accel = 5;
+            if (Type == UnitType.PLAYER)
+            {
+                Speed = 10;
+            }
+            else
+            {
+                Speed = 6;
+            }
+            Accel = 1.5f;
         }
         #endregion
 

@@ -472,7 +472,7 @@ namespace Pathogenesis
         /// until it has ended.
         /// </remarks>
         /// <param name="blend">Blending mode for combining sprites</param>
-        public void BeginSpritePass(BlendState blend)
+        public void BeginSpritePass(BlendState blend, Camera camera)
         {
             // Check that state invariant is satisfied.
             Debug.Assert(state == DrawState.Inactive, "Drawing state is invalid (expected Inactive)");
@@ -480,6 +480,7 @@ namespace Pathogenesis
 
             // Set up the drawing canvas to use the appropriate blending.
             // Deferred sorting guarantees Sprites are drawn in order given.
+            //transform = camera.TransformMatrix;
             spriteBatch.Begin(SpriteSortMode.Deferred, blend, null, null, null, null, transform);
         }
 

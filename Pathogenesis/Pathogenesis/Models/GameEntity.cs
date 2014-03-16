@@ -26,6 +26,7 @@ namespace Pathogenesis
         public GameEntity(Texture2D texture)
         {
             Texture = texture;
+            Exists = true;
         }
 
         // Returns true if the other entity is within the specified range

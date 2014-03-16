@@ -80,6 +80,10 @@ namespace Pathogenesis
 
             // Game starts at the main menu
             game_state = GameState.MAIN_MENU;
+
+            // TEST
+            unit_controller.Player = factory.createPlayer(new Vector2(100, 100));
+            level_controller.NextLevel(factory);
             base.Initialize();
         }
 
@@ -116,8 +120,8 @@ namespace Pathogenesis
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
-            input_controller.Update(game_state);    // Receive and process input
+            
+            input_controller.Update();    // Receive and process input
             switch (game_state)
             {
                 case GameState.MAIN_MENU:
@@ -127,7 +131,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.05)
+                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 1)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
@@ -139,6 +143,11 @@ namespace Pathogenesis
                         level_controller.CurLevel, input_controller);
                     collision_controller.Update(        // Process and handle collisions
                         unit_controller.Units, level_controller.CurLevel);
+
+                    if (unit_controller.Player != null)
+                    {
+                        camera.Position = unit_controller.Player.Position;
+                    }
                     break;
                 case GameState.PAUSED:
                     break;
@@ -154,11 +163,10 @@ namespace Pathogenesis
         protected override void Draw(GameTime gameTime)
         {
             canvas.Reset();
-            canvas.BeginSpritePass(BlendState.AlphaBlend);
+            canvas.BeginSpritePass(BlendState.AlphaBlend, camera);
 
-            foreach(GameUnit unit in unit_controller.Units) {
-                unit.Draw(canvas);
-            }
+            level_controller.Draw(canvas);
+            unit_controller.Draw(canvas);
 
             canvas.EndSpritePass();
             base.Draw(gameTime);

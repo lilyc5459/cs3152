@@ -17,6 +17,10 @@ namespace Pathogenesis
     {
         #region Constants
         public const int ENEMY_CHASE_RANGE = 300;   // Distance at which an enemy will start chasing the player
+        public const int INFECT_RANGE = 200;        // Range of the infection ability
+        public const int MAX_ALLIES = 10;           // Maximum number of allies allowed
+
+        public const float SPEED_DAMP_FACTOR = 0.5f;
         #endregion
 
         // A list of all the units currently in the game
@@ -51,26 +55,75 @@ namespace Pathogenesis
          */
         public void Update(Level level, InputController input_controller)
         {
-            // Process player input
-            CheckPlayerInput();
-
-            // Set the next move for each unit
             foreach (GameUnit unit in Units)
             {
                 setNextMove(unit, level);
             }
 
-            // Apply the next move for each unit
             foreach (GameUnit unit in Units)
             {
                 moveUnit(unit);
             }
-        }
 
-        private void CheckPlayerInput()
+            if (Player != null)
+            {
+                CheckPlayerInput(input_controller);
+                moveUnit(Player);
+            }
+        }
+        #endregion
+
+        #region Player logic
+        /*
+         * Process player input and apply to player object
+         */
+        private void CheckPlayerInput(InputController input_controller)
         {
+            Vector2 vel = Player.Vel;
+            if (input_controller.Left) { vel.X -= Player.Accel; }
+            if (input_controller.Right) { vel.X += Player.Accel; }
+            if (input_controller.Up) { vel.Y -= Player.Accel; }
+            if (input_controller.Down) { vel.Y += Player.Accel; }
 
+            // Clamp values to max speeds
+            vel.X = MathHelper.Clamp(vel.X, -Player.Speed, Player.Speed);
+            vel.Y = MathHelper.Clamp(vel.Y, -Player.Speed, Player.Speed);
+            Player.Vel = vel;
+            if (input_controller.Converting) { PlayerInfect(); }
         }
+
+        /*
+         * Searches for the closest enemy within infection range and converts it to an ally
+         */
+        private void PlayerInfect()
+        {
+            // Search for closest enemy within infection range
+            GameUnit closestInRange = null;
+		    foreach(GameUnit unit in Units) {
+			    if(unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, INFECT_RANGE)) {
+				    if(closestInRange == null || Player.distance(unit) < Player.distance(closestInRange)) {
+					    closestInRange = unit;
+				    }
+			    }
+		    }
+		
+            // Convert the enemy!
+		    if(closestInRange != null && !Player.MaxAllies) {
+                Convert(closestInRange);
+                Player.NumAllies++;
+                if (Player.NumAllies == MAX_ALLIES) { Player.MaxAllies = true; } 
+		    }
+        }
+
+        /*
+         * Converts an enemy to an ally, handling stat changes as necessary
+         */
+        private void Convert(GameUnit unit)
+        {
+            unit.Faction = UnitFaction.ALLY;
+            // Change stats like speed etc as necessary
+        }
+
         #endregion
 
         #region Movement and Pathfinding
@@ -88,10 +141,12 @@ namespace Pathogenesis
                 {
                     case UnitType.TANK:
                         // tank AI
-                        //unit.Target = Player.Position;
+                        unit.Target = Player.Position;
                         JumpPointParam jpParam = new JumpPointParam(level.Map,
-                            new GridPos((int)unit.Position.X, (int)unit.Position.Y),
-                            new GridPos((int)unit.Target.X, (int)unit.Target.Y));
+                            new GridPos((int)unit.Position.X/Map.TILE_SIZE, (int)unit.Position.Y/Map.TILE_SIZE),
+                            new GridPos((int)unit.Target.X/Map.TILE_SIZE, (int)unit.Target.Y/Map.TILE_SIZE));
+                        List<GridPos> resultPathList = JumpPointFinder.FindPath(jpParam); 
+
                         break;
                     case UnitType.RANGED:
                         // ranged AI
@@ -134,11 +189,28 @@ namespace Pathogenesis
             //unit.Position = unit.Target; //TESTs
             // Damping
             Vector2 vel = unit.Vel;
-            if (vel.X < 0) vel.X++;
-            else if (vel.X > 0) vel.X--;
-            if (vel.Y < 0) vel.Y++;
-            else if (vel.Y > 0) vel.Y++;
+            if (vel.X < 0) vel.X += SPEED_DAMP_FACTOR;
+            else if (vel.X > 0) vel.X -= SPEED_DAMP_FACTOR;
+            if (vel.Y < 0) vel.Y += SPEED_DAMP_FACTOR;
+            else if (vel.Y > 0) vel.Y -= SPEED_DAMP_FACTOR;
+
+            if ((vel - Vector2.Zero).Length() < 0.5) { vel = Vector2.Zero; }
             unit.Vel = vel;
+        }
+
+        #endregion
+
+        #region Draw
+        public void Draw(GameCanvas canvas)
+        {
+            foreach (GameUnit unit in Units)
+            {
+                unit.Draw(canvas);
+            }
+            if (Player != null)
+            {
+                Player.Draw(canvas);
+            }
         }
 
         #endregion

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
+using Pathogenesis.Models;
 
 namespace Pathogenesis
 {
@@ -17,6 +18,9 @@ namespace Pathogenesis
 
             // Dictionary of all textures mapped as <filename, texture>
             protected Dictionary<String, Texture2D> textures;
+
+            // List of levels in the order they appear in the game
+            private List<Level> levels;
 
             protected SpriteFont font;
 
@@ -47,7 +51,8 @@ namespace Pathogenesis
                 this.content = content;
                 content.RootDirectory = "Content";
 
-                this.textures = new Dictionary<string, Texture2D>();
+                textures = new Dictionary<string, Texture2D>();
+                levels = new List<Level>();
             }
 
             // Loads all content from content directory
@@ -111,6 +116,12 @@ namespace Pathogenesis
                     enemy.Position = pos;
                 }
                 return enemy;
+            }
+
+            public Level loadLevel(int num)
+            {
+                //return levels[num];
+                return new Level(800, 640, textures[BACKGROUND1]);
             }
 
             // Returns the game font
