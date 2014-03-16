@@ -8,11 +8,24 @@ namespace Pathogenesis
 {
     public class LevelController
     {
-        public Level CurLevel { get; set; }
+        #region Fields
+        public Level CurLevelObject { get; set; }       // Stores Current Level Object
+        public int CurLevelNum { get; set; }            // Stores Current Level Number
+        #endregion
 
-        public void Update()
-        {
-            // Update level logic here
+        #region Methods
+        public void NextLevel(ContentFactory gameContentFactory){
+            //Load Next Level via content factory
+            CurLevelNum++;
+            CurLevelObject = gameContentFactory.createLevel(CurLevelNum);
         }
+
+        public void ResetLevel(ContentFactory gameContentFactory){
+            //Load Next Level via content factory
+            CurLevelNum = 0;
+            CurLevelObject = gameContentFactory.createLevel(CurLevelNum);
+        }
+        #endregion
+
     }
 }
