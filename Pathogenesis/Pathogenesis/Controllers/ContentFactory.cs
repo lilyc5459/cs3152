@@ -30,6 +30,8 @@ namespace Pathogenesis
             private const string ENVIRONMENT_DIR = "Environment/";
 
             private const string MAINPLAYER = CHARACTERS_DIR + "mainplayer";
+            private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
+            private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
 
             private const string ENEMY_TANK = CHARACTERS_DIR + "enemy_tank";
             private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
@@ -60,6 +62,8 @@ namespace Pathogenesis
             {
                 // Load textures into the textures map
                 textures.Add(MAINPLAYER, content.Load<Texture2D>(MAINPLAYER));
+                textures.Add(INFECT_RANGE, content.Load<Texture2D>(INFECT_RANGE));
+                textures.Add(HEALTH_BAR, content.Load<Texture2D>(HEALTH_BAR));
 
                 textures.Add(ENEMY_TANK, content.Load<Texture2D>(ENEMY_TANK));
                 textures.Add(ENEMY_RANGED, content.Load<Texture2D>(ENEMY_RANGED));
@@ -90,6 +94,11 @@ namespace Pathogenesis
                 Player p = new Player(textures[MAINPLAYER]);
                 p.Position = pos;
                 return p;
+            }
+
+            public HUD createHUD(Player player)
+            {
+                return new HUD(player, textures[INFECT_RANGE], textures[HEALTH_BAR]);
             }
         
             // Returns an instance of a unit of the given type and faction

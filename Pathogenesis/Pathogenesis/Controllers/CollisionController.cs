@@ -86,7 +86,7 @@ namespace Pathogenesis
                         {
                             if (unit != other)
                             {
-                                CheckUnitCollision(unit, other);
+                                //CheckUnitCollision(unit, other);
                             }
                         }
                     }

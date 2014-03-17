@@ -89,7 +89,7 @@ namespace Pathogenesis
         #region Constants
         // Default window size.  This belongs in the view, not the game engine.
         private const int GAME_WIDTH = 800;
-        private const int GAME_HEIGHT = 640;
+        private const int GAME_HEIGHT = 800;
         #endregion
 
         #region Fields
@@ -481,7 +481,7 @@ namespace Pathogenesis
             // Set up the drawing canvas to use the appropriate blending.
             // Deferred sorting guarantees Sprites are drawn in order given.
 
-            //transform = camera.TransformMatrix;
+            transform = camera.TransformMatrix;
             spriteBatch.Begin(SpriteSortMode.Deferred, blend, null, null, null, null, transform);
         }
 
@@ -529,6 +529,27 @@ namespace Pathogenesis
 
             // Draw it.
             spriteBatch.Draw(image, position, null, tint, angle, origin, scale, SpriteEffects.None, 0);
+        }
+
+        /// <summary>
+        /// Draw a sprite on this drawing canvas.
+        /// </summary>
+        /// <remarks>
+        /// The image is scaled according to the canvas Scale attribute.
+        /// </remarks>
+        /// <param name="image">Sprite to draw</param>
+        /// <param name="tint">Color to tint sprite</param>
+        /// <param name="position">Location to draw image on canvas</param>
+        /// <param name="source">Source rectange of the image to draw</param>
+        /// <param name="scale">Amount to scale image (in addition to global scale)</param>
+        /// <param name="angle">Amount to rotate image in radians</param>
+        public void DrawSprite(Texture2D image, Color tint, Rectangle dest, Rectangle source)
+        {
+            // Enforce invariants.
+            Debug.Assert(state == DrawState.SpritePass, "Drawing state is invalid (expected SpritePass)");
+
+            // Draw it.
+            spriteBatch.Draw(image, dest, source, tint);
         }
 
         /// <summary>

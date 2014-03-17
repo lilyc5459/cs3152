@@ -49,12 +49,13 @@ namespace Pathogenesis
     {
         // Constants
         public const int UNIT_SIZE = 40;
+        public const int MAX_HEALTH = 100;
+        public const int MAX_INFECTION_VITALITY = 100;
 
         #region Properties
         // Unit movement data
         public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
-        private Vector2 target;
         public Vector2 NextMove { get; set; }
         public float Accel { get; set; }
 
@@ -66,6 +67,9 @@ namespace Pathogenesis
         public UnitFaction Faction { get; set; }
 
         // Unit stat fields
+        public int Health { get; set; }
+        public int InfectionVitality { get; set; }
+
         public int Attack { get; set; }
         public int Defense { get; set; }
         public int Speed { get; set; }
@@ -82,25 +86,23 @@ namespace Pathogenesis
             NextMove = new Vector2(-1, -1);
 
             InitStats();
-
-            target = new Vector2(-1, -1);
         }
 
-        public void setTarget(Vector2 targ) { target = targ; }
-        public Vector2 getTarget() { return target; }
         private void InitStats()
         {
             // TODO load stats from a config file
             // Test
+            Health = MAX_HEALTH;
+            InfectionVitality = MAX_INFECTION_VITALITY;
             if (Type == UnitType.PLAYER)
-            {
-                Speed = 10;
-            }
-            else
             {
                 Speed = 6;
             }
-            Accel = 1.5f;
+            else
+            {
+                Speed = 3;
+            }
+            Accel = 1.1f;
 
             Size = 20;
             Mass = 20;
@@ -115,7 +117,7 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             // test
-            canvas.DrawSprite(Texture, Color.White, Position);
+            canvas.DrawSprite(Texture, Faction == UnitFaction.ENEMY? Color.Red : Color.White, Position);
         }
     }
 }

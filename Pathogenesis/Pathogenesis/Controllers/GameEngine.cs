@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Pathogenesis.Models;
 
 namespace Pathogenesis
 {
@@ -49,6 +50,7 @@ namespace Pathogenesis
         private ItemController item_controller;
         private LevelController level_controller;
 
+        private HUD HUD_display;
         private GameState game_state;
         #endregion
 
@@ -57,7 +59,7 @@ namespace Pathogenesis
         {
             canvas = new GameCanvas(this);
             factory = new ContentFactory(new ContentManager(Services));
-            camera = new Camera();
+            camera = new Camera(canvas.Width, canvas.Height);
 
             input_controller = new InputController();
             collision_controller = new CollisionController();
@@ -83,6 +85,7 @@ namespace Pathogenesis
 
             // TEST
             unit_controller.Player = factory.createPlayer(new Vector2(100, 100));
+            HUD_display = factory.createHUD(unit_controller.Player);
             level_controller.NextLevel(factory);
             base.Initialize();
         }
@@ -131,7 +134,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 50)
+                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 5)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
@@ -141,6 +144,8 @@ namespace Pathogenesis
                     level_controller.Update();          // Process level environment logic
                     unit_controller.Update(             // Process and update all units
                         level_controller.CurLevel, input_controller);
+                    HUD_display.Update(                 // Update the HUD
+                        input_controller);               
                     collision_controller.Update(        // Process and handle collisions
                         unit_controller.Units, level_controller.CurLevel);
 
@@ -166,6 +171,7 @@ namespace Pathogenesis
             canvas.BeginSpritePass(BlendState.AlphaBlend, camera);
 
             level_controller.Draw(canvas);
+            HUD_display.Draw(canvas, unit_controller.Units);
             unit_controller.Draw(canvas);
 
             canvas.EndSpritePass();

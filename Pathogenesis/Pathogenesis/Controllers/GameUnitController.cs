@@ -17,9 +17,9 @@ namespace Pathogenesis
     public class GameUnitController
     {
         #region Constants
-        public const int ENEMY_CHASE_RANGE = 300;   // Distance at which an enemy will start chasing the player
+        public const int ENEMY_CHASE_RANGE = 150;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
-        public const int MAX_ALLIES = 10;           // Maximum number of allies allowed
+        public const int MAX_ALLIES = 100;           // Maximum number of allies allowed
 
         public const float SPEED_DAMP_FACTOR = 0.5f;
         #endregion
@@ -64,6 +64,8 @@ namespace Pathogenesis
             foreach (GameUnit unit in Units)
             {
                 moveUnit(unit);
+                unit.InfectionVitality = (int)MathHelper.Clamp(
+                    ++unit.InfectionVitality, 0, GameUnit.MAX_INFECTION_VITALITY);
             }
 
             if (Player != null)
@@ -90,7 +92,14 @@ namespace Pathogenesis
             vel.X = MathHelper.Clamp(vel.X, -Player.Speed, Player.Speed);
             vel.Y = MathHelper.Clamp(vel.Y, -Player.Speed, Player.Speed);
             Player.Vel = vel;
-            if (input_controller.Converting) { PlayerInfect(); }
+            if (input_controller.Converting)
+            {
+                PlayerInfect();
+            }
+            else
+            {
+                Player.Infecting = null;
+            }
         }
 
         /*
@@ -98,22 +107,49 @@ namespace Pathogenesis
          */
         private void PlayerInfect()
         {
-            // Search for closest enemy within infection range
-            GameUnit closestInRange = null;
-		    foreach(GameUnit unit in Units) {
-			    if(unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, INFECT_RANGE)) {
-				    if(closestInRange == null || Player.distance(unit) < Player.distance(closestInRange)) {
-					    closestInRange = unit;
-				    }
-			    }
-		    }
-		
-            // Convert the enemy!
-		    if(closestInRange != null && !Player.MaxAllies) {
-                Convert(closestInRange);
-                Player.NumAllies++;
-                if (Player.NumAllies == MAX_ALLIES) { Player.MaxAllies = true; } 
-		    }
+            if (Player.Infecting != null)
+            {
+                if (!Player.Infecting.inRange(Player, INFECT_RANGE))
+                {
+                    Player.Infecting = null;
+                    return;
+                }
+                if (Player.Infecting.Faction == UnitFaction.ALLY)
+                {
+                    return;
+                }
+                if (Player.Infecting.InfectionVitality == 0)
+                {
+                    Convert(Player.Infecting);
+                    Player.NumAllies++;
+                    if (Player.NumAllies == MAX_ALLIES) { Player.MaxAllies = true; }
+                }
+                else
+                {
+                    Player.Infecting.InfectionVitality -= 2;
+                }
+            }
+            else
+            {
+                // Search for closest enemy within infection range
+                GameUnit closestInRange = null;
+                foreach (GameUnit unit in Units)
+                {
+                    if (unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, INFECT_RANGE))
+                    {
+                        if (closestInRange == null || Player.distance(unit) < Player.distance(closestInRange))
+                        {
+                            closestInRange = unit;
+                        }
+                    }
+                }
+
+                // Convert the enemy!
+                if (closestInRange != null && !Player.MaxAllies)
+                {
+                    Player.Infecting = closestInRange;
+                }
+            }
         }
 
         /*

@@ -11,6 +11,8 @@ namespace Pathogenesis
         public int NumAllies { get; set; }
         public bool MaxAllies { get; set; }
 
+        public GameUnit Infecting { get; set; }
+
         public Player(Texture2D texture) : base(texture, UnitType.PLAYER, UnitFaction.ALLY)
         {
 

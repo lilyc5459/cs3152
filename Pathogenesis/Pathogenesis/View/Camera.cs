@@ -9,8 +9,14 @@ namespace Pathogenesis
     // Camera code from http://jason-mitchell.com/game-development/xna-camera-for-2d-games/
     public class Camera
     {
-        public Camera()
+        private int screen_width;
+        private int screen_height;
+
+        public Camera(int s_width, int s_height)
         {
+            screen_width = s_width;
+            screen_height = s_height;
+
             Position = Vector2.Zero;
             Zoom = 1f;
         }
@@ -24,7 +30,7 @@ namespace Pathogenesis
             get
             {
                 return Matrix.CreateRotationZ(Rotation) * Matrix.CreateScale(Zoom) *
-                       Matrix.CreateTranslation(-Position.X, -Position.Y, 0);
+                       Matrix.CreateTranslation(-Position.X + screen_width/2, -Position.Y + screen_height/2, 0);
             }
         }
     }

@@ -7,10 +7,31 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Pathogenesis
 {
+    public enum KeyState
+    {
+        DOWN,
+        HELD,
+        UP,
+    }
+
     public class InputController
     {
         #region Fields
+            private Dictionary<Keys, KeyState> keyStates;
+
+            private Keys CONVERT = Keys.Space;
+            private Keys LEFT = Keys.A;
+            private Keys RIGHT = Keys.D;
+            private Keys UP = Keys.W;
+            private Keys DOWN = Keys.S;
+            private Keys RALLY = Keys.E;
+            private Keys PAUSE = Keys.Escape;
+            private Keys TOGGLE_HUD = Keys.Tab;
+            private Keys ENTER = Keys.Enter;
+
             private bool convertPressed;	// Convert pressed              [Game]
+            private bool convertHeld;
+
             private bool rallyPressed;		// Rally pressed                [Game]
             private bool pausePressed;      // Pause pressed                [Menu/Game]
             private bool leftPressed;   // Left is pressed                  [Menu/Game]
@@ -18,6 +39,8 @@ namespace Pathogenesis
             private bool upPressed;     // Up is pressed                    [Menu/Game]
             private bool downPressed;   // Down is pressed                  [Menu/Game]
             private bool enterPressed;  // Enter is pressed                 [Menu/Game]
+
+            private bool toggleHUD;     // HUD is toggled
         #endregion
 
         #region Properties (READ-ONLY)
@@ -26,7 +49,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Rallying
             {
-                get { return rallyPressed; }
+                get { return keyStates[RALLY] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -34,7 +57,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Converting
             {
-                get { return convertPressed; }
+                get { return keyStates[CONVERT] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -42,7 +65,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Pause
             {
-                get { return pausePressed; }
+                get { return keyStates[PAUSE] == KeyState.DOWN; }
             }
 
             /// <summary>
@@ -50,7 +73,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Enter
             {
-                get { return enterPressed; }
+                get { return keyStates[ENTER] == KeyState.DOWN; }
             }
 
             /// <summary>
@@ -58,7 +81,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Left
             {
-                get { return leftPressed; }
+                get { return keyStates[LEFT] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -66,7 +89,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Right
             {
-                get { return rightPressed; }
+                get { return keyStates[RIGHT] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -74,7 +97,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Up
             {
-                get { return upPressed; }
+                get { return keyStates[UP] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -82,15 +105,40 @@ namespace Pathogenesis
             /// </summary>
             public bool Down
             {
-                get { return downPressed; }
+                get { return keyStates[DOWN] == KeyState.HELD; }
             }
+
+            /// <summary>
+            /// Whether the toggle HUDE button was pressed.
+            /// </summary>
+            public bool Toggle_HUD
+            {
+                get { return keyStates[TOGGLE_HUD] == KeyState.DOWN; }
+            }
+
+
         #endregion
 
         #region Methods
             /// <summary>
             /// Creates a new input controller.
             /// </summary>
-            public InputController() { }
+            public InputController()
+            {
+                keyStates = new Dictionary<Keys, KeyState>();
+                keyStates.Add(CONVERT, KeyState.UP);
+                keyStates.Add(Keys.Up, KeyState.UP);
+                keyStates.Add(Keys.Down, KeyState.UP);
+                keyStates.Add(Keys.Left, KeyState.UP);
+                keyStates.Add(Keys.Right, KeyState.UP);
+                keyStates.Add(UP, KeyState.UP);
+                keyStates.Add(DOWN, KeyState.UP);
+                keyStates.Add(LEFT, KeyState.UP);
+                keyStates.Add(RIGHT, KeyState.UP);
+                keyStates.Add(RALLY, KeyState.UP);
+                keyStates.Add(PAUSE, KeyState.UP);
+                keyStates.Add(TOGGLE_HUD, KeyState.UP);
+            }
 
             /// <summary>
             /// Read Keyboard Input
@@ -98,43 +146,18 @@ namespace Pathogenesis
             public void Update()
             {
                 KeyboardState keyboard = Keyboard.GetState();
-
-                convertPressed = keyboard.IsKeyDown(Keys.Space);
-                rallyPressed = keyboard.IsKeyDown(Keys.E);
-                pausePressed = keyboard.IsKeyDown(Keys.Escape);
-                enterPressed = keyboard.IsKeyDown(Keys.Enter);
-
-                if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right))
+                List<Keys> keys = new List<Keys>(keyStates.Keys);
+                foreach (Keys k in keys)
                 {
-                    rightPressed = true;
-                }
-                else
-                {
-                    rightPressed = false;
-                }
-                if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left))
-                {
-                    leftPressed = true;
-                }
-                else
-                {
-                    leftPressed = false;
-                }
-                if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up))
-                {
-                    upPressed = true;
-                }
-                else
-                {
-                    upPressed = false;
-                }
-                if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down))
-                {
-                    downPressed = true;
-                }
-                else
-                {
-                    downPressed = false;
+                    if (keyboard.IsKeyDown(k))
+                    {
+                        if (keyStates[k] == KeyState.UP) keyStates[k] = KeyState.DOWN;
+                        else keyStates[k] = KeyState.HELD;
+                    }
+                    else
+                    {
+                        keyStates[k] = KeyState.UP;
+                    }
                 }
             }
         #endregion
