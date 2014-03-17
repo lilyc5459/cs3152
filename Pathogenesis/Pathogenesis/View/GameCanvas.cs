@@ -480,6 +480,7 @@ namespace Pathogenesis
 
             // Set up the drawing canvas to use the appropriate blending.
             // Deferred sorting guarantees Sprites are drawn in order given.
+
             //transform = camera.TransformMatrix;
             spriteBatch.Begin(SpriteSortMode.Deferred, blend, null, null, null, null, transform);
         }

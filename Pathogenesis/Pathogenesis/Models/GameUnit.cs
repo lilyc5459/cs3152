@@ -58,6 +58,9 @@ namespace Pathogenesis
         public Vector2 NextMove { get; set; }
         public float Accel { get; set; }
 
+        public int Size { get; set; }
+        public int Mass { get; set; }
+
         // Unit type data
         public UnitType Type { get; set; }
         public UnitFaction Faction { get; set; }
@@ -98,6 +101,9 @@ namespace Pathogenesis
                 Speed = 6;
             }
             Accel = 1.5f;
+
+            Size = 20;
+            Mass = 20;
         }
         #endregion
 

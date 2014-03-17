@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Models;
 using EpPathFinding;
+using Pathogenesis.Pathfinding;
 
 namespace Pathogenesis
 {
@@ -142,11 +143,6 @@ namespace Pathogenesis
                     case UnitType.TANK:
                         // tank AI
                         unit.Target = Player.Position;
-                        JumpPointParam jpParam = new JumpPointParam(level.Map,
-                            new GridPos((int)unit.Position.X/Map.TILE_SIZE, (int)unit.Position.Y/Map.TILE_SIZE),
-                            new GridPos((int)unit.Target.X/Map.TILE_SIZE, (int)unit.Target.Y/Map.TILE_SIZE));
-                        List<GridPos> resultPathList = JumpPointFinder.FindPath(jpParam); 
-
                         break;
                     case UnitType.RANGED:
                         // ranged AI
@@ -167,10 +163,26 @@ namespace Pathogenesis
 
             if(unit.HasTarget())
             {
+                unit.NextMove = unit.Target;
+
+                // Pathfind to target if necessary
+                if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))
+                {
+                    List<Vector2> path = Pathfinder.findPath(level.Map, unit.Position, unit.Target);
+                    // Set the next move to the last node in the path with no obstacles in the way
+                    for(int i = path.Count-1; i > 0; i--) {
+                        if (!level.Map.rayCastHasObstacle(unit.Position, path[i]))
+                        {
+                            unit.NextMove = path[i];
+                            break;
+                        }
+                    }
+                }
+
                 // Calculate direction of acceleration
                 Vector2 vel = unit.Vel;
-                float x_mod = unit.Accel * ((unit.Target.X - unit.Position.X) > 0? 1 : -1);
-                float y_mod = unit.Accel * ((unit.Target.Y - unit.Position.Y) > 0? 1 : -1);
+                float x_mod = unit.Accel * ((unit.NextMove.X - unit.Position.X) > 0? 1 : -1);
+                float y_mod = unit.Accel * ((unit.NextMove.Y - unit.Position.Y) > 0? 1 : -1);
                 vel += new Vector2(x_mod, y_mod);
 
                 // Clamp values to max speeds

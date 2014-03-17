@@ -107,12 +107,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\CollisionController.cs" />
     <Compile Include="Models\HUD.cs" />
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\Map.cs" />
     <Compile Include="Models\Menu.cs" />
+    <Compile Include="Pathfinding\BinaryHeap.cs" />
+    <Compile Include="Pathfinding\Pathfinder.cs" />
+    <Compile Include="Pathfinding\PathNode.cs" />
     <Compile Include="View\Camera.cs" />
-    <Compile Include="Controllers\CollisionController.cs" />
     <Compile Include="Controllers\ContentFactory.cs" />
     <Compile Include="View\GameCanvas.cs" />
     <Compile Include="Models\GameEntity.cs" />

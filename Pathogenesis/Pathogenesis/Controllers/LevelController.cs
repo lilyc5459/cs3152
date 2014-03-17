@@ -39,7 +39,7 @@ namespace Pathogenesis
 
         public void Draw(GameCanvas canvas)
         {
-            canvas.DrawOverlay(CurLevel.Texture, Color.White, Vector2.Zero);
+            CurLevel.Draw(canvas);
         }
 
     }

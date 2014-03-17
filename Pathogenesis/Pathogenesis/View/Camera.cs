@@ -24,7 +24,7 @@ namespace Pathogenesis
             get
             {
                 return Matrix.CreateRotationZ(Rotation) * Matrix.CreateScale(Zoom) *
-                       Matrix.CreateTranslation(Position.X, Position.Y, 0);
+                       Matrix.CreateTranslation(-Position.X, -Position.Y, 0);
             }
         }
     }
