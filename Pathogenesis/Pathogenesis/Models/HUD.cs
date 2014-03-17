@@ -59,7 +59,7 @@ namespace Pathogenesis.Models
                 if (Player.Exists)
                 {
                     //Infection range
-                    canvas.DrawSprite(InfectTexture, new Color(20, 50, 20, 70), Player.Position, new Vector2(1, 1), 0f);
+                    canvas.DrawSprite(InfectTexture, new Color(30, 0, 0, 30), Player.Position, new Vector2(1, 1), 0f);
                     //Player health
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 0, 100),
                                             new Rectangle((int)Player.Position.X - HealthBarTexture.Width / 2, (int)Player.Position.Y - 30, (int)(0.5 * Player.Health), 8),

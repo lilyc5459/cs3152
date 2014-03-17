@@ -33,17 +33,19 @@ namespace Pathogenesis
             private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
             private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
 
-            private const string ENEMY_TANK = CHARACTERS_DIR + "enemy_right";
+            private const string ENEMY_TANK_r = CHARACTERS_DIR + "enemy_right";
+            private const string ENEMY_TANK_l = CHARACTERS_DIR + "enemy_left";
             private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
             private const string ENEMY_FLYING = CHARACTERS_DIR + "enemy_flying";
 
-            private const string ALLY_TANK = CHARACTERS_DIR + "ally_right";
+            private const string ALLY_TANK_r = CHARACTERS_DIR + "ally_right";
+            private const string ALLY_TANK_l = CHARACTERS_DIR + "ally_left";
             private const string ALLY_RANGED = CHARACTERS_DIR + "ally_ranged";
             private const string ALLY_FLYING = CHARACTERS_DIR + "ally_flying";
 
             private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
-            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background";
+            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background1";
             private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
             private const string BACKGROUND3 = BACKGROUNDS_DIR + "background3";
         #endregion
@@ -67,11 +69,13 @@ namespace Pathogenesis
                 textures.Add(INFECT_RANGE, content.Load<Texture2D>(INFECT_RANGE));
                 textures.Add(HEALTH_BAR, content.Load<Texture2D>(HEALTH_BAR));
 
-                textures.Add(ENEMY_TANK, content.Load<Texture2D>(ENEMY_TANK));
+                textures.Add(ENEMY_TANK_r, content.Load<Texture2D>(ENEMY_TANK_r));
+                textures.Add(ENEMY_TANK_l, content.Load<Texture2D>(ENEMY_TANK_l));
                 textures.Add(ENEMY_RANGED, content.Load<Texture2D>(ENEMY_RANGED));
                 textures.Add(ENEMY_FLYING, content.Load<Texture2D>(ENEMY_FLYING));
 
-                textures.Add(ALLY_TANK, content.Load<Texture2D>(ALLY_TANK));
+                textures.Add(ALLY_TANK_r, content.Load<Texture2D>(ALLY_TANK_r));
+                textures.Add(ALLY_TANK_l, content.Load<Texture2D>(ALLY_TANK_l));
                 textures.Add(ALLY_RANGED, content.Load<Texture2D>(ALLY_RANGED));
                 textures.Add(ALLY_FLYING, content.Load<Texture2D>(ALLY_FLYING));
 
@@ -95,7 +99,7 @@ namespace Pathogenesis
             // Returns an instance of Player
             public Player createPlayer(Vector2 pos)
             {
-                Player p = new Player(textures[MAINPLAYER]);
+                Player p = new Player(textures[MAINPLAYER], textures[MAINPLAYER]);
                 p.Position = pos;
                 return p;
             }
@@ -112,13 +116,16 @@ namespace Pathogenesis
                 switch (type)
                 {
                     case UnitType.TANK:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY? textures[ALLY_TANK] : textures[ENEMY_TANK], type, faction);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY? textures[ALLY_TANK_l] : textures[ENEMY_TANK_l],
+                            faction == UnitFaction.ALLY? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction);
                         break;
                     case UnitType.RANGED:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_RANGED] : textures[ENEMY_RANGED], type, faction);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_RANGED] : textures[ENEMY_RANGED],
+                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction);
                         break;
                     case UnitType.FLYING:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING], type, faction);
+                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING],
+                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction);
                         break;
                     default:
                         enemy = null;
@@ -138,7 +145,7 @@ namespace Pathogenesis
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(800, 640, textures[BACKGROUND1], textures[ALLY_TANK]);
+                return new Level(800, 640, textures[BACKGROUND1], textures[ALLY_TANK_r]);
             }
 
             // Returns the game font

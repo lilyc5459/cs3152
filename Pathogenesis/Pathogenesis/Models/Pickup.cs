@@ -11,9 +11,11 @@ namespace Pathogenesis
     {
         public const int ITEM_SIZE = 20;
 
-        public Pickup(Texture2D texture) : base(texture)
-        {
+        public Texture2D Texture { get; set; }
 
+        public Pickup(Texture2D texture)
+        {
+            Texture = texture;
         }
 
         public void Draw(GameCanvas canvas)

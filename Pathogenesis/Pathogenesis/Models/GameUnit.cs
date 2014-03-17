@@ -53,6 +53,10 @@ namespace Pathogenesis
         public const int MAX_INFECTION_VITALITY = 100;
 
         #region Properties
+        // Textures
+        public Texture2D Texture_L { get; set; }
+        public Texture2D Texture_R { get; set; }
+
         // Unit movement data
         public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
@@ -83,8 +87,11 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
-        public GameUnit(Texture2D texture, UnitType type, UnitFaction faction) : base(texture)
+        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type, UnitFaction faction)
         {
+            Texture_L = texture_l;
+            Texture_R = texture_r;
+
             Type = type;
             Faction = faction;
             Target = new Vector2(-1, -1);
@@ -141,7 +148,8 @@ namespace Pathogenesis
             // test
             if (Exists)
             {
-                canvas.DrawSprite(Texture, Faction == UnitFaction.ENEMY ? new Color(250, 210, 210) : Color.White, Position);
+                Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
+                canvas.DrawSprite(texture, Faction == UnitFaction.ENEMY ? new Color(250, 210, 210) : Color.White, Position);
             }
         }
     }

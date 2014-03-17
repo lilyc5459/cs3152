@@ -16,16 +16,12 @@ namespace Pathogenesis
         public Vector2 Position { get; set; }
         public Vector2 Screen_pos { get; set; }
 
-        // Image property
-        public Texture2D Texture { get; set; }
-
         // Indicates if the entity exists in the game. If false, game engine will delete soon
         public bool Exists { get; set; }
         #endregion
 
-        public GameEntity(Texture2D texture)
+        public GameEntity()
         {
-            Texture = texture;
             Exists = true;
         }
 
