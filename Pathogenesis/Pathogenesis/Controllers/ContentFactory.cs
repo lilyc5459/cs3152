@@ -33,17 +33,17 @@ namespace Pathogenesis
             private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
             private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
 
-            private const string ENEMY_TANK = CHARACTERS_DIR + "enemy";
+            private const string ENEMY_TANK = CHARACTERS_DIR + "enemy_right";
             private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
             private const string ENEMY_FLYING = CHARACTERS_DIR + "enemy_flying";
 
-            private const string ALLY_TANK = CHARACTERS_DIR + "ally";
+            private const string ALLY_TANK = CHARACTERS_DIR + "ally_right";
             private const string ALLY_RANGED = CHARACTERS_DIR + "ally_ranged";
             private const string ALLY_FLYING = CHARACTERS_DIR + "ally_flying";
 
             private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
-            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background1";
+            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background";
             private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
             private const string BACKGROUND3 = BACKGROUNDS_DIR + "background3";
         #endregion
