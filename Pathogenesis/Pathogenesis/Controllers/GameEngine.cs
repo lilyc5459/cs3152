@@ -65,7 +65,7 @@ namespace Pathogenesis
             collision_controller = new CollisionController();
 
             level_controller = new LevelController();
-            unit_controller = new GameUnitController();
+            unit_controller = new GameUnitController(factory);
             item_controller = new ItemController();
         }
 
@@ -138,6 +138,7 @@ namespace Pathogenesis
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                        item_controller.AddItem(factory.createPickup());
                     }
                     //
 
@@ -172,6 +173,7 @@ namespace Pathogenesis
 
             level_controller.Draw(canvas);
             HUD_display.Draw(canvas, unit_controller.Units);
+            item_controller.Draw(canvas);
             unit_controller.Draw(canvas);
 
             canvas.EndSpritePass();

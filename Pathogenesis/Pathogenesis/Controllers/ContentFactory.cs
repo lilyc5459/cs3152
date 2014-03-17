@@ -33,13 +33,15 @@ namespace Pathogenesis
             private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
             private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
 
-            private const string ENEMY_TANK = CHARACTERS_DIR + "enemy_tank";
+            private const string ENEMY_TANK = CHARACTERS_DIR + "enemy";
             private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
             private const string ENEMY_FLYING = CHARACTERS_DIR + "enemy_flying";
 
-            private const string ALLY_TANK = CHARACTERS_DIR + "ally_tank";
+            private const string ALLY_TANK = CHARACTERS_DIR + "ally";
             private const string ALLY_RANGED = CHARACTERS_DIR + "ally_ranged";
             private const string ALLY_FLYING = CHARACTERS_DIR + "ally_flying";
+
+            private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
             private const string BACKGROUND1 = BACKGROUNDS_DIR + "background1";
             private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
@@ -72,6 +74,8 @@ namespace Pathogenesis
                 textures.Add(ALLY_TANK, content.Load<Texture2D>(ALLY_TANK));
                 textures.Add(ALLY_RANGED, content.Load<Texture2D>(ALLY_RANGED));
                 textures.Add(ALLY_FLYING, content.Load<Texture2D>(ALLY_FLYING));
+
+                textures.Add(PLASMID, content.Load<Texture2D>(PLASMID));
 
                 textures.Add(BACKGROUND1, content.Load<Texture2D>(BACKGROUND1));
                 textures.Add(BACKGROUND2, content.Load<Texture2D>(BACKGROUND2));
@@ -127,6 +131,10 @@ namespace Pathogenesis
                 return enemy;
             }
 
+            public Pickup createPickup()
+            {
+                return new Pickup(textures[PLASMID]);
+            }
             public Level loadLevel(int num)
             {
                 //return levels[num];

@@ -58,6 +58,7 @@ namespace Pathogenesis
         public Vector2 Target { get; set; }
         public Vector2 NextMove { get; set; }
         public float Accel { get; set; }
+        public float Decel { get; set; }
 
         public int Size { get; set; }
         public int Mass { get; set; }
@@ -65,6 +66,10 @@ namespace Pathogenesis
         // Unit type data
         public UnitType Type { get; set; }
         public UnitFaction Faction { get; set; }
+
+        // Attacking fields
+        public int AttackCoolDown { get; set; }
+        public bool Attacking { get; set; }
 
         // Unit stat fields
         public int Health { get; set; }
@@ -94,15 +99,27 @@ namespace Pathogenesis
             // Test
             Health = MAX_HEALTH;
             InfectionVitality = MAX_INFECTION_VITALITY;
+            AttackCoolDown = 0;
             if (Type == UnitType.PLAYER)
             {
                 Speed = 6;
+                Accel = 1.1f;
+                Decel = 0.5f;
+            }
+            else if (Faction == UnitFaction.ENEMY)
+            {
+                Speed = 2;
+                Accel = 0.4f;
+                Decel = 0.2f;
             }
             else
             {
-                Speed = 3;
+                Speed = 8;
+                Accel = 1.1f;
+                Decel = 0.5f;
             }
-            Accel = 1.1f;
+            Attack = 5;
+            Defense = 0;
 
             Size = 20;
             Mass = 20;
@@ -114,10 +131,18 @@ namespace Pathogenesis
             return Target.X >= 0 && Target.Y >= 0;
         }
 
+        public bool HasNextMove()
+        {
+            return NextMove.X >= 0 && NextMove.Y >= 0;
+        }
+
         public void Draw(GameCanvas canvas)
         {
             // test
-            canvas.DrawSprite(Texture, Faction == UnitFaction.ENEMY? Color.Red : Color.White, Position);
+            if (Exists)
+            {
+                canvas.DrawSprite(Texture, Faction == UnitFaction.ENEMY ? new Color(250, 210, 210) : Color.White, Position);
+            }
         }
     }
 }

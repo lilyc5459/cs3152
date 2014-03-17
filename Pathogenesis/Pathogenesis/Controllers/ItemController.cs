@@ -7,5 +7,23 @@ namespace Pathogenesis
 {
     public class ItemController
     {
+        public List<Pickup> Items { get; set; }
+
+        public ItemController()
+        {
+            Items = new List<Pickup>();
+        }
+
+        public void AddItem(Pickup p) {
+            Items.Add(p);
+        }
+
+        public void Draw(GameCanvas canvas)
+        {
+            foreach (Pickup it in Items)
+            {
+                it.Draw(canvas);
+            }
+        }
     }
 }

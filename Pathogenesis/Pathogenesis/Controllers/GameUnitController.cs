@@ -19,13 +19,19 @@ namespace Pathogenesis
         #region Constants
         public const int ENEMY_CHASE_RANGE = 150;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
-        public const int MAX_ALLIES = 100;           // Maximum number of allies allowed
-
-        public const float SPEED_DAMP_FACTOR = 0.5f;
+        public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
+        public const int STOP_DIST = 10;            // Distance at which a unit is considered "at" its target
+        public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
+        public const int ATTACK_RANGE = 20;         // Attack cooldown
+        public const int ENEMY_LOCK_RANGE = 80;     // Distance at which enemies and allies will lock on to each other
+        public const int ALLY_FOLLOW_RANGE = 200;  
         #endregion
+
+        private ContentFactory factory;
 
         // A list of all the units currently in the game
         public List<GameUnit> Units { get; set; }
+        public List<GameUnit> DeadUnits { get; set; }
 
         // The player object
         public Player Player { get; set; }
@@ -34,9 +40,11 @@ namespace Pathogenesis
         private Random rand;
 
         #region Initialization
-        public GameUnitController()
+        public GameUnitController(ContentFactory factory)
         {
+            this.factory = factory;
             Units = new List<GameUnit>();
+            DeadUnits = new List<GameUnit>();
             rand = new Random();
         }
 
@@ -46,6 +54,7 @@ namespace Pathogenesis
         public void AddUnit(GameUnit unit)
         {
             unit.ID = Units.Count;
+            unit.AttackCoolDown = ATTACK_COOLDOWN;
             Units.Add(unit);
         }
         #endregion
@@ -64,8 +73,17 @@ namespace Pathogenesis
             foreach (GameUnit unit in Units)
             {
                 moveUnit(unit);
+                ProcessCombat(unit);
                 unit.InfectionVitality = (int)MathHelper.Clamp(
                     ++unit.InfectionVitality, 0, GameUnit.MAX_INFECTION_VITALITY);
+                unit.AttackCoolDown = (int)MathHelper.Clamp(
+                    --unit.AttackCoolDown, 0, ATTACK_COOLDOWN);
+            }
+
+            foreach (GameUnit unit in DeadUnits)
+            {
+                if (unit.Type == UnitType.PLAYER) Player.Exists = false;
+                else Units.Remove(unit);
             }
 
             if (Player != null)
@@ -158,6 +176,8 @@ namespace Pathogenesis
         private void Convert(GameUnit unit)
         {
             unit.Faction = UnitFaction.ALLY;
+            Units.Remove(unit);
+            AddUnit(factory.createUnit(unit.Type, UnitFaction.ALLY, unit.Position));
             // Change stats like speed etc as necessary
         }
 
@@ -172,35 +192,64 @@ namespace Pathogenesis
         public void setNextMove(GameUnit unit, Level level)
         {
             // Select target
-            if (Player != null && Player.Exists && Player.inRange(unit, ENEMY_CHASE_RANGE))
+            Vector2 prev_target = unit.Target;
+            
+            switch (unit.Type)
             {
-                switch (unit.Type)
-                {
-                    case UnitType.TANK:
-                        // tank AI
+                case UnitType.TANK:
+                    // tank AI
+                    if (Player != null && Player.Exists &&
+                        unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, ENEMY_CHASE_RANGE))
+                    {
                         unit.Target = Player.Position;
-                        break;
-                    case UnitType.RANGED:
-                        // ranged AI
-                        break;
-                    case UnitType.FLYING:
-                        // flying AI
-                        break;
-                    default:
-                        // Player case, do nothing
-                        break;
-                }
-            }
-            else if(rand.NextDouble() < 0.05)
-            {
-                // Random walk
-                unit.Target = new Vector2(rand.Next(level.Width), rand.Next(level.Height));
+                    }
+                    else if (rand.NextDouble() < 0.05)
+                    {
+                        // Random walk
+                        unit.Target = new Vector2(rand.Next(level.Width), rand.Next(level.Height));
+                    }
+
+                    if (unit.Faction == UnitFaction.ALLY)
+                    {
+                        Vector2 vel = Player.Vel;
+                        if (Player.Vel.Length() > 0)
+                        {
+                            //vel.Normalize();
+                        }
+                        unit.Target = Player.Position + vel * 15;
+                    }
+
+                    foreach (GameUnit other in Units)
+                    {
+                        if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_RANGE))
+                        {
+                            unit.Target = other.Position;
+                        }
+                    }
+                    if(unit.Faction == UnitFaction.ALLY && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
+                    {
+                        Vector2 vel = Player.Vel;
+                        if (Player.Vel.Length() > 0)
+                        {
+                            //vel.Normalize();
+                        }
+                        unit.Target = Player.Position + vel * 15;
+                    }
+                    break;
+                case UnitType.RANGED:
+                    // ranged AI
+                    break;
+                case UnitType.FLYING:
+                    // flying AI
+                    break;
+                default:
+                    // Player case, do nothing
+                    break;
             }
 
-            if(unit.HasTarget())
+            unit.NextMove = unit.Target;
+            if (unit.HasTarget() && !unit.Target.Equals(prev_target))
             {
-                unit.NextMove = unit.Target;
-
                 // Pathfind to target if necessary
                 if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))
                 {
@@ -214,11 +263,31 @@ namespace Pathogenesis
                         }
                     }
                 }
+            }
 
+            if (unit.HasNextMove())
+            {
                 // Calculate direction of acceleration
                 Vector2 vel = unit.Vel;
                 float x_mod = unit.Accel * ((unit.NextMove.X - unit.Position.X) > 0? 1 : -1);
                 float y_mod = unit.Accel * ((unit.NextMove.Y - unit.Position.Y) > 0? 1 : -1);
+
+                if (Math.Abs(unit.Position.X - unit.NextMove.X) < STOP_DIST) x_mod = 0;
+                if (Math.Abs(unit.Position.Y - unit.NextMove.Y) < STOP_DIST) y_mod = 0;
+
+                //TEMP
+                if (unit.Faction == UnitFaction.ALLY)
+                {
+                    if ((unit.Position - unit.Target).Length() < 20)
+                    {
+                        unit.Speed = (int) (Player.Speed * 1.5);
+                    }
+                    else
+                    {
+                        unit.Speed = Player.Speed * 3;
+                    }
+                }
+
                 vel += new Vector2(x_mod, y_mod);
 
                 // Clamp values to max speeds
@@ -237,15 +306,45 @@ namespace Pathogenesis
             //unit.Position = unit.Target; //TESTs
             // Damping
             Vector2 vel = unit.Vel;
-            if (vel.X < 0) vel.X += SPEED_DAMP_FACTOR;
-            else if (vel.X > 0) vel.X -= SPEED_DAMP_FACTOR;
-            if (vel.Y < 0) vel.Y += SPEED_DAMP_FACTOR;
-            else if (vel.Y > 0) vel.Y -= SPEED_DAMP_FACTOR;
+            if (vel.X < 0) vel.X += unit.Decel;
+            else if (vel.X > 0) vel.X -= unit.Decel;
+            if (vel.Y < 0) vel.Y += unit.Decel;
+            else if (vel.Y > 0) vel.Y -= unit.Decel;
 
-            if ((vel - Vector2.Zero).Length() < 0.5) { vel = Vector2.Zero; }
+            if ((vel - Vector2.Zero).Length() < unit.Decel) { vel = Vector2.Zero; }
             unit.Vel = vel;
         }
 
+        #endregion
+
+        #region Combat
+        private void ProcessCombat(GameUnit unit)
+        {
+            if (unit.AttackCoolDown > 0) return;
+
+            // Attack other units
+            //TODO make this more efficient by only checking nearby units
+            foreach (GameUnit other in Units)
+            {
+                if (other != unit && other.Faction != unit.Faction && unit.inRange(other, ATTACK_RANGE))
+                {
+                    Attack(unit, other);
+                }
+            }
+            // Attack player if not attacking other
+            if (Player.Exists && unit.AttackCoolDown == 0 &&
+                unit.Faction == UnitFaction.ENEMY && unit.inRange(Player, ATTACK_RANGE))
+            {
+                Attack(unit, Player);
+            }
+        }
+
+        private void Attack(GameUnit aggressor, GameUnit victim)
+        {
+            aggressor.AttackCoolDown = ATTACK_COOLDOWN;
+            victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+            if (victim.Health <= 0) DeadUnits.Add(victim);
+        }
         #endregion
 
         #region Draw
