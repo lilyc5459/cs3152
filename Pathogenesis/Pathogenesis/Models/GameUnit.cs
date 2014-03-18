@@ -76,7 +76,7 @@ namespace Pathogenesis
         public bool Attacking { get; set; }
 
         // Unit stat fields
-        public int Health { get; set; }
+        public float Health { get; set; }
         public int InfectionVitality { get; set; }
 
         public int Attack { get; set; }

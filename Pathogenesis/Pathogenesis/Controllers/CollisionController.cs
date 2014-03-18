@@ -93,7 +93,8 @@ namespace Pathogenesis
                     {
                         foreach (GameUnit other in cellGrid[loc.Y, loc.X])
                         {
-                            if (unit != other)
+                            // Don't check collision for the same units or if they are in the same position (will crash)
+                            if (unit != other && unit.Position != other.Position)
                             {
                                 CheckUnitCollision(unit, other);
                             }
@@ -110,6 +111,7 @@ namespace Pathogenesis
          */
         public void CheckUnitCollision(GameUnit g1, GameUnit g2)
         {
+            // Don't check collision between player and ally
             if (g1.Faction == UnitFaction.ALLY && g2.Type == UnitType.PLAYER ||
                 g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER)
             {
@@ -122,8 +124,11 @@ namespace Pathogenesis
 
             if (distance < g1.Size)
             {
+                //System.Diagnostics.Debug.WriteLine("1 pos: " + g1.Position + " 2pos: " + g2.Position +
+                //    " 1size: " + g1.Size + " 2size: " + g2.Size + " norm: " + normal + " dist: " + distance);
                 g1.Position += normal * (g1.Size - distance)/2; 
-                g2.Position -= normal * (g2.Size - distance)/2; 
+                g2.Position -= normal * (g2.Size - distance)/2;
+                //System.Diagnostics.Debug.WriteLine(g1.Position + " " + g2.Position);
 
                 Vector2 relVel = g1.Vel - g2.Vel;
 
@@ -151,10 +156,11 @@ namespace Pathogenesis
 
             foreach (Vector2 dir in dirs)
             {
-                if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
+                if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
                 {
-                    Vector2 a = (unit.Position + dir * unit.Size) / Map.TILE_SIZE;
-                     while (!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
+                    Vector2 a = (unit.Position + dir * unit.Size/2) / Map.TILE_SIZE;
+                    int i = 0;
+                     while (i++ < unit.Size && !map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
                     {
                         unit.Position -= dir;
                     }
@@ -165,12 +171,6 @@ namespace Pathogenesis
                     //unit.Vel = -dir * 5;
                 }
             }
-
-
-
-
-
-
 
             /*
             float right_limit = Math.Min((unit.Position.X + unit.Size/2),map.Height);

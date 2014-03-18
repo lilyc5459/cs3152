@@ -25,6 +25,7 @@ namespace Pathogenesis
         public const int ENEMY_LOCK_RANGE = 800;     // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 2;
+        public const float ALLY_ATTRITION = 0.2f;
         #endregion
 
         private ContentFactory factory;
@@ -61,7 +62,7 @@ namespace Pathogenesis
 
         #region Update
         /*
-         * Updates all game units
+         * Update all units
          */
         public void Update(Level level, InputController input_controller)
         {
@@ -74,10 +75,14 @@ namespace Pathogenesis
             {
                 moveUnit(unit);
                 ProcessCombat(unit);
-                unit.InfectionVitality = (int)MathHelper.Clamp(
-                    ++unit.InfectionVitality, 0, GameUnit.MAX_INFECTION_VITALITY);
-                unit.AttackCoolDown = (int)MathHelper.Clamp(
-                    --unit.AttackCoolDown, 0, ATTACK_COOLDOWN);
+                UpdateUnit(unit);
+            }
+
+            if (Player != null && Player.Exists)
+            {
+                CheckPlayerInput(input_controller);
+                moveUnit(Player);
+                //UpdatePlayer();
             }
 
             foreach (GameUnit unit in DeadUnits)
@@ -85,13 +90,9 @@ namespace Pathogenesis
                 if (unit.Type == UnitType.PLAYER) Player.Exists = false;
                 else Units.Remove(unit);
             }
-
-            if (Player != null)
-            {
-                CheckPlayerInput(input_controller);
-                moveUnit(Player);
-            }
+            DeadUnits = new List<GameUnit>();
         }
+
         #endregion
 
         #region Player logic
@@ -181,6 +182,10 @@ namespace Pathogenesis
             // Change stats like speed etc as necessary
         }
 
+        private void UpdatePlayer()
+        {
+            if (Player.Health <= 0) DeadUnits.Add(Player);
+        }
         #endregion
 
         #region Movement and Pathfinding
@@ -246,7 +251,7 @@ namespace Pathogenesis
 
             unit.NextMove = unit.Target;
             //&& !unit.Target.Equals(prev_target)
-            if (unit.HasTarget() )
+            if (unit.HasTarget())
             {
                 // Pathfind to target if necessary
                 if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))
@@ -278,7 +283,7 @@ namespace Pathogenesis
                 {
                     if ((unit.Position - unit.Target).Length() < 50)
                     {
-                        unit.Speed = (int) (Player.Speed * 1.5);
+                        unit.Speed = (int) (Player.Speed * 1.2);
                     }
                     else
                     {
@@ -293,6 +298,7 @@ namespace Pathogenesis
                 vel.Y = MathHelper.Clamp(vel.Y, -unit.Speed, unit.Speed);
                 unit.Vel = vel;
             }
+            //System.Diagnostics.Debug.WriteLine(unit.Vel);
         }
 
         /*
@@ -301,7 +307,6 @@ namespace Pathogenesis
         private void moveUnit(GameUnit unit)
         {
             unit.Position += unit.Vel;
-            //unit.Position = unit.Target; //TESTs
             // Damping
             Vector2 vel = unit.Vel;
             if (vel.X < 0) vel.X += unit.Decel;
@@ -341,7 +346,28 @@ namespace Pathogenesis
         {
             aggressor.AttackCoolDown = ATTACK_COOLDOWN;
             victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
-            if (victim.Health <= 0) DeadUnits.Add(victim);
+        }
+        #endregion
+
+        #region UpdateUnit
+        private void UpdateUnit(GameUnit unit)
+        {
+            // Infection vitality update
+            unit.InfectionVitality = (int)MathHelper.Clamp(
+                ++unit.InfectionVitality, 0, GameUnit.MAX_INFECTION_VITALITY);
+            // Attack cooldown
+            unit.AttackCoolDown = (int)MathHelper.Clamp(
+                --unit.AttackCoolDown, 0, ATTACK_COOLDOWN);
+            // Apply ally attrition
+            if (unit.Faction == UnitFaction.ALLY)
+            {
+                unit.Health -= ALLY_ATTRITION;
+            }
+            // Check health
+            if (unit.Health <= 0)
+            {
+                DeadUnits.Add(unit);
+            }
         }
         #endregion
 

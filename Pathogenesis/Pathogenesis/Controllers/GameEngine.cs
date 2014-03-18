@@ -134,7 +134,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 20)
+                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 20)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
@@ -142,13 +142,14 @@ namespace Pathogenesis
                     }
                     //
 
-                    level_controller.Update();          // Process level environment logic
-                    unit_controller.Update(             // Process and update all units
-                        level_controller.CurLevel, input_controller);
-                    HUD_display.Update(                 // Update the HUD
-                        input_controller);
-                    collision_controller.Update(        // Process and handle collisions
-                        unit_controller.Units, unit_controller.Player, level_controller.CurLevel);
+                    // Process level environment logic
+                    level_controller.Update();
+                    // Process and update all units
+                    unit_controller.Update(level_controller.CurLevel, input_controller);
+                    // Process and handle collisions
+                    collision_controller.Update(unit_controller.Units, unit_controller.Player, level_controller.CurLevel);
+                    // Update the HUD
+                    HUD_display.Update(input_controller);
                     
                     if (unit_controller.Player != null)
                     {
