@@ -25,7 +25,7 @@ namespace Pathogenesis
         public const int ENEMY_LOCK_RANGE = 800;     // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 2;
-        public const float ALLY_ATTRITION = 0.2f;
+        public const float ALLY_ATTRITION = 0.1f;
         #endregion
 
         private ContentFactory factory;
@@ -82,7 +82,7 @@ namespace Pathogenesis
             {
                 CheckPlayerInput(input_controller);
                 moveUnit(Player);
-                //UpdatePlayer();
+                UpdatePlayer();
             }
 
             foreach (GameUnit unit in DeadUnits)
@@ -211,14 +211,14 @@ namespace Pathogenesis
                     else if (rand.NextDouble() < 0.05)
                     {
                         // Random walk
-                        unit.Target = new Vector2(rand.Next(level.Width), rand.Next(level.Height));
+                        unit.Target = unit.Position + new Vector2(rand.Next(400)-200, rand.Next(400)-200);
                     }
 
                     if (unit.Faction == UnitFaction.ALLY)
                     {
                         Vector2 front = Vector2.Zero;
-                        front.X = (Player.Vel.X > 0)? 70 : (Player.Vel.X == 0)? 0 : -70;
-                        front.Y = (Player.Vel.Y > 0)? 70 : (Player.Vel.Y == 0)? 0 : -70;
+                        front.X = (Player.Vel.X > 0)? 100 : (Player.Vel.X == 0)? 0 : -100;
+                        front.Y = (Player.Vel.Y > 0)? 100 : (Player.Vel.Y == 0)? 0 : -100;
                         unit.Target = Player.Position + front;
                     }
 
@@ -256,13 +256,17 @@ namespace Pathogenesis
                 // Pathfind to target if necessary
                 if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))
                 {
-                    List<Vector2> path = Pathfinder.findPath(level.Map, unit.Position, unit.Target);
+                    List<Vector2> path = Pathfinder.findPath(level.Map, unit.Position, unit.Target, 100);
                     // Set the next move to the last node in the path with no obstacles in the way
-                    for(int i = path.Count-1; i > 0; i--) {
-                        if (!level.Map.rayCastHasObstacle(unit.Position, path[i]))
+                    if (path != null)
+                    {
+                        for (int i = path.Count - 1; i > 0; i--)
                         {
-                            unit.NextMove = path[i];
-                            break;
+                            if (!level.Map.rayCastHasObstacle(unit.Position, path[i]))
+                            {
+                                unit.NextMove = path[i];
+                                break;
+                            }
                         }
                     }
                 }

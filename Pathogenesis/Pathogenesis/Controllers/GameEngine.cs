@@ -87,6 +87,10 @@ namespace Pathogenesis
             unit_controller.Player = factory.createPlayer(new Vector2(100, 100));
             HUD_display = factory.createHUD(unit_controller.Player);
             level_controller.NextLevel(factory);
+
+            bool test = level_controller.CurLevel.Map.rayCastHasObstacle(
+                new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE));
+            System.Diagnostics.Debug.WriteLine(test);
             base.Initialize();
         }
 
@@ -134,7 +138,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 20)
+                    if (rand.NextDouble() < 0.05 && unit_controller.Units.Count < 100)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));

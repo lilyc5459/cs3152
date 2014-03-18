@@ -139,7 +139,7 @@ namespace Pathogenesis.Models
             float slope = (float)(y1 - y0) / (x1 - x0);
             float b = y0 - slope * x0;
 
-            for (int i = x0; i <= x1; i += TILE_SIZE / 2)
+            for (int i = x0; i <= x1; i += TILE_SIZE / 4)
             {
                 float x = steep ? slope * i + b : i;
                 float y = steep ? i : slope * i + b;

@@ -13,7 +13,7 @@ namespace Pathogenesis.Pathfinding
         /*
          * Finds the tile based path from start to end, given in world coordinates
          */
-        public static List<Vector2> findPath(Map map, Vector2 start, Vector2 end)
+        public static List<Vector2> findPath(Map map, Vector2 start, Vector2 end, int limit)
         {
             if (!map.canMoveToWorldPos(end))
             {
@@ -39,6 +39,10 @@ namespace Pathogenesis.Pathfinding
                 if (current.Pos.Equals(endPoint))
                 {
                     return constructPath(current);
+                }
+                if (current.G_score + 1 > limit)    // Don't explore tiles too far
+                {
+                    continue;
                 }
 
                 List<Point> adj = getAdjacent(current.Pos);
