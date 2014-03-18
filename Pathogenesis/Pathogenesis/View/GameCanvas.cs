@@ -89,7 +89,7 @@ namespace Pathogenesis
         #region Constants
         // Default window size.  This belongs in the view, not the game engine.
         private const int GAME_WIDTH = 800;
-        private const int GAME_HEIGHT = 800;
+        private const int GAME_HEIGHT = 640;
         #endregion
 
         #region Fields
@@ -406,12 +406,11 @@ namespace Pathogenesis
         {
             // Override window position at start-up
             window = game.Window;
-            if (!fullscreen)
-            {
-                graphics.PreferredBackBufferWidth = bounds.Width;
-                graphics.PreferredBackBufferHeight = bounds.Height;
+
+            graphics.PreferredBackBufferWidth = GAME_WIDTH;
+            graphics.PreferredBackBufferHeight = GAME_HEIGHT;
                 graphics.ApplyChanges();
-            }
+            
 
             // Set up Sprite Batch properites
             spriteBatch = new SpriteBatch(game.GraphicsDevice);
