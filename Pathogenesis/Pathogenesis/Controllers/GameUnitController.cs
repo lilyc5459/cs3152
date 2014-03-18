@@ -49,6 +49,12 @@ namespace Pathogenesis
             rand = new Random();
         }
 
+        public void Reset()
+        {
+            Units = new List<GameUnit>();
+            DeadUnits = new List<GameUnit>();
+        }
+
         /*
          * Add a unit to the game
          */

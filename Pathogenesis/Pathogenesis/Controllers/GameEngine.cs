@@ -30,6 +30,9 @@ namespace Pathogenesis
     public class GameEngine : Microsoft.Xna.Framework.Game
     {
         #region Fields
+        // First time game loaded?
+        private bool firstLoop = true;
+
         private SpriteBatch spriteBatch;
 
         // Used to draw the game onto the screen (VIEW CLASS)
@@ -77,8 +80,9 @@ namespace Pathogenesis
         /// </summary>
         protected override void Initialize()
         {
-            factory.LoadAllContent();
+            if (firstLoop) factory.LoadAllContent();
             canvas.Initialize(this);
+
 
             // Game starts at the main menu
             game_state = GameState.MAIN_MENU;
@@ -92,6 +96,7 @@ namespace Pathogenesis
                 new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE));
             System.Diagnostics.Debug.WriteLine(test);
             base.Initialize();
+            firstLoop = false;
         }
 
         /// <summary>
@@ -112,7 +117,9 @@ namespace Pathogenesis
         /// </summary>
         protected override void UnloadContent()
         {
+            //canvas.Dispose();
             factory.UnloadAll();
+            
         }
     #endregion
 
@@ -163,6 +170,13 @@ namespace Pathogenesis
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
                     }
                     //
+                    //Restart
+                    if (input_controller.Restart)
+                    {
+                        Initialize();
+                        unit_controller.Reset();
+                        item_controller.Reset();
+                    }
 
                     // Process level environment logic
                     level_controller.Update();

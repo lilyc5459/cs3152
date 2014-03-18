@@ -14,6 +14,11 @@ namespace Pathogenesis
             Items = new List<Pickup>();
         }
 
+        public void Reset()
+        {
+            Items = new List<Pickup>();
+        }
+
         public void AddItem(Pickup p) {
             Items.Add(p);
         }
