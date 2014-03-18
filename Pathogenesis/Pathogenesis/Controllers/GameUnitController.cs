@@ -24,7 +24,8 @@ namespace Pathogenesis
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
         public const int ATTACK_RANGE = 20;         // Attack cooldown
         public const int ENEMY_LOCK_RANGE = 80;     // Distance at which enemies and allies will lock on to each other
-        public const int ALLY_FOLLOW_RANGE = 200;  
+        public const int ALLY_FOLLOW_RANGE = 200;
+        public const int INFECTION_SPEED = 2;
         #endregion
 
         private ContentFactory factory;
@@ -144,7 +145,7 @@ namespace Pathogenesis
                 }
                 else
                 {
-                    Player.Infecting.InfectionVitality -= 2;
+                    Player.Infecting.InfectionVitality -= INFECTION_SPEED;
                 }
             }
             else

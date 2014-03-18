@@ -86,13 +86,13 @@ namespace Pathogenesis
                         {
                             if (unit != other)
                             {
-                                CheckUnitCollision(unit, other);
+                                //CheckUnitCollision(unit, other);
                             }
                         }
                     }
                 }
 
-                CheckWallCollision(unit, map);
+                //CheckWallCollision(unit, map);
             }
         }
 
@@ -107,8 +107,8 @@ namespace Pathogenesis
 
             if (distance < g1.Size)
             {
-                g1.Position += normal * (g1.Size - distance)/2; 
-                g2.Position -= normal * (g2.Size - distance)/2; 
+                g1.Position += normal * (g1.Size - distance) / 2;
+                g2.Position -= normal * (g2.Size - distance) / 2;
 
                 Vector2 relVel = g1.Vel - g2.Vel;
 
@@ -124,81 +124,8 @@ namespace Pathogenesis
          */ 
         public void CheckWallCollision(GameUnit unit, Map map)
         {
-            List<Vector2> dirs = new List<Vector2>();
-            dirs.Add(new Vector2(0, 1));
-            dirs.Add(new Vector2(1, 0));
-            dirs.Add(new Vector2(0, -1));
-            dirs.Add(new Vector2(-1, 0));
-            dirs.Add(new Vector2(1, 1));
-            dirs.Add(new Vector2(1, -1));
-            dirs.Add(new Vector2(-1, 1));
-            dirs.Add(new Vector2(-1, -1));
-
-            foreach (Vector2 dir in dirs)
-            {
-                if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
-                {
-                    unit.Position -= unit.Vel * dir;
-                    unit.Vel *= -dir;
-                }
-            }
 
 
-
-
-
-
-
-
-            float right_limit = Math.Min((unit.Position.X + unit.Size/2),map.Height);
-            float left_limit = Math.Max((unit.Position.X - unit.Size/2),0);
-            
-            float up_limit = Math.Max((unit.Position.Y - unit.Size/2),0);
-            float down_limit = Math.Min((unit.Position.Y + unit.Size/2),map.Width);
-
-            for (float x = unit.Position.X; x < right_limit; x++)
-            {
-                if (CheckForWall(x,unit.Position.Y,map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X,unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float x = unit.Position.X; x > left_limit; x--)
-            {
-                if (CheckForWall(x, unit.Position.Y, map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X, unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y > up_limit; y--)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y < down_limit; y++)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-        }
-
-        public Boolean CheckForWall(float x, float y, Map map)
-        {
-            Vector2 pos = new Vector2(x, y);
-            pos = map.translateWorldToMap(pos);
-
-            return map.getTileAt((int)pos.X, (int)pos.Y) == 1;
         }
 
         // Returns all the adjacent positions from the specified one

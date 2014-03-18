@@ -65,7 +65,7 @@ namespace Pathogenesis
         public float Decel { get; set; }
 
         public int Size { get; set; }
-        public int Mass { get; set; }
+        public float Mass { get; set; }
 
         // Unit type data
         public UnitType Type { get; set; }
@@ -129,7 +129,7 @@ namespace Pathogenesis
             Defense = 0;
 
             Size = 20;
-            Mass = 20;
+            Mass = 0.5f;
         }
         #endregion
 

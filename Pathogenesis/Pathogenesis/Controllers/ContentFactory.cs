@@ -45,6 +45,7 @@ namespace Pathogenesis
 
             private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
+            private const string WALL = BACKGROUNDS_DIR + "wall";
             private const string BACKGROUND1 = BACKGROUNDS_DIR + "background1";
             private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
             private const string BACKGROUND3 = BACKGROUNDS_DIR + "background3";
@@ -81,6 +82,7 @@ namespace Pathogenesis
 
                 textures.Add(PLASMID, content.Load<Texture2D>(PLASMID));
 
+                textures.Add(WALL, content.Load<Texture2D>(WALL));
                 textures.Add(BACKGROUND1, content.Load<Texture2D>(BACKGROUND1));
                 textures.Add(BACKGROUND2, content.Load<Texture2D>(BACKGROUND2));
                 textures.Add(BACKGROUND3, content.Load<Texture2D>(BACKGROUND3));
@@ -145,7 +147,7 @@ namespace Pathogenesis
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(800, 640, textures[BACKGROUND1], textures[ALLY_TANK_r]);
+                return new Level(800, 640, textures[BACKGROUND1], textures[WALL]);
             }
 
             // Returns the game font

@@ -154,7 +154,7 @@ namespace Pathogenesis.Models
                 {
                     if (tiles[i, j] == 1)
                     {
-                        canvas.DrawSprite(WallTexture, Color.Red, new Vector2(j * TILE_SIZE, i * TILE_SIZE), new Vector2(0.01f, 0.01f), 0f);
+                        canvas.DrawSprite(WallTexture, Color.Red, new Vector2(j * TILE_SIZE, i * TILE_SIZE), new Vector2(1f, 1f), 0f);
                     }
                 }
             }
