@@ -30,9 +30,9 @@ namespace Pathogenesis
          * using the collision cell optimization structure
          */
 
-        public void Update(List<GameUnit> units, Level level)
+        public void Update(List<GameUnit> units, Player player, Level level)
         {
-            cellGrid = ConstructCollisionGrid(units, level);
+            cellGrid = ConstructCollisionGrid(units, player, level);
 
             for (int ii = 0; ii < cellGrid.GetLength(0); ii++)
             {
@@ -50,7 +50,7 @@ namespace Pathogenesis
          * Populates the collision grid by bucketizing each unit on the map into a cell 
          * around which collisions will be processed
          */
-        public List<GameUnit>[,] ConstructCollisionGrid(List<GameUnit> units, Level level)
+        public List<GameUnit>[,] ConstructCollisionGrid(List<GameUnit> units, Player player, Level level)
         {
             List<GameUnit>[,] grid = new List<GameUnit>[
                 (int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
@@ -66,6 +66,15 @@ namespace Pathogenesis
                 }
                 grid[y_index, x_index].Add(unit);
             }
+
+            int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
+            int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
+            if (grid[y_indexp, x_indexp] == null)
+            {
+                grid[y_indexp, x_indexp] = new List<GameUnit>();
+            }
+            grid[y_indexp, x_indexp].Add(player);
+
             return grid;
         }
 
@@ -101,6 +110,12 @@ namespace Pathogenesis
          */
         public void CheckUnitCollision(GameUnit g1, GameUnit g2)
         {
+            if (g1.Faction == UnitFaction.ALLY && g2.Type == UnitType.PLAYER ||
+                g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER)
+            {
+                return;
+            }
+
             Vector2 normal = g1.Position - g2.Position;
             float distance = normal.Length();
             normal.Normalize();
@@ -138,8 +153,16 @@ namespace Pathogenesis
             {
                 if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
                 {
-                    unit.Position -= unit.Vel * dir;
-                    unit.Vel *= -dir;
+                    Vector2 a = (unit.Position + dir * unit.Size) / Map.TILE_SIZE;
+                     while (!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
+                    {
+                        unit.Position -= dir;
+                    }
+                    Vector2 vel = unit.Vel;
+                    if (dir.X != 0) vel.X = 0;
+                    if (dir.Y != 0) vel.Y = 0;
+                    unit.Vel = vel;
+                    //unit.Vel = -dir * 5;
                 }
             }
 
@@ -149,7 +172,7 @@ namespace Pathogenesis
 
 
 
-
+            /*
             float right_limit = Math.Min((unit.Position.X + unit.Size/2),map.Height);
             float left_limit = Math.Max((unit.Position.X - unit.Size/2),0);
             
@@ -191,6 +214,7 @@ namespace Pathogenesis
                     return;
                 }
             }
+             * */
         }
 
         public Boolean CheckForWall(float x, float y, Map map)

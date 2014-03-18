@@ -45,8 +45,8 @@ namespace Pathogenesis
 
             private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
-            private const string WALL = BACKGROUNDS_DIR + "wall";
-            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background1";
+            private const string WALL = BACKGROUNDS_DIR + "wall_square";
+            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background_long2";
             private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
             private const string BACKGROUND3 = BACKGROUNDS_DIR + "background3";
         #endregion

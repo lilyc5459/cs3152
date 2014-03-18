@@ -17,13 +17,13 @@ namespace Pathogenesis
     public class GameUnitController
     {
         #region Constants
-        public const int ENEMY_CHASE_RANGE = 150;   // Distance at which an enemy will start chasing the player
+        public const int ENEMY_CHASE_RANGE = 300;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
         public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
         public const int STOP_DIST = 10;            // Distance at which a unit is considered "at" its target
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
         public const int ATTACK_RANGE = 20;         // Attack cooldown
-        public const int ENEMY_LOCK_RANGE = 80;     // Distance at which enemies and allies will lock on to each other
+        public const int ENEMY_LOCK_RANGE = 100;     // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 2;
         #endregion
@@ -249,7 +249,8 @@ namespace Pathogenesis
             }
 
             unit.NextMove = unit.Target;
-            if (unit.HasTarget() && !unit.Target.Equals(prev_target))
+            //&& !unit.Target.Equals(prev_target)
+            if (unit.HasTarget() )
             {
                 // Pathfind to target if necessary
                 if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))

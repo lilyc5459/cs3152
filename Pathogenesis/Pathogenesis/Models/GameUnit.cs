@@ -115,7 +115,7 @@ namespace Pathogenesis
             }
             else if (Faction == UnitFaction.ENEMY)
             {
-                Speed = 2;
+                Speed = 4;
                 Accel = 0.4f;
                 Decel = 0.2f;
             }
