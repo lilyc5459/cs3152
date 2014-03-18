@@ -232,7 +232,7 @@ namespace Pathogenesis
                 {
                     bounds.Y = window.ClientBounds.Y;
                 }
-                return bounds.Y;
+                return 0;
             }
             set
             {
@@ -654,7 +654,7 @@ namespace Pathogenesis
 
             // Rescale position to align
             pos = pos / Scale;
-            Vector2 orig = new Vector2(image.Width / 2, image.Height / 2);
+            Vector2 orig = new Vector2(0,0);
             Vector2 scale = new Vector2(1 / SX, 1 / SY); // To counter global scale
 
             // Draw this unscaled
