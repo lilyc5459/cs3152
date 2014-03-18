@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Models;
-using EpPathFinding;
 using Pathogenesis.Pathfinding;
 
 namespace Pathogenesis
