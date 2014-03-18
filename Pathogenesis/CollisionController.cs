@@ -30,9 +30,9 @@ namespace Pathogenesis
          * using the collision cell optimization structure
          */
 
-        public void Update(List<GameUnit> units, Player player, Level level)
+        public void Update(List<GameUnit> units, Level level)
         {
-            cellGrid = ConstructCollisionGrid(units, player, level);
+            cellGrid = ConstructCollisionGrid(units, level);
 
             for (int ii = 0; ii < cellGrid.GetLength(0); ii++)
             {
@@ -50,7 +50,7 @@ namespace Pathogenesis
          * Populates the collision grid by bucketizing each unit on the map into a cell 
          * around which collisions will be processed
          */
-        public List<GameUnit>[,] ConstructCollisionGrid(List<GameUnit> units, Player player, Level level)
+        public List<GameUnit>[,] ConstructCollisionGrid(List<GameUnit> units, Level level)
         {
             List<GameUnit>[,] grid = new List<GameUnit>[
                 (int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
@@ -66,15 +66,6 @@ namespace Pathogenesis
                 }
                 grid[y_index, x_index].Add(unit);
             }
-
-            int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
-            int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
-            if (grid[y_indexp, x_indexp] == null)
-            {
-                grid[y_indexp, x_indexp] = new List<GameUnit>();
-            }
-            grid[y_indexp, x_indexp].Add(player);
-
             return grid;
         }
 
@@ -95,13 +86,13 @@ namespace Pathogenesis
                         {
                             if (unit != other)
                             {
-                                CheckUnitCollision(unit, other);
+                                //CheckUnitCollision(unit, other);
                             }
                         }
                     }
                 }
 
-                CheckWallCollision(unit, map);
+                //CheckWallCollision(unit, map);
             }
         }
 
@@ -110,20 +101,14 @@ namespace Pathogenesis
          */
         public void CheckUnitCollision(GameUnit g1, GameUnit g2)
         {
-            if (g1.Faction == UnitFaction.ALLY && g2.Type == UnitType.PLAYER ||
-                g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER)
-            {
-                return;
-            }
-
             Vector2 normal = g1.Position - g2.Position;
             float distance = normal.Length();
             normal.Normalize();
 
             if (distance < g1.Size)
             {
-                g1.Position += normal * (g1.Size - distance)/2; 
-                g2.Position -= normal * (g2.Size - distance)/2; 
+                g1.Position += normal * (g1.Size - distance) / 2;
+                g2.Position -= normal * (g2.Size - distance) / 2;
 
                 Vector2 relVel = g1.Vel - g2.Vel;
 
@@ -139,90 +124,8 @@ namespace Pathogenesis
          */ 
         public void CheckWallCollision(GameUnit unit, Map map)
         {
-            List<Vector2> dirs = new List<Vector2>();
-            dirs.Add(new Vector2(0, 1));
-            dirs.Add(new Vector2(1, 0));
-            dirs.Add(new Vector2(0, -1));
-            dirs.Add(new Vector2(-1, 0));
-            dirs.Add(new Vector2(1, 1));
-            dirs.Add(new Vector2(1, -1));
-            dirs.Add(new Vector2(-1, 1));
-            dirs.Add(new Vector2(-1, -1));
-
-            foreach (Vector2 dir in dirs)
-            {
-                if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
-                {
-                    Vector2 a = (unit.Position + dir * unit.Size) / Map.TILE_SIZE;
-                     while (!map.canMoveToWorldPos(unit.Position + dir * unit.Size))
-                    {
-                        unit.Position -= dir;
-                    }
-                    Vector2 vel = unit.Vel;
-                    if (dir.X != 0) vel.X = 0;
-                    if (dir.Y != 0) vel.Y = 0;
-                    unit.Vel = vel;
-                    //unit.Vel = -dir * 5;
-                }
-            }
 
 
-
-
-
-
-
-            /*
-            float right_limit = Math.Min((unit.Position.X + unit.Size/2),map.Height);
-            float left_limit = Math.Max((unit.Position.X - unit.Size/2),0);
-            
-            float up_limit = Math.Max((unit.Position.Y - unit.Size/2),0);
-            float down_limit = Math.Min((unit.Position.Y + unit.Size/2),map.Width);
-
-            for (float x = unit.Position.X; x < right_limit; x++)
-            {
-                if (CheckForWall(x,unit.Position.Y,map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X,unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float x = unit.Position.X; x > left_limit; x--)
-            {
-                if (CheckForWall(x, unit.Position.Y, map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X, unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y > up_limit; y--)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y < down_limit; y++)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-             * */
-        }
-
-        public Boolean CheckForWall(float x, float y, Map map)
-        {
-            Vector2 pos = new Vector2(x, y);
-            pos = map.translateWorldToMap(pos);
-
-            return map.getTileAt((int)pos.X, (int)pos.Y) == 1;
         }
 
         // Returns all the adjacent positions from the specified one

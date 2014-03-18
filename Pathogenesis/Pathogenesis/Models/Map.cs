@@ -75,6 +75,7 @@ namespace Pathogenesis.Models
         #region Map Methods
         public int getTileAt(int x, int y)
         {
+            if (!canMoveTo(x, y)) return -1;
             return tiles[y, x];
         }
 
@@ -159,7 +160,7 @@ namespace Pathogenesis.Models
                 {
                     if (tiles[i, j] == 1)
                     {
-                        canvas.DrawSprite(WallTexture, Color.Red, new Vector2(j * TILE_SIZE, i * TILE_SIZE), new Vector2(0.01f, 0.01f), 0f);
+                        canvas.DrawSprite(WallTexture, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE), new Vector2(0.15f, 0.15f), 0f);
                     }
                 }
             }
