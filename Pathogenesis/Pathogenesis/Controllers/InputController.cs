@@ -28,19 +28,10 @@ namespace Pathogenesis
             private Keys PAUSE = Keys.Escape;
             private Keys TOGGLE_HUD = Keys.Tab;
             private Keys ENTER = Keys.Enter;
-
-            private bool convertPressed;	// Convert pressed              [Game]
-            private bool convertHeld;
-
-            private bool rallyPressed;		// Rally pressed                [Game]
-            private bool pausePressed;      // Pause pressed                [Menu/Game]
-            private bool leftPressed;   // Left is pressed                  [Menu/Game]
-            private bool rightPressed;  // Right is pressed                 [Menu/Game]     
-            private bool upPressed;     // Up is pressed                    [Menu/Game]
-            private bool downPressed;   // Down is pressed                  [Menu/Game]
-            private bool enterPressed;  // Enter is pressed                 [Menu/Game]
-
-            private bool toggleHUD;     // HUD is toggled
+            private Keys RESTART = Keys.R;
+            private Keys SPAWN_ENEMY = Keys.I;
+            private Keys SPAWN_ALLY = Keys.O;
+            private Keys SPAWN_PLASMID = Keys.P;
         #endregion
 
         #region Properties (READ-ONLY)
@@ -109,13 +100,44 @@ namespace Pathogenesis
             }
 
             /// <summary>
-            /// Whether the toggle HUDE button was pressed.
+            /// Whether the toggle HUD button was pressed.
             /// </summary>
             public bool Toggle_HUD
             {
                 get { return keyStates[TOGGLE_HUD] == KeyState.DOWN; }
             }
 
+            /// <summary>
+            /// Whether the Restart button was pressed.
+            /// </summary>
+            public bool Restart
+            {
+                get { return keyStates[RESTART] == KeyState.DOWN; }
+            }
+
+            /// <summary>
+            /// Whether the Spawn Enemy button was pressed.
+            /// </summary>
+            public bool Spawn_Enemy
+            {
+                get { return keyStates[SPAWN_ENEMY] == KeyState.DOWN; }
+            }
+
+            /// <summary>
+            /// Whether the Spawn Ally button was pressed.
+            /// </summary>
+            public bool Spawn_Ally
+            {
+                get { return keyStates[SPAWN_ALLY] == KeyState.DOWN; }
+            }
+
+            /// <summary>
+            /// Whether the Spawn Plasmid button was pressed.
+            /// </summary>
+            public bool Spawn_Plasmid
+            {
+                get { return keyStates[SPAWN_PLASMID] == KeyState.DOWN; }
+            }
 
         #endregion
 
@@ -138,6 +160,10 @@ namespace Pathogenesis
                 keyStates.Add(RALLY, KeyState.UP);
                 keyStates.Add(PAUSE, KeyState.UP);
                 keyStates.Add(TOGGLE_HUD, KeyState.UP);
+                keyStates.Add(RESTART, KeyState.UP);
+                keyStates.Add(SPAWN_ENEMY, KeyState.UP);
+                keyStates.Add(SPAWN_ALLY, KeyState.UP);
+                keyStates.Add(SPAWN_PLASMID, KeyState.UP);
             }
 
             /// <summary>

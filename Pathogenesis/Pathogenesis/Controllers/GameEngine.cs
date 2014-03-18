@@ -142,7 +142,25 @@ namespace Pathogenesis
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
-                        item_controller.AddItem(factory.createPickup());
+                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                    }
+                    //
+                    /* TODO: Remove DEBUG CODE HERE (remove late)
+                     * 
+                     */
+                    if (input_controller.Spawn_Enemy)
+                    {
+                        unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY,
+                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                    }
+                    if (input_controller.Spawn_Ally)
+                    {
+                        unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY,
+                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                    }
+                    if (input_controller.Spawn_Plasmid)
+                    {
+                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
                     }
                     //
 

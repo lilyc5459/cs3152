@@ -140,14 +140,19 @@ namespace Pathogenesis
                 return enemy;
             }
 
-            public Pickup createPickup()
+            public Pickup createPickup(Vector2 pos)
             {
-                return new Pickup(textures[PLASMID]);
+                Pickup plasmid = new Pickup(textures[PLASMID]);
+                if (plasmid != null)
+                {
+                    plasmid.Position = pos;
+                }
+                return plasmid;
             }
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(2000, 1000, textures[BACKGROUND1], textures[WALL]);
+                return new Level(2020, 1020, textures[BACKGROUND1], textures[WALL]);
             }
 
             // Returns the game font
