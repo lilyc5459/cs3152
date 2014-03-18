@@ -64,10 +64,57 @@ namespace Pathogenesis.Models
                     }
 
                     //Test
-                    if (i == 10 && j > 10 && j < 30)
+                    if (i == 10 && j > 5 && j < 7)
                     {
                         tiles[i, j] = 1;
                     }
+
+                    if (i == 15 && j > 15 && j < 20)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (i == 20 && j > 40 && j < 60)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (j == 40 && i > 21 && i < 40)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (j == 10 && i > 18 && i < 27)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (i == 40 && j > 50 && j < 70)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (i == 40 && j > 80 && j < 100)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (j == 10 && i > 10 && i < 15)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (j == 80 && i > 10 && i < 15)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+                    if (j == 80 && i > 25 && i < 35)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
+
                 }
             }
         }
