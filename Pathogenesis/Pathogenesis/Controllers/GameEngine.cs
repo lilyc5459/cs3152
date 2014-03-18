@@ -178,6 +178,21 @@ namespace Pathogenesis
                         item_controller.Reset();
                     }
 
+                    //Pickup items
+                    List<Pickup> itemsRemove = new List<Pickup>();
+                    foreach (Pickup item in item_controller.Items)
+                    {
+                        if ((unit_controller.Player.Position.X > item.Position.X - 10 && unit_controller.Player.Position.X < item.Position.X + 30)
+                            && (unit_controller.Player.Position.Y > item.Position.Y - 10 && unit_controller.Player.Position.Y < item.Position.Y + 30))
+                        {
+                            itemsRemove.Add(item);
+                        }
+                    }
+                    foreach (Pickup removeitem in itemsRemove)
+                    {
+                        item_controller.RemoveItem(removeitem);
+                    }
+
                     // Process level environment logic
                     level_controller.Update();
                     // Process and update all units

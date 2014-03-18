@@ -23,6 +23,11 @@ namespace Pathogenesis
             Items.Add(p);
         }
 
+        public void RemoveItem(Pickup p)
+        {
+            Items.Remove(p);
+        }
+
         public void Draw(GameCanvas canvas)
         {
             foreach (Pickup it in Items)
