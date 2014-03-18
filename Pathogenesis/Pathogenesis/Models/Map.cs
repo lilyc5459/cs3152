@@ -57,6 +57,12 @@ namespace Pathogenesis.Models
             {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
+                    //Map Borders
+                    if (i == 0 || j == 0 || i == tiles.GetLength(0)-1 || j == tiles.GetLength(1)-1)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
                     //Test
                     if (i == 10 && j > 10 && j < 30)
                     {

@@ -138,7 +138,7 @@ namespace Pathogenesis
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(800, 640, textures[BACKGROUND1], textures[ALLY_TANK]);
+                return new Level(2420, 1620, textures[BACKGROUND1], textures[ALLY_TANK]);
             }
 
             // Returns the game font
