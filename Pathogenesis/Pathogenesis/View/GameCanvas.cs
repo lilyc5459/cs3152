@@ -455,7 +455,7 @@ namespace Pathogenesis
         /// </summary>
         public void Reset()
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            graphics.GraphicsDevice.Clear(Color.Black);
 
             // Allow either pass to follow.
             state = DrawState.Inactive;

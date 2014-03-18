@@ -115,7 +115,7 @@ namespace Pathogenesis
             }
             else if (Faction == UnitFaction.ENEMY)
             {
-                Speed = 4;
+                Speed = 2;
                 Accel = 0.4f;
                 Decel = 0.2f;
             }
@@ -128,7 +128,7 @@ namespace Pathogenesis
             Attack = 5;
             Defense = 0;
 
-            Size = 20;
+            Size = 30;
             Mass = 0.5f;
         }
         #endregion

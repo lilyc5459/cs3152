@@ -47,7 +47,7 @@ namespace Pathogenesis.Models
                     //Infected bar indicator
                     if (unit.Faction != UnitFaction.ALLY && unit.InfectionVitality != GameUnit.MAX_INFECTION_VITALITY)
                     {
-                        canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 100),
+                        canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                             new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)(0.5*(GameUnit.MAX_INFECTION_VITALITY - unit.InfectionVitality)), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                     }
@@ -61,7 +61,7 @@ namespace Pathogenesis.Models
                     //Infection range
                     canvas.DrawSprite(InfectTexture, new Color(30, 0, 0, 30), Player.Position, new Vector2(1, 1), 0f);
                     //Player health
-                    canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 0, 100),
+                    canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 0, 200),
                                             new Rectangle((int)Player.Position.X - HealthBarTexture.Width / 2, (int)Player.Position.Y - 30, (int)(0.5 * Player.Health), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }

@@ -69,6 +69,7 @@ namespace Pathogenesis.Models
         #region Map Methods
         public int getTileAt(int x, int y)
         {
+            if (!canMoveTo(x, y)) return -1;
             return tiles[y, x];
         }
 

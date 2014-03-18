@@ -16,13 +16,13 @@ namespace Pathogenesis
     public class GameUnitController
     {
         #region Constants
-        public const int ENEMY_CHASE_RANGE = 300;   // Distance at which an enemy will start chasing the player
+        public const int ENEMY_CHASE_RANGE = 200;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
         public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
-        public const int STOP_DIST = 10;            // Distance at which a unit is considered "at" its target
+        public const int STOP_DIST = 40;            // Distance at which a unit is considered "at" its target
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_RANGE = 20;         // Attack cooldown
-        public const int ENEMY_LOCK_RANGE = 100;     // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_RANGE = 40;         // Attack cooldown
+        public const int ENEMY_LOCK_RANGE = 800;     // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 2;
         #endregion
@@ -211,12 +211,10 @@ namespace Pathogenesis
 
                     if (unit.Faction == UnitFaction.ALLY)
                     {
-                        Vector2 vel = Player.Vel;
-                        if (Player.Vel.Length() > 0)
-                        {
-                            //vel.Normalize();
-                        }
-                        unit.Target = Player.Position + vel * 15;
+                        Vector2 front = Vector2.Zero;
+                        front.X = (Player.Vel.X > 0)? 70 : (Player.Vel.X == 0)? 0 : -70;
+                        front.Y = (Player.Vel.Y > 0)? 70 : (Player.Vel.Y == 0)? 0 : -70;
+                        unit.Target = Player.Position + front;
                     }
 
                     foreach (GameUnit other in Units)
@@ -224,16 +222,15 @@ namespace Pathogenesis
                         if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_RANGE))
                         {
                             unit.Target = other.Position;
+                            break;
                         }
                     }
                     if(unit.Faction == UnitFaction.ALLY && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
                     {
-                        Vector2 vel = Player.Vel;
-                        if (Player.Vel.Length() > 0)
-                        {
-                            //vel.Normalize();
-                        }
-                        unit.Target = Player.Position + vel * 15;
+                        Vector2 front = Vector2.Zero;
+                        front.X = (Player.Vel.X > 0)? 15 : -15;
+                        front.Y = (Player.Vel.Y > 3)? 15 : -15;
+                        unit.Target = Player.Position + front;
                     }
                     break;
                 case UnitType.RANGED:
@@ -279,13 +276,13 @@ namespace Pathogenesis
                 //TEMP
                 if (unit.Faction == UnitFaction.ALLY)
                 {
-                    if ((unit.Position - unit.Target).Length() < 20)
+                    if ((unit.Position - unit.Target).Length() < 50)
                     {
                         unit.Speed = (int) (Player.Speed * 1.5);
                     }
                     else
                     {
-                        unit.Speed = Player.Speed * 3;
+                        unit.Speed = Player.Speed * 2;
                     }
                 }
 
