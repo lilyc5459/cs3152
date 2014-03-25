@@ -28,12 +28,27 @@ namespace Pathogenesis.Models
     public class Map
     {
         // Size of the map tiles
-        public const int TILE_SIZE = 20;
+        public const int TILE_SIZE = 40;
 
-        // Map dimensions in tiles
+        // Map dimensions
         public int Width { get; set; }
         public int Height { get; set; }
+        public int WidthTiles
+        {
+            get
+            {
+                return Width / TILE_SIZE;
+            }
+        }
+        public int HeightTiles
+        {
+            get
+            {
+                return Height / TILE_SIZE;
+            }
+        }
 
+        // Tile array representation of the map
         private int[,] tiles;
 
         public Texture2D WallTexture { get; set; }
@@ -151,7 +166,7 @@ namespace Pathogenesis.Models
             Vector2 diff = end - start;
 
             if ((int)start.X/TILE_SIZE == (int)end.X/TILE_SIZE && (int)start.Y/TILE_SIZE == (int)end.Y/TILE_SIZE
-                || !canMoveToWorldPos(start) || !canMoveToWorldPos(end) || diff.Length() < GameUnit.UNIT_SIZE)
+                || !canMoveToWorldPos(start) || !canMoveToWorldPos(end) || diff.Length() < Map.TILE_SIZE)
             {
                 return false;
             }
@@ -197,6 +212,7 @@ namespace Pathogenesis.Models
             }
             return false;
         }
+
         #endregion
 
         #region Draw
@@ -207,7 +223,9 @@ namespace Pathogenesis.Models
                 {
                     if (tiles[i, j] == 1)
                     {
-                        canvas.DrawSprite(WallTexture, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE), new Vector2(0.15f, 0.15f), 0f);
+                        canvas.DrawSprite(WallTexture, Color.White,
+                            new Rectangle(j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                            new Rectangle(0, 0, WallTexture.Width, WallTexture.Height));
                     }
                 }
             }

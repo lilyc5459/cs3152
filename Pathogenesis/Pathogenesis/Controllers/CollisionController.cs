@@ -16,7 +16,7 @@ namespace Pathogenesis
          * some collisions won't be detected.
          */
         private const float COLL_COEFF = 0.1f;
-        private const int CELL_SIZE = 20;
+        private const int CELL_SIZE = 50;
 
         // Collisions cell structures
         private List<GameUnit>[,] cellGrid;
@@ -122,12 +122,12 @@ namespace Pathogenesis
             float distance = normal.Length();
             normal.Normalize();
 
-            if (distance < g1.Size)
+            if (distance < (g1.Size + g2.Size)/2)
             {
                 //System.Diagnostics.Debug.WriteLine("1 pos: " + g1.Position + " 2pos: " + g2.Position +
                 //    " 1size: " + g1.Size + " 2size: " + g2.Size + " norm: " + normal + " dist: " + distance);
-                g1.Position += normal * (g1.Size - distance)/2; 
-                g2.Position -= normal * (g2.Size - distance)/2;
+                g1.Position += normal * ((g1.Size+g2.Size)/2 - distance)/2; 
+                g2.Position -= normal * ((g2.Size+g1.Size)/2 - distance)/2;
                 //System.Diagnostics.Debug.WriteLine(g1.Position + " " + g2.Position);
 
                 Vector2 relVel = g1.Vel - g2.Vel;

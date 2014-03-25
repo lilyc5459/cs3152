@@ -14,7 +14,7 @@ namespace Pathogenesis
         public GameUnit Infecting { get; set; }
 
         public Player(Texture2D texture_l, Texture2D texture_r)
-            : base(texture_l, texture_r, UnitType.PLAYER, UnitFaction.ALLY)
+            : base(texture_l, texture_r, UnitType.PLAYER, UnitFaction.ALLY, 1)
         {
         }
     }

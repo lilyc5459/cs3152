@@ -48,9 +48,12 @@ namespace Pathogenesis
     public class GameUnit : GameEntity
     {
         // Constants
-        public const int UNIT_SIZE = 40;
-        public const int MAX_HEALTH = 100;
-        public const int MAX_INFECTION_VITALITY = 100;
+        //public const int UNIT_SIZE = 40;
+        public const int BASE_HEALTH = 100;
+        public int MAX_HEALTH = 100;
+        public const int BASE_INFECTION_VITALITY = 100;
+        public int MAX_INFECTION_VITALITY = 100;
+        public const int BASE_UNIT_SIZE = 40;
 
         #region Properties
         // Textures
@@ -84,16 +87,20 @@ namespace Pathogenesis
         public int Speed { get; set; }
         public int Range { get; set; }
         public int AttackSpeed { get; set; }
+
+        public int Level { get; set; }
         #endregion
 
         #region Initialization
-        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type, UnitFaction faction)
+        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type, UnitFaction faction, int level)
         {
             Texture_L = texture_l;
             Texture_R = texture_r;
 
             Type = type;
             Faction = faction;
+            Level = level;
+
             Target = new Vector2(-1, -1);
             NextMove = new Vector2(-1, -1);
 
@@ -104,8 +111,11 @@ namespace Pathogenesis
         {
             // TODO load stats from a config file
             // Test
+            MAX_HEALTH = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
             Health = MAX_HEALTH;
+            MAX_INFECTION_VITALITY = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
             InfectionVitality = MAX_INFECTION_VITALITY;
+
             AttackCoolDown = 0;
             if (Type == UnitType.PLAYER)
             {
@@ -128,7 +138,7 @@ namespace Pathogenesis
             Attack = 5;
             Defense = 0;
 
-            Size = 30;
+            Size = (int)(Math.Pow(2, Level-1) * BASE_UNIT_SIZE);
             Mass = 0.5f;
         }
         #endregion
@@ -149,7 +159,10 @@ namespace Pathogenesis
             if (Exists)
             {
                 Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
-                canvas.DrawSprite(texture, Faction == UnitFaction.ENEMY ? new Color(250, 210, 210) : Color.White, Position);
+                canvas.DrawSprite(texture,
+                    Faction == UnitFaction.ENEMY ? new Color(250, 210, 210) : Color.White,
+                    new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
+                    new Rectangle(0, 0, texture.Width, texture.Height));
             }
         }
     }

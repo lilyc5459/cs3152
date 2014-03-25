@@ -21,7 +21,7 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             canvas.DrawSprite(Texture, Color.White,
-                new Rectangle((int)Position.X, (int)Position.Y, ITEM_SIZE, ITEM_SIZE),
+                new Rectangle((int)Position.X - ITEM_SIZE/2, (int)Position.Y - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE),
                 new Rectangle(0, 0, Texture.Width, Texture.Height));
         }
     }

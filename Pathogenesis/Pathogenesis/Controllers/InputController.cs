@@ -11,6 +11,7 @@ namespace Pathogenesis
     {
         DOWN,
         HELD,
+        DOUBLE,
         UP,
     }
 
@@ -179,6 +180,9 @@ namespace Pathogenesis
                     {
                         if (keyStates[k] == KeyState.UP) keyStates[k] = KeyState.DOWN;
                         else keyStates[k] = KeyState.HELD;
+
+                        //if(
+
                     }
                     else
                     {
