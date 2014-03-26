@@ -19,9 +19,10 @@ namespace Pathogenesis
         public const int ENEMY_CHASE_RANGE = 200;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
         public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
-        public const int STOP_DIST = 40;            // Distance at which a unit is considered "at" its target
+        public const int STOP_DIST = 50;            // Distance at which a unit is considered "at" its target
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_RANGE = 40;         // Attack cooldown
+        public const int ATTACK_LOCK_RANGE = 70;         // Attack range
+        public const int ATTACK_RANGE = 50;         // Attack range
         public const int ENEMY_LOCK_RANGE = 800;     // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
@@ -223,15 +224,18 @@ namespace Pathogenesis
 
                     if (unit.Faction == UnitFaction.ALLY)
                     {
-                        Vector2 front = Vector2.Zero;
-                        front.X = (Player.Vel.X > 0)? 100 : (Player.Vel.X == 0)? 0 : -100;
-                        front.Y = (Player.Vel.Y > 0)? 100 : (Player.Vel.Y == 0)? 0 : -100;
+                        Vector2 front = Player.Vel;
+                        if (front.Length() != 0)
+                        {
+                            front.Normalize();
+                            front *= 100;
+                        }
                         unit.Target = Player.Position + front;
                     }
 
                     foreach (GameUnit other in Units)
                     {
-                        if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_RANGE))
+                        if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_LOCK_RANGE))
                         {
                             unit.Target = other.Position;
                             break;
@@ -239,10 +243,7 @@ namespace Pathogenesis
                     }
                     if(unit.Faction == UnitFaction.ALLY && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
                     {
-                        Vector2 front = Vector2.Zero;
-                        front.X = (Player.Vel.X > 0)? 15 : -15;
-                        front.Y = (Player.Vel.Y > 3)? 15 : -15;
-                        unit.Target = Player.Position + front;
+                        unit.Target = Player.Position;
                     }
                     break;
                 case UnitType.RANGED:
@@ -283,10 +284,9 @@ namespace Pathogenesis
             {
                 // Calculate direction of acceleration
                 Vector2 vel = unit.Vel;
-                
-                /*
-                Vector2 vel_mod = unit.Position - unit.NextMove;
-                if ((unit.Position + vel_mod).Length() < STOP_DIST)
+
+                Vector2 vel_mod = unit.NextMove - unit.Position;
+                if (vel_mod.Length() < STOP_DIST)
                 {
                     vel_mod = Vector2.Zero;
                 }
@@ -294,15 +294,7 @@ namespace Pathogenesis
                 {
                     vel_mod.Normalize();
                     vel_mod *= unit.Accel;
-                }*/
-
-                
-                float x_mod = unit.Accel * ((unit.NextMove.X - unit.Position.X) > 0? 1 : -1);
-                float y_mod = unit.Accel * ((unit.NextMove.Y - unit.Position.Y) > 0? 1 : -1);
-                
-                if (Math.Abs(unit.Position.X - unit.NextMove.X) < STOP_DIST) x_mod = 0;
-                if (Math.Abs(unit.Position.Y - unit.NextMove.Y) < STOP_DIST) y_mod = 0;
-                
+                }
 
                 //TEMP
                 if (unit.Faction == UnitFaction.ALLY)
@@ -317,10 +309,9 @@ namespace Pathogenesis
                     }
                 }
 
-                vel += new Vector2(x_mod, y_mod);
-
                 // Clamp values to max speeds
-                //vel += vel_mod;
+                vel += vel_mod;
+                //vel += new Vector2(x_mod, y_mod);
                 vel.X = MathHelper.Clamp(vel.X, -unit.Speed, unit.Speed);
                 vel.Y = MathHelper.Clamp(vel.Y, -unit.Speed, unit.Speed);
                 unit.Vel = vel;
@@ -332,29 +323,23 @@ namespace Pathogenesis
          * Move this unit according to its current velocity vector
          */ 
         private void moveUnit(GameUnit unit)
-        {
-            
+        {   
             // Damping
             Vector2 vel = unit.Vel;
-            /*
-            float dec_x = vel.X / (vel.X + vel.Y) * unit.Decel;
-            float dec_y = vel.Y / (vel.X + vel.Y) * unit.Decel;
 
-            if (vel.X < 0) vel.X += dec_x;
-            else if (vel.X > 0) vel.X -= dec_x;
-            if (vel.Y < 0) vel.Y += dec_y;
-            else if (vel.Y > 0) vel.Y -= dec_y;
-            */
-            
-            if (vel.X < 0) vel.X += unit.Decel;
-            else if (vel.X > 0) vel.X -= unit.Decel;
-            if (vel.Y < 0) vel.Y += unit.Decel;
-            else if (vel.Y > 0) vel.Y -= unit.Decel;
-
-            if ((vel - Vector2.Zero).Length() < unit.Decel) { vel = Vector2.Zero; }
-            unit.Vel = vel;
+            Vector2 vel_mod = vel;
+            if (vel_mod.Length() != 0)
+            {
+                vel_mod.Normalize();
+                vel_mod *= unit.Decel;
+                vel -= vel_mod;
+            }
 
             // Apply drag
+            if ((vel - Vector2.Zero).Length() < unit.Decel) { vel = Vector2.Zero; }
+            else if (Math.Abs(vel.X) < unit.Decel * 3 / 4) vel.X = 0;
+            else if (Math.Abs(vel.Y) < unit.Decel * 3 / 4) vel.Y = 0;
+            unit.Vel = vel;
             unit.Position += unit.Vel;
         }
 

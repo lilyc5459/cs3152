@@ -144,7 +144,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 100)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 2)
                     {
                         int level = rand.NextDouble() < 0.1 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
