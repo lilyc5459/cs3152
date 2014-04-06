@@ -140,14 +140,14 @@ namespace Pathogenesis
                 return enemy;
             }
 
-            public Pickup createPickup(Vector2 pos)
+            public Item createPickup(Vector2 pos, ItemType type)
             {
-                Pickup plasmid = new Pickup(textures[PLASMID]);
-                if (plasmid != null)
+                Item item = new Item(textures[PLASMID], type);
+                if (item != null)
                 {
-                    plasmid.Position = pos;
+                    item.Position = pos;
                 }
-                return plasmid;
+                return item;
             }
             public Level loadLevel(int num)
             {

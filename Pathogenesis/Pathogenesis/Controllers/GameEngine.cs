@@ -151,7 +151,8 @@ namespace Pathogenesis
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             rand.NextDouble() < 0.1 ? true : false));
-                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
+                            rand.NextDouble() < 0.2? ItemType.HEALTH : ItemType.PLASMID));
                     }
                     //
                     /* TODO: Remove DEBUG CODE HERE (remove later)
@@ -169,7 +170,8 @@ namespace Pathogenesis
                     }
                     if (input_controller.Spawn_Plasmid)
                     {
-                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
+                            ItemType.PLASMID));
                     }
                     //
                     //Restart
@@ -181,8 +183,9 @@ namespace Pathogenesis
                     }
 
                     //Pickup items
-                    List<Pickup> itemsRemove = new List<Pickup>();
-                    foreach (Pickup item in item_controller.Items)
+                    /*
+                    List<Item> itemsRemove = new List<Item>();
+                    foreach (Item item in item_controller.Items)
                     {
                         if ((unit_controller.Player.Position.X > item.Position.X - 10 && unit_controller.Player.Position.X < item.Position.X + 30)
                             && (unit_controller.Player.Position.Y > item.Position.Y - 10 && unit_controller.Player.Position.Y < item.Position.Y + 30))
@@ -190,17 +193,18 @@ namespace Pathogenesis
                             itemsRemove.Add(item);
                         }
                     }
-                    foreach (Pickup removeitem in itemsRemove)
+                    foreach (Item removeitem in itemsRemove)
                     {
                         item_controller.RemoveItem(removeitem);
-                    }
+                    }*/
 
                     // Process level environment logic
                     level_controller.Update();
                     // Process and update all units
                     unit_controller.Update(level_controller.CurLevel, input_controller);
                     // Process and handle collisions
-                    collision_controller.Update(unit_controller.Units, unit_controller.Player, level_controller.CurLevel);
+                    collision_controller.Update(unit_controller.Units, unit_controller.Player,
+                        level_controller.CurLevel, item_controller);
                     // Update the HUD
                     HUD_display.Update(input_controller);
                     

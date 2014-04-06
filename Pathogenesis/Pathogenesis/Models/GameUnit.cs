@@ -49,11 +49,9 @@ namespace Pathogenesis
     {
         // Constants
         public const int BASE_UNIT_SIZE = 40;
-
         public const int BASE_HEALTH = 100;
-        public int MAX_HEALTH = 100;
-        public const int BASE_INFECTION_VITALITY = 250;
-        public int MAX_INFECTION_VITALITY = 250;
+        public const int BASE_INFECTION_VITALITY = 100;
+        
 
         public const int BASE_ATTACK = 5;
         public const int MAX_ATTACK = 5;
@@ -61,6 +59,8 @@ namespace Pathogenesis
         public const int BASE_DEFENSE = 0;
         public const int MAX_DEFENSE = 0;
 
+        public int max_health = 100;
+        public int max_infection_vitality = 250;
         #region Properties
         // Textures
         public Texture2D Texture_L { get; set; }
@@ -89,7 +89,7 @@ namespace Pathogenesis
 
         // Unit stat fields
         public float Health { get; set; }
-        public int InfectionVitality { get; set; }
+        public float InfectionVitality { get; set; }
 
         public int Attack { get; set; }
         public int Defense { get; set; }
@@ -124,10 +124,10 @@ namespace Pathogenesis
             // Test
             Size = (int)(Math.Pow(2, Level - 1) * BASE_UNIT_SIZE);
 
-            MAX_HEALTH = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
-            Health = MAX_HEALTH;
-            MAX_INFECTION_VITALITY = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
-            InfectionVitality = MAX_INFECTION_VITALITY;
+            max_health = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
+            Health = max_health;
+            max_infection_vitality = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
+            InfectionVitality = max_infection_vitality;
 
             AttackCoolDown = 0;
             if (Type == UnitType.PLAYER)
@@ -172,7 +172,7 @@ namespace Pathogenesis
             {
                 Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
                 canvas.DrawSprite(texture,
-                    Immune? Color.Gold : new Color(250, InfectionVitality, InfectionVitality, 250),
+                    Immune? Color.Gold : new Color(250, InfectionVitality+150, InfectionVitality+150, 250),
                     new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
                     new Rectangle(0, 0, texture.Width, texture.Height));
                 canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));

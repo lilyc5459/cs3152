@@ -20,6 +20,7 @@ namespace Pathogenesis
 
         // Collisions cell structures
         private List<GameUnit>[,] cellGrid;
+        private List<Item>[,] itemGrid;
 
         public CollisionController()
         {
@@ -30,9 +31,9 @@ namespace Pathogenesis
          * using the collision cell optimization structure
          */
 
-        public void Update(List<GameUnit> units, Player player, Level level)
+        public void Update(List<GameUnit> units, Player player, Level level, ItemController item_controller)
         {
-            cellGrid = ConstructCollisionGrid(units, player, level);
+            ConstructCollisionGrids(units, item_controller.Items, player, level);
 
             for (int ii = 0; ii < cellGrid.GetLength(0); ii++)
             {
@@ -44,14 +45,18 @@ namespace Pathogenesis
                     }
                 }
             }
+            
+            ProcessItems(player, item_controller);
         }
 
         /*
          * Populates the collision grid by bucketizing each unit on the map into a cell 
          * around which collisions will be processed
          */
-        public List<GameUnit>[,] ConstructCollisionGrid(List<GameUnit> units, Player player, Level level)
+        public void ConstructCollisionGrids(List<GameUnit> units, List<Item> items,
+            Player player, Level level)
         {
+            // Construct unit collision grid
             List<GameUnit>[,] grid = new List<GameUnit>[
                 (int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
 
@@ -75,7 +80,21 @@ namespace Pathogenesis
             }
             grid[y_indexp, x_indexp].Add(player);
 
-            return grid;
+            cellGrid = grid;
+
+            // Contruct item collision grid
+            itemGrid = new List<Item>[(int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
+            foreach (Item item in items)
+            {
+                int x_index = (int)MathHelper.Clamp((item.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
+                int y_index = (int)MathHelper.Clamp((item.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
+
+                if (itemGrid[y_index, x_index] == null)
+                {
+                    itemGrid[y_index, x_index] = new List<Item>();
+                }
+                itemGrid[y_index, x_index].Add(item);
+            }
         }
 
         /*
@@ -88,21 +107,39 @@ namespace Pathogenesis
             {
                 foreach (Point loc in adjacent)
                 {
-                    if (loc.Y > 0 && loc.X > 0 && loc.Y < cellGrid.GetLength(0) && loc.X < cellGrid.GetLength(1) &&
-                        cellGrid[loc.Y, loc.X] != null)
+                    foreach (GameUnit other in cellGrid[loc.Y, loc.X])
                     {
-                        foreach (GameUnit other in cellGrid[loc.Y, loc.X])
+                        // Don't check collision for the same units or if they are in the same position (will crash)
+                        if (unit != other && unit.Position != other.Position && !unit.Ghost)
                         {
-                            // Don't check collision for the same units or if they are in the same position (will crash)
-                            if (unit != other && unit.Position != other.Position && !unit.Ghost)
-                            {
-                                CheckUnitCollision(unit, other);
-                            }
+                            CheckUnitCollision(unit, other);
                         }
                     }
                 }
-
                 CheckWallCollision(unit, map);
+            }
+        }
+
+        /*
+         * Process item pickups
+         */
+        public void ProcessItems(Player player, ItemController item_controller)
+        {
+            int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, itemGrid.GetLength(1) - 1);
+            int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, itemGrid.GetLength(0) - 1);
+            List<Point> adjacent = getAdjacent(new Point(x_indexp, y_indexp));
+            foreach (Point loc in adjacent)
+            {
+                if (itemGrid[loc.Y, loc.X] != null)
+                {
+                    foreach (Item it in itemGrid[loc.Y, loc.X])
+                    {
+                        if (CheckItemCollision(player, it))
+                        {
+                            item_controller.RemoveItem(it);
+                        }
+                    }
+                }
             }
         }
 
@@ -178,16 +215,21 @@ namespace Pathogenesis
             }
         }
 
-        public Boolean CheckForWall(float x, float y, Map map)
+        /*
+         * Handle collision between player and item
+         */
+        private bool CheckItemCollision(Player player, Item item)
         {
-            Vector2 pos = new Vector2(x, y);
-            pos = map.translateWorldToMap(pos);
-
-            return map.getTileAt((int)pos.X, (int)pos.Y) == 1;
+            if (player.distance(item) < (player.Size + Item.ITEM_SIZE)/2)
+            {
+                player.PickupItem(item);
+                return true;
+            }
+            return false;
         }
 
         // Returns all the adjacent positions from the specified one
-        private static List<Point> getAdjacent(Point pos)
+        private List<Point> getAdjacent(Point pos)
         {
             List<Point> adjacent = new List<Point>();
             List<Point> dirs = new List<Point>();
@@ -202,7 +244,12 @@ namespace Pathogenesis
             dirs.Add(new Point(-1, -1));
             foreach (Point dir in dirs)
             {
-                adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));
+                Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
+                if (loc.Y > 0 && loc.X > 0 && loc.Y < cellGrid.GetLength(0) && loc.X < cellGrid.GetLength(1) &&
+                        cellGrid[loc.Y, loc.X] != null)
+                {
+                    adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));
+                }
             }
             return adjacent;
         }

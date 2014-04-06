@@ -17,6 +17,7 @@ namespace Pathogenesis
     {
         #region Constants
         public const int PLAYER_PATHFIND_FIELD_SIZE = 15;
+        public const int MAX_PLAYER_CONVERSION_POINTS = 1000; // Maximum conversion points for the player
         public const int MAX_ASTAR_DIST = 15;
         public const int LOST_ALLY_DISTANCE = 500;
 
@@ -28,8 +29,12 @@ namespace Pathogenesis
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
         public const int ATTACK_LOCK_RANGE = 70;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
-        public const int INFECTION_SPEED = 10;
+        public const int INFECTION_SPEED = 3;
+        public const float INFECTION_RECOVER_SPEED = 0.5f;
         public const float ALLY_ATTRITION = 0.0f;
+
+        public const int PLASMID_POINTS = 120;      // Conversion points gained from picking up a plasmid
+        public const int HEALTH_POINTS = 100;       // Health points gained from picking up a health item
         #endregion
 
         private ContentFactory factory;
@@ -61,8 +66,9 @@ namespace Pathogenesis
 
         public void Reset()
         {
-            Units = new List<GameUnit>();
-            DeadUnits = new List<GameUnit>();
+            Units.Clear();
+            DeadUnits.Clear();
+            ConvertedUnits.Clear();
         }
 
         /*
@@ -162,8 +168,6 @@ namespace Pathogenesis
                 vel *= Player.Speed;
             }
             
-            vel.X = MathHelper.Clamp(vel.X, -Player.Speed, Player.Speed);
-            vel.Y = MathHelper.Clamp(vel.Y, -Player.Speed, Player.Speed);
             Player.Vel = vel;
             if (input_controller.Converting)
             {
@@ -182,9 +186,14 @@ namespace Pathogenesis
         {
             if (Player.Infecting != null)
             {
-                if (Player.Infecting.inRange(Player, INFECT_RANGE))
+                if (Player.InfectionPoints > 0 && Player.Infecting.InfectionVitality > 0 && 
+                    Player.Infecting.inRange(Player, INFECT_RANGE))
                 {
                     Player.Infecting.InfectionVitality -= INFECTION_SPEED;
+
+                    Player.InfectionPoints -= (int)INFECTION_SPEED;
+                    Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
+                        0, MAX_PLAYER_CONVERSION_POINTS);
                 }
                 else
                 {
@@ -217,6 +226,25 @@ namespace Pathogenesis
         private void UpdatePlayer()
         {
             if (Player.Health <= 0) DeadUnits.Add(Player);
+
+            foreach(Item item in Player.Items)
+            {
+                switch (item.Type)
+                {
+                    case ItemType.PLASMID:
+                        Player.InfectionPoints += PLASMID_POINTS;
+                        Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
+                            0, MAX_PLAYER_CONVERSION_POINTS);
+                        break;
+                    case ItemType.HEALTH:
+                        Player.Health += HEALTH_POINTS;
+                        Player.Health = MathHelper.Clamp(Player.Health, 0, Player.max_health);
+                        break;
+                    case ItemType.ATTACK:
+                        break;
+                }
+            }
+            Player.Items = new List<Item>();
         }
         #endregion
 
@@ -494,13 +522,15 @@ namespace Pathogenesis
             // Infection vitality update
             if (unit.Lost)
             {
-                unit.InfectionVitality = (int)MathHelper.Clamp(
-                    --unit.InfectionVitality, 0, unit.MAX_INFECTION_VITALITY);
+                unit.InfectionVitality -= INFECTION_RECOVER_SPEED;
+                unit.InfectionVitality = MathHelper.Clamp(
+                    unit.InfectionVitality, 0, unit.max_infection_vitality);
             }
             else
             {
-                unit.InfectionVitality = (int)MathHelper.Clamp(
-                    ++unit.InfectionVitality, 0, unit.MAX_INFECTION_VITALITY);
+                unit.InfectionVitality += INFECTION_RECOVER_SPEED;
+                unit.InfectionVitality = MathHelper.Clamp(
+                    unit.InfectionVitality, 0, unit.max_infection_vitality);
             }
             if (unit.InfectionVitality == 0)
             {

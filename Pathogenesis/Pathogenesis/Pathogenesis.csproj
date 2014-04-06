@@ -136,7 +136,7 @@
     <Compile Include="Controllers\GameUnitController.cs" />
     <Compile Include="Controllers\InputController.cs" />
     <Compile Include="Controllers\LevelController.cs" />
-    <Compile Include="Models\Pickup.cs" />
+    <Compile Include="Models\Item.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

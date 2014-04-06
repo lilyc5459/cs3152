@@ -50,10 +50,10 @@ namespace Pathogenesis.Models
                             unit.Position, new Vector2(0.3f, 0.3f), 0f);*/
                     }
                     //Infected bar indicator
-                    if (unit.InfectionVitality != unit.MAX_INFECTION_VITALITY)
+                    if (unit.InfectionVitality != unit.max_infection_vitality)
                     {
                         canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
-                                            new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)(0.5*(unit.MAX_INFECTION_VITALITY - unit.InfectionVitality)), 8),
+                                            new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)(0.5*(unit.max_infection_vitality - unit.InfectionVitality)), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                     }
                     //Health bar
@@ -69,6 +69,18 @@ namespace Pathogenesis.Models
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 0, 200),
                                             new Rectangle((int)Player.Position.X - HealthBarTexture.Width / 2, (int)Player.Position.Y - 30, (int)(0.5 * Player.Health), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
+
+                    canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
+                        new Rectangle((int)(Player.Position.X - canvas.Width/2 + 10),
+                            (int)(Player.Position.Y - canvas.Height/2 + 10),
+                            (int)(Player.Health * 5), 30),
+                        new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+
+                    canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
+                        new Rectangle((int)(Player.Position.X + 10),
+                            (int)(Player.Position.Y - canvas.Height / 2 + 10),
+                            (int)(Player.InfectionPoints / 2), 30),
+                        new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
                 }
             }
         }
