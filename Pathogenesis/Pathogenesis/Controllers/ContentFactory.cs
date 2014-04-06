@@ -112,22 +112,22 @@ namespace Pathogenesis
             }
         
             // Returns an instance of a unit of the given type and faction
-            public GameUnit createUnit(UnitType type, UnitFaction faction, int level, Vector2 pos)
+            public GameUnit createUnit(UnitType type, UnitFaction faction, int level, Vector2 pos, bool immune)
             {
                 GameUnit enemy;
                 switch (type)
                 {
                     case UnitType.TANK:
                         enemy = new GameUnit(faction == UnitFaction.ALLY? textures[ALLY_TANK_l] : textures[ENEMY_TANK_l],
-                            faction == UnitFaction.ALLY? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level);
+                            faction == UnitFaction.ALLY? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
                         break;
                     case UnitType.RANGED:
                         enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_RANGED] : textures[ENEMY_RANGED],
-                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level);
+                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
                         break;
                     case UnitType.FLYING:
                         enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING],
-                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level);
+                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
                         break;
                     default:
                         enemy = null;

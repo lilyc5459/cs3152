@@ -50,7 +50,7 @@ namespace Pathogenesis.Models
                             unit.Position, new Vector2(0.3f, 0.3f), 0f);*/
                     }
                     //Infected bar indicator
-                    if (unit.Faction != UnitFaction.ALLY && unit.InfectionVitality != unit.MAX_INFECTION_VITALITY)
+                    if (unit.InfectionVitality != unit.MAX_INFECTION_VITALITY)
                     {
                         canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                             new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)(0.5*(unit.MAX_INFECTION_VITALITY - unit.InfectionVitality)), 8),

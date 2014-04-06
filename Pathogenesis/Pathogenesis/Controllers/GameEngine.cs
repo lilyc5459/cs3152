@@ -145,11 +145,12 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 1)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 100)
                     {
-                        int level = rand.NextDouble() < 0.3 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
+                        int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
-                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
+                            rand.NextDouble() < 0.1 ? true : false));
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
                     }
                     //
@@ -159,12 +160,12 @@ namespace Pathogenesis
                     if (input_controller.Spawn_Enemy)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, 1,
-                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)), false));
                     }
                     if (input_controller.Spawn_Ally)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY, 1,
-                            unit_controller.Player.Position));
+                            unit_controller.Player.Position, false));
                     }
                     if (input_controller.Spawn_Plasmid)
                     {

@@ -52,8 +52,8 @@ namespace Pathogenesis
 
         public const int BASE_HEALTH = 100;
         public int MAX_HEALTH = 100;
-        public const int BASE_INFECTION_VITALITY = 100;
-        public int MAX_INFECTION_VITALITY = 100;
+        public const int BASE_INFECTION_VITALITY = 250;
+        public int MAX_INFECTION_VITALITY = 250;
 
         public const int BASE_ATTACK = 5;
         public const int MAX_ATTACK = 5;
@@ -65,6 +65,9 @@ namespace Pathogenesis
         // Textures
         public Texture2D Texture_L { get; set; }
         public Texture2D Texture_R { get; set; }
+
+        public bool Lost { get; set; }
+        public bool Immune { get; set; }
 
         // Unit movement data
         public Vector2 Vel { get; set; }
@@ -95,13 +98,11 @@ namespace Pathogenesis
         public int AttackSpeed { get; set; }
 
         public int Level { get; set; }
-
-        //DEBUG
-        public bool Lost { get; set; }
         #endregion
 
         #region Initialization
-        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type, UnitFaction faction, int level)
+        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type,
+            UnitFaction faction, int level, bool immune)
         {
             Texture_L = texture_l;
             Texture_R = texture_r;
@@ -109,6 +110,7 @@ namespace Pathogenesis
             Type = type;
             Faction = faction;
             Level = level;
+            Immune = immune;
 
             Target = new Vector2(-1, -1);
             NextMove = new Vector2(-1, -1);
@@ -136,7 +138,7 @@ namespace Pathogenesis
             }
             else if (Faction == UnitFaction.ENEMY)
             {
-                Speed = 2;
+                Speed = 4;
                 Accel = 0.4f;
                 Decel = 0.2f;
             }
@@ -170,7 +172,7 @@ namespace Pathogenesis
             {
                 Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
                 canvas.DrawSprite(texture,
-                    Lost? Color.Blue : Color.White,
+                    Immune? Color.Gold : new Color(250, InfectionVitality, InfectionVitality, 250),
                     new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
                     new Rectangle(0, 0, texture.Width, texture.Height));
                 canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
