@@ -41,8 +41,13 @@ namespace Pathogenesis.Models
                     if (unit.AttackCoolDown != 0)
                     {
                         canvas.DrawSprite(InfectTexture,
+                            new Color(70, 20, 20, (int)(unit.AttackCoolDown * 2.5)),
+                            new Rectangle((int)unit.Position.X - unit.AttackRange, (int)unit.Position.Y - unit.AttackRange, unit.AttackRange*2, unit.AttackRange*2),
+                            new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
+                        /*
+                        canvas.DrawSprite(InfectTexture,
                             new Color(70, 20, 20, (int)(unit.AttackCoolDown*2.5)),
-                            unit.Position, new Vector2(0.3f, 0.3f), 0f);
+                            unit.Position, new Vector2(0.3f, 0.3f), 0f);*/
                     }
                     //Infected bar indicator
                     if (unit.Faction != UnitFaction.ALLY && unit.InfectionVitality != unit.MAX_INFECTION_VITALITY)

@@ -16,14 +16,17 @@ namespace Pathogenesis
     public class GameUnitController
     {
         #region Constants
+        public const int PLAYER_PATHFIND_FIELD_SIZE = 15;
+        public const int MAX_ASTAR_DIST = 15;
+        public const int LOST_ALLY_DISTANCE = 500;
+
         public const int ENEMY_CHASE_RANGE = 200;   // Distance at which an enemy will start chasing the player
         public const int INFECT_RANGE = 200;        // Range of the infection ability
         public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
-        public const int STOP_DIST = 50;            // Distance at which a unit is considered "at" its target
+        public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
+        public const int MOVE_STOP_DIST = 5;
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_LOCK_RANGE = 70;         // Attack range
-        public const int ATTACK_RANGE = 50;         // Attack range
-        public const int ENEMY_LOCK_RANGE = 800;     // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_LOCK_RANGE = 70;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
         public const float ALLY_ATTRITION = 0.0f;
@@ -37,6 +40,8 @@ namespace Pathogenesis
 
         // The player object
         public Player Player { get; set; }
+        private Vector2[,] playerLocationField;
+        private List<GameUnit> lostUnits;
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
@@ -47,6 +52,8 @@ namespace Pathogenesis
             this.factory = factory;
             Units = new List<GameUnit>();
             DeadUnits = new List<GameUnit>();
+            lostUnits = new List<GameUnit>();
+
             rand = new Random();
         }
 
@@ -62,7 +69,6 @@ namespace Pathogenesis
         public void AddUnit(GameUnit unit)
         {
             unit.ID = Units.Count;
-            unit.AttackCoolDown = ATTACK_COOLDOWN;
             Units.Add(unit);
         }
         #endregion
@@ -73,18 +79,43 @@ namespace Pathogenesis
          */
         public void Update(Level level, InputController input_controller)
         {
+            //Pathfinder.findPath(level.Map, Player.Front, Player.Front, PLAYER_PATHFIND_FIELD_SIZE, true);
+            //playerLocationField = Pathfinder.pointLocMap;
+            //lostUnits.Clear();
+
+            // Set next moves
             foreach (GameUnit unit in Units)
             {
                 setNextMove(unit, level);
             }
 
+            // Handle lost units
+            if (lostUnits.Count != 0)
+            {
+                GameUnit captain = lostUnits.First();
+                captain.Target = Player.Position;
+                //findTarget(captain, Player.Position, level.Map, 100);
+                foreach (GameUnit unit in lostUnits)
+                {
+                    if (unit != captain)
+                    {
+                        unit.Lost = true;
+                        unit.Target = captain.Position;
+                        unit.NextMove = unit.Target;
+                    }
+                }
+            }
+
+            // Execute moves and actions
             foreach (GameUnit unit in Units)
             {
+                setVelocity(unit);
                 moveUnit(unit);
                 ProcessCombat(unit);
                 UpdateUnit(unit);
             }
 
+            // Handle player input
             if (Player != null && Player.Exists)
             {
                 CheckPlayerInput(input_controller);
@@ -92,6 +123,7 @@ namespace Pathogenesis
                 UpdatePlayer();
             }
 
+            // Dispose of dead units
             foreach (GameUnit unit in DeadUnits)
             {
                 if (unit.Type == UnitType.PLAYER) Player.Exists = false;
@@ -115,6 +147,12 @@ namespace Pathogenesis
             if (input_controller.Down) { vel.Y += Player.Accel; }
 
             // Clamp values to max speeds
+            if (vel.Length() > Player.Speed)
+            {
+                vel.Normalize();
+                vel *= Player.Speed;
+            }
+            
             vel.X = MathHelper.Clamp(vel.X, -Player.Speed, Player.Speed);
             vel.Y = MathHelper.Clamp(vel.Y, -Player.Speed, Player.Speed);
             Player.Vel = vel;
@@ -178,17 +216,6 @@ namespace Pathogenesis
             }
         }
 
-        /*
-         * Converts an enemy to an ally, handling stat changes as necessary
-         */
-        private void Convert(GameUnit unit)
-        {
-            unit.Faction = UnitFaction.ALLY;
-            Units.Remove(unit);
-            AddUnit(factory.createUnit(unit.Type, UnitFaction.ALLY, unit.Level, unit.Position));
-            // Change stats like speed etc as necessary
-        }
-
         private void UpdatePlayer()
         {
             if (Player.Health <= 0) DeadUnits.Add(Player);
@@ -203,9 +230,25 @@ namespace Pathogenesis
          */ 
         public void setNextMove(GameUnit unit, Level level)
         {
+            if (unit.Position.X < 0 || unit.Position.Y < 0) return;
+
             // Select target
-            Vector2 prev_target = unit.Target;
-            Vector2[,] playerLocationField = new Vector2[level.Map.WidthTiles,level.Map.HeightTiles];
+            Vector2 prev_move = unit.NextMove;
+            
+            if (unit.Faction == UnitFaction.ALLY && unit.Lost)
+            {
+                if (rand.NextDouble() < 0.01)
+                {
+                    unit.Target = Player.Position;
+                    findTarget(unit, Player.Position, level.Map, MAX_ASTAR_DIST);
+                }
+                else if(rand.NextDouble() < 0.05)
+                {
+                    unit.Target = unit.Position + new Vector2(rand.Next(600) - 300, rand.Next(600) - 300);
+                    unit.NextMove = unit.Target;
+                }
+                return;
+            }
 
             switch (unit.Type)
             {
@@ -219,20 +262,13 @@ namespace Pathogenesis
                     else if (rand.NextDouble() < 0.05)
                     {
                         // Random walk
-                        unit.Target = unit.Position + new Vector2(rand.Next(400)-200, rand.Next(400)-200);
+                        unit.Target = unit.Position + new Vector2(rand.Next(600)-300, rand.Next(600)-300);
                     }
 
                     if (unit.Faction == UnitFaction.ALLY)
                     {
-                        Vector2 front = Player.Vel;
-                        if (front.Length() != 0)
-                        {
-                            front.Normalize();
-                            front *= 100;
-                        }
-                        unit.Target = Player.Position + front;
+                        unit.Target = Player.Front;
                     }
-
                     foreach (GameUnit other in Units)
                     {
                         if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_LOCK_RANGE))
@@ -258,35 +294,41 @@ namespace Pathogenesis
             }
 
             unit.NextMove = unit.Target;
-            //&& !unit.Target.Equals(prev_target)
             if (unit.HasTarget())
             {
-                // Pathfind to target if necessary
-                if (level.Map.rayCastHasObstacle(unit.Position, unit.Target))
+                /*
+                // If the target is the player, use the player location map
+                if (unit.Target.Equals(Player.Position) &&
+                    Math.Abs(unit.TilePosition.X - Player.TilePosition.X) +
+                    Math.Abs(unit.TilePosition.Y - Player.TilePosition.Y) < PLAYER_PATHFIND_FIELD_SIZE)
                 {
-                    List<Vector2> path = Pathfinder.findPath(level.Map, unit.Position, unit.Target, 100);
-                    // Set the next move to the last node in the path with no obstacles in the way
-                    if (path != null)
-                    {
-                        for (int i = path.Count - 1; i > 0; i--)
-                        {
-                            if (!level.Map.rayCastHasObstacle(unit.Position, path[i]))
-                            {
-                                unit.NextMove = path[i];
-                                break;
-                            }
-                        }
-                    }
+                    Vector2 moveToPlayerTile = findMoveToPlayer(unit, level.Map);
+                    unit.NextMove = new Vector2(moveToPlayerTile.X * Map.TILE_SIZE,
+                        moveToPlayerTile.Y * Map.TILE_SIZE);
+                }
+                 * */
+
+                // Pathfind to target if necessary
+                if (level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size/2))
+                {
+                    findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
                 }
             }
+        }
 
+        /*
+         * Sets the velocity of the unit based on its next move
+         */
+        private void setVelocity(GameUnit unit)
+        {
             if (unit.HasNextMove())
             {
                 // Calculate direction of acceleration
                 Vector2 vel = unit.Vel;
-
                 Vector2 vel_mod = unit.NextMove - unit.Position;
-                if (vel_mod.Length() < STOP_DIST)
+
+                // If the unit is close enough to target don't move
+                if (unit.NextMove == unit.Target && vel_mod.Length() < TARGET_STOP_DIST)
                 {
                     vel_mod = Vector2.Zero;
                 }
@@ -301,7 +343,7 @@ namespace Pathogenesis
                 {
                     if ((unit.Position - unit.Target).Length() < 50)
                     {
-                        unit.Speed = (int) (Player.Speed * 1.2);
+                        unit.Speed = (int)(Player.Speed * 1.2);
                     }
                     else
                     {
@@ -311,12 +353,14 @@ namespace Pathogenesis
 
                 // Clamp values to max speeds
                 vel += vel_mod;
-                //vel += new Vector2(x_mod, y_mod);
-                vel.X = MathHelper.Clamp(vel.X, -unit.Speed, unit.Speed);
-                vel.Y = MathHelper.Clamp(vel.Y, -unit.Speed, unit.Speed);
+
+                if (vel.Length() > unit.Speed)
+                {
+                    vel.Normalize();
+                    vel *= unit.Speed;
+                }
                 unit.Vel = vel;
             }
-            //System.Diagnostics.Debug.WriteLine(unit.Vel);
         }
 
         /*
@@ -336,13 +380,64 @@ namespace Pathogenesis
             }
 
             // Apply drag
-            if ((vel - Vector2.Zero).Length() < unit.Decel) { vel = Vector2.Zero; }
+            if ((vel - Vector2.Zero).Length() < unit.Decel * 3/4) { vel = Vector2.Zero; }
             else if (Math.Abs(vel.X) < unit.Decel * 3 / 4) vel.X = 0;
             else if (Math.Abs(vel.Y) < unit.Decel * 3 / 4) vel.Y = 0;
             unit.Vel = vel;
             unit.Position += unit.Vel;
         }
 
+        /*
+         * A* to target
+         */
+        private void findTarget(GameUnit unit, Vector2 target, Map map, int limit)
+        {
+            List<Vector2> path = Pathfinder.findPath(map, unit.Position, unit.Target, limit, false);
+            // Set the next move to the last node in the path with no obstacles in the way
+            if (path != null)
+            {
+                for (int i = path.Count - 1; i > 0; i--)
+                {
+                    if (!map.rayCastHasObstacle(unit.Position, path[i], unit.Size / 2))
+                    {
+                        unit.NextMove = path[i];
+                        if (unit.Lost) unit.Lost = false;
+                        return;
+                    }
+                }
+            }
+            else if (unit.Faction == UnitFaction.ALLY)
+            {
+                unit.Lost = true;
+            }
+        }
+
+        private Vector2 findMoveToPlayer(GameUnit unit, Map map)
+        {
+            return playerLocationField[(int)unit.Position.Y / Map.TILE_SIZE, (int)unit.Position.X / Map.TILE_SIZE];
+        }
+
+        #endregion
+
+        #region Conversion
+        /*
+         * Converts an enemy to an ally or vice versa, handling stat changes as necessary
+         */
+        private void Convert(GameUnit unit)
+        {
+            if (unit.Faction == UnitFaction.ALLY)
+            {
+                unit.Faction = UnitFaction.ENEMY;
+            }
+            else if (unit.Faction == UnitFaction.ENEMY)
+            {
+                unit.Faction = UnitFaction.ALLY;
+            }
+
+            Units.Remove(unit);
+            AddUnit(factory.createUnit(unit.Type, unit.Faction, unit.Level, unit.Position));
+            // Change stats like speed etc as necessary
+        }
         #endregion
 
         #region Combat
@@ -352,16 +447,23 @@ namespace Pathogenesis
 
             // Attack other units
             //TODO make this more efficient by only checking nearby units
+            GameUnit closest = null;
             foreach (GameUnit other in Units)
             {
-                if (other != unit && other.Faction != unit.Faction && unit.inRange(other, ATTACK_RANGE))
+                // Change to use hitboxes so we don't have to use other.Size/2
+                if (other != unit && other.Faction != unit.Faction && unit.inRange(other, unit.AttackRange+other.Size/2) &&
+                    (closest == null || unit.distance(other) < unit.distance(closest)))
                 {
-                    Attack(unit, other);
+                    closest = other;
                 }
             }
-            // Attack player if not attacking other
-            if (Player.Exists && unit.AttackCoolDown == 0 &&
-                unit.Faction == UnitFaction.ENEMY && unit.inRange(Player, ATTACK_RANGE))
+
+            // Attack other unit. If no other, attack player
+            if(closest != null) {
+                Attack(unit, closest);
+            }
+            else if (Player.Exists && unit.AttackCoolDown == 0 &&
+                unit.Faction == UnitFaction.ENEMY && unit.inRange(Player, unit.AttackRange+Player.Size/2))
             {
                 Attack(unit, Player);
             }
@@ -383,8 +485,8 @@ namespace Pathogenesis
             // Attack cooldown
             unit.AttackCoolDown = (int)MathHelper.Clamp(
                 --unit.AttackCoolDown, 0, ATTACK_COOLDOWN);
-            // Apply ally attrition
-            if (unit.Faction == UnitFaction.ALLY)
+            // Apply ally attrition if they are outside of range
+            if (unit.Faction == UnitFaction.ALLY && !unit.inRange(Player, ALLY_FOLLOW_RANGE))
             {
                 unit.Health -= ALLY_ATTRITION;
             }

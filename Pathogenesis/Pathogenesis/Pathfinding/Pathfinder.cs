@@ -10,10 +10,12 @@ namespace Pathogenesis.Pathfinding
 {
     class Pathfinder
     {
+        public static Vector2[,] pointLocMap;
+
         /*
          * Finds the tile based path from start to end, given in world coordinates
          */
-        public static List<Vector2> findPath(Map map, Vector2 start, Vector2 end, int limit)
+        public static List<Vector2> findPath(Map map, Vector2 start, Vector2 end, int limit, bool exploreAll)
         {
             if (!map.canMoveToWorldPos(end))
             {
@@ -21,7 +23,7 @@ namespace Pathogenesis.Pathfinding
             }
 
             BinaryHeap<PathNode> node_queue = new BinaryHeap<PathNode>(new NodeCompararer()); // use comparator
-            HashSet<Point> visited = new HashSet<Point>();
+            HashSet<PathNode> visited = new HashSet<PathNode>();
 
             Vector2 mapStart = map.translateWorldToMap(start);
             Vector2 mapEnd = map.translateWorldToMap(end);
@@ -35,8 +37,7 @@ namespace Pathogenesis.Pathfinding
             while (node_queue.Count > 0)
             {
                 PathNode current = node_queue.RemoveRoot(); // O(logn)
-                visited.Add(current.Pos);
-                if (current.Pos.Equals(endPoint))
+                if (!exploreAll && current.Pos.Equals(endPoint))
                 {
                     return constructPath(current);
                 }
@@ -44,11 +45,12 @@ namespace Pathogenesis.Pathfinding
                 {
                     continue;
                 }
+                visited.Add(current);
 
                 List<Point> adj = getAdjacent(current.Pos);
                 foreach (Point position in adj)
                 {
-                    if (visited.Contains(position) || !map.canMoveTo(position.X, position.Y))
+                    if (visited.Contains(new PathNode(position)) || !map.canMoveTo(position.X, position.Y))
                     {
                         continue;
                     }
@@ -67,16 +69,46 @@ namespace Pathogenesis.Pathfinding
                         node.H_score = calculateHeuristic(node.Pos, endPoint);
                         node.Parent = current;
                         node_queue.Insert(node);    // O(logn)
-                    }   
+                    }
                 }
             }
+
+            if (!exploreAll) return null;
+            
+            // Populate the point location map, initialize with (-1, -1)
+            pointLocMap = new Vector2[map.HeightTiles, map.WidthTiles];
+            for (int i = 0; i < pointLocMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < pointLocMap.GetLength(1); j++)
+                {
+                    pointLocMap[i, j] = new Vector2(-1, -1);
+                }
+            }
+
+            pointLocMap[(int)mapStart.Y, (int)mapStart.X] = mapStart;
+            foreach(PathNode node in visited) {
+                if (pointLocMap[node.Pos.Y, node.Pos.X] == new Vector2(-1, -1))
+                {
+                    Vector2 nodePos = new Vector2(node.Pos.X * Map.TILE_SIZE + Map.TILE_SIZE/2,
+                        node.Pos.Y * Map.TILE_SIZE + Map.TILE_SIZE/2);
+                    if (map.rayCastHasObstacle(nodePos, end, Map.TILE_SIZE/3))
+                    {
+                        pointLocMap[node.Pos.Y, node.Pos.X] = new Vector2(node.Parent.Pos.X, node.Parent.Pos.Y);
+                    }
+                    else
+                    {
+                        pointLocMap[node.Pos.Y, node.Pos.X] = mapEnd;
+                    }
+                    //collapseBlockedPaths(node, map);
+                }
+            }
+
             return null;
         }
 
         // Returns the node, if any, with the specified coordinate position
         private static PathNode nodeAtPosition(BinaryHeap<PathNode> queue, Point position)
         {
-            
             foreach (PathNode node in queue.GetList())
             {
                 if (node.Pos.Equals(position))
@@ -84,7 +116,6 @@ namespace Pathogenesis.Pathfinding
                     return node;
                 }
             }
-
             return null;
         }
 
@@ -109,6 +140,46 @@ namespace Pathogenesis.Pathfinding
             return Math.Sqrt(Math.Pow(Math.Abs(start.X - end.X), 2) + Math.Pow(Math.Abs(start.Y - end.Y), 2));
         }
 
+        /*
+         * Iterates through positions with obstacles to target of pointLocMap (player position), and
+         * points them to the next position without an obstacle.
+         * 
+         * Vector2 end is given in tile coordinates
+         * Assumes the 0,0 tile will be a wall, so it doesn't count as a position
+         */
+        private static void collapseBlockedPaths(PathNode start, Map map)
+        {
+            if (start.Parent == null) return;
+            if (start.Pos.X == 5 && start.Pos.Y == 4)
+            {
+                int a = 0;
+            }
+            Vector2 startPos = new Vector2(start.Pos.X, start.Pos.Y);
+            PathNode cur = start;
+            Vector2 curPos = new Vector2(cur.Pos.X, cur.Pos.Y);
+            Vector2 prevPos = new Vector2(-1, -1);
+
+            List<Vector2> positionsInPath = new List<Vector2>();
+            while(!map.rayCastHasObstacle(
+                startPos*Map.TILE_SIZE + new Vector2(Map.TILE_SIZE/2, Map.TILE_SIZE/2),
+                curPos*Map.TILE_SIZE + new Vector2(Map.TILE_SIZE/2, Map.TILE_SIZE),
+                Map.TILE_SIZE/2-5))
+            {
+                positionsInPath.Add(curPos);
+                cur = cur.Parent;
+                if (cur == null)
+                {
+                    break;
+                }
+                curPos = new Vector2(cur.Pos.X, cur.Pos.Y);
+            }
+            
+            foreach (Vector2 pos in positionsInPath)
+            {
+                pointLocMap[(int)pos.Y, (int)pos.X] = curPos;
+            }
+        }
+
         // Returns all the adjacent positions from the specified one
         private static List<Point> getAdjacent(Point pos)
         {
@@ -124,6 +195,5 @@ namespace Pathogenesis.Pathfinding
             }
             return adjacent;
         }
-
     }
 }

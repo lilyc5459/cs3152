@@ -94,7 +94,7 @@ namespace Pathogenesis
                         foreach (GameUnit other in cellGrid[loc.Y, loc.X])
                         {
                             // Don't check collision for the same units or if they are in the same position (will crash)
-                            if (unit != other && unit.Position != other.Position)
+                            if (unit != other && unit.Position != other.Position && !unit.Ghost)
                             {
                                 CheckUnitCollision(unit, other);
                             }
@@ -158,63 +158,24 @@ namespace Pathogenesis
             {
                 if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
                 {
-                    Vector2 a = (unit.Position + dir * unit.Size/2) / Map.TILE_SIZE;
                     int i = 0;
-                     while (i++ < unit.Size && !map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
+                    while (i++ < unit.Size && !map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
                     {
                         unit.Position -= dir;
                     }
+
                     Vector2 vel = unit.Vel;
-                    if (dir.X != 0) vel.X = 0;
-                    if (dir.Y != 0) vel.Y = 0;
+                    float length = vel.Length();
+                    //if (dir.X != 0) vel.X = 0;
+                    //if (dir.Y != 0) vel.Y = 0;
+                    if (vel.Length() != 0)
+                    {
+                        vel.Normalize();
+                        vel *= length;
+                    }
                     unit.Vel = vel;
-                    //unit.Vel = -dir * 5;
                 }
             }
-
-            /*
-            float right_limit = Math.Min((unit.Position.X + unit.Size/2),map.Height);
-            float left_limit = Math.Max((unit.Position.X - unit.Size/2),0);
-            
-            float up_limit = Math.Max((unit.Position.Y - unit.Size/2),0);
-            float down_limit = Math.Min((unit.Position.Y + unit.Size/2),map.Width);
-
-            for (float x = unit.Position.X; x < right_limit; x++)
-            {
-                if (CheckForWall(x,unit.Position.Y,map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X,unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float x = unit.Position.X; x > left_limit; x--)
-            {
-                if (CheckForWall(x, unit.Position.Y, map))
-                {
-                    unit.Vel = new Vector2(-unit.Vel.X, unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y > up_limit; y--)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-
-            for (float y = unit.Position.Y; y < down_limit; y++)
-            {
-                if (CheckForWall(unit.Position.X, y, map))
-                {
-                    unit.Vel = new Vector2(unit.Vel.X, -unit.Vel.Y);
-                    return;
-                }
-            }
-             * */
         }
 
         public Boolean CheckForWall(float x, float y, Map map)

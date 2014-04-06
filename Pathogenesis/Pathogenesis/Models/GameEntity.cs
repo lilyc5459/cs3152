@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Pathogenesis.Models;
 
 namespace Pathogenesis
 {
@@ -14,10 +15,19 @@ namespace Pathogenesis
 
         // Positioning
         public Vector2 Position { get; set; }
+        public Vector2 TilePosition
+        {
+            get
+            {
+                return new Vector2((int)Position.X / Map.TILE_SIZE, (int)Position.Y / Map.TILE_SIZE);
+            }
+        }
         public Vector2 Screen_pos { get; set; }
 
         // Indicates if the entity exists in the game. If false, game engine will delete soon
         public bool Exists { get; set; }
+
+        public bool Ghost { get; set; }
         #endregion
 
         public GameEntity()

@@ -152,7 +152,7 @@ namespace Pathogenesis
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(2020, 1020, textures[BACKGROUND1], textures[WALL]);
+                return new Level(2000, 2000, textures[BACKGROUND1], textures[WALL]);
             }
 
             // Returns the game font

@@ -26,6 +26,21 @@ namespace Pathogenesis.Pathfinding
         {
             Pos = new Point((int)pos.X, (int)pos.Y);
         }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as PathNode;
+            if (other == null)
+            {
+                return false;
+            }
+            return this.Pos.Equals(other.Pos);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Pos.GetHashCode();
+        }
     }
 
     public class NodeCompararer : IComparer<PathNode>

@@ -129,7 +129,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Spawn_Ally
             {
-                get { return keyStates[SPAWN_ALLY] == KeyState.DOWN; }
+                get { return keyStates[SPAWN_ALLY] == KeyState.HELD; }
             }
 
             /// <summary>

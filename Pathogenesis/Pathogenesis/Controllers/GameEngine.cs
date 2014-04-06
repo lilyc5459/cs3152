@@ -92,7 +92,8 @@ namespace Pathogenesis
             level_controller.NextLevel(factory);
 
             bool test = level_controller.CurLevel.Map.rayCastHasObstacle(
-                new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE));
+                new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE),
+                Map.TILE_SIZE);
             System.Diagnostics.Debug.WriteLine(test);
             base.Initialize();
             firstLoop = false;
@@ -144,15 +145,15 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 2)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 1)
                     {
-                        int level = rand.NextDouble() < 0.1 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
+                        int level = rand.NextDouble() < 0.3 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
                     }
                     //
-                    /* TODO: Remove DEBUG CODE HERE (remove late)
+                    /* TODO: Remove DEBUG CODE HERE (remove later)
                      * 
                      */
                     if (input_controller.Spawn_Enemy)
@@ -163,7 +164,7 @@ namespace Pathogenesis
                     if (input_controller.Spawn_Ally)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY, 1,
-                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height))));
+                            unit_controller.Player.Position));
                     }
                     if (input_controller.Spawn_Plasmid)
                     {

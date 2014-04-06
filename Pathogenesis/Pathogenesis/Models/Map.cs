@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Pathogenesis.Pathfinding;
 
 namespace Pathogenesis.Models
 {
@@ -78,6 +79,11 @@ namespace Pathogenesis.Models
                         tiles[i, j] = 1;
                     }
 
+                    if (i == 5 && j > 3 && j < 7)
+                    {
+                        tiles[i, j] = 1;
+                    }
+
                     //Test
                     if (i == 10 && j > 5 && j < 7)
                     {
@@ -114,7 +120,7 @@ namespace Pathogenesis.Models
                         tiles[i, j] = 1;
                     }
 
-                    if (j == 10 && i > 10 && i < 15)
+                    if (j == 10 && i > 10 && i < 18)
                     {
                         tiles[i, j] = 1;
                     }
@@ -161,7 +167,7 @@ namespace Pathogenesis.Models
         /*
          * Returns true if obstacle in path
          */
-        public bool rayCastHasObstacle(Vector2 start, Vector2 end)
+        public bool rayCastHasObstacle(Vector2 start, Vector2 end, int cast_width)
         {
             Vector2 diff = end - start;
 
@@ -201,11 +207,23 @@ namespace Pathogenesis.Models
             float slope = (float)(y1 - y0) / (x1 - x0);
             float b = y0 - slope * x0;
 
-            for (int i = x0; i <= x1; i += TILE_SIZE / 4)
+            // Casts two lines account for the cast width
+            for (int i = x0; i <= x1; i+=TILE_SIZE/4)
             {
-                float x = steep ? slope * i + b : i;
-                float y = steep ? i : slope * i + b;
-                if (tiles[(int)(y / TILE_SIZE), (int)(x / TILE_SIZE)] == 1)
+                int x_offset = (int)(cast_width / 2 * Math.Cos(Math.Atan(-1 / slope)));
+                int y_offset = (int)(cast_width / 2 * Math.Sin(Math.Atan(-1 / slope)));
+
+                int x_top = i + x_offset;
+                int y_top = (int)(slope * i + b + y_offset);
+                float x = steep ? y_top : x_top;
+                float y = steep ? x_top : y_top;
+
+                int x_bot = i - x_offset;
+                int y_bot = (int)(slope * i + b - y_offset);
+                float x2 = steep ? y_bot : x_bot;
+                float y2 = steep ? x_bot : y_bot;
+                if (tiles[(int)(y / TILE_SIZE), (int)(x / TILE_SIZE)] == 1 ||
+                    tiles[(int)(y2 / TILE_SIZE), (int)(x2 / TILE_SIZE)] == 1)
                 {
                     return true;
                 }
@@ -221,6 +239,14 @@ namespace Pathogenesis.Models
             for(int i = 0; i < tiles.GetLength(0); i++) {
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
+                    //canvas.DrawText(i + "," + j, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE));
+
+                    if (Pathfinder.pointLocMap != null)
+                    {
+                        Vector2 next = Pathfinder.pointLocMap[i, j];
+                        canvas.DrawText((int)next.Y + "," + (int)next.X, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE));
+                    }
+                    
                     if (tiles[i, j] == 1)
                     {
                         canvas.DrawSprite(WallTexture, Color.White,
