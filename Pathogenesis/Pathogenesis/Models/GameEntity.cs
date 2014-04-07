@@ -24,8 +24,9 @@ namespace Pathogenesis
         }
         public Vector2 Screen_pos { get; set; }
 
-        // Indicates if the entity exists in the game. If false, game engine will delete soon
-        public bool Exists { get; set; }
+
+        public bool Exists { get; set; }    // Indicates if the entity exists in the game
+        public bool Static { get; set; }    // Indicates if the entity is immovable
 
         public bool Ghost { get; set; }
         #endregion
@@ -44,6 +45,7 @@ namespace Pathogenesis
         // Calculates the euclidean distance between the entities
         public double distance(GameEntity other)
         {
+            if (other == null) return 0.0;
             return (other.Position - Position).Length();
         }
 

@@ -108,7 +108,7 @@ namespace Pathogenesis
 
             public HUD createHUD(Player player)
             {
-                return new HUD(player, textures[INFECT_RANGE], textures[HEALTH_BAR]);
+                return new HUD(textures[INFECT_RANGE], textures[HEALTH_BAR]);
             }
         
             // Returns an instance of a unit of the given type and faction
@@ -128,6 +128,9 @@ namespace Pathogenesis
                     case UnitType.FLYING:
                         enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING],
                             faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
+                        break;
+                    case UnitType.BOSS:
+                        enemy = new GameUnit(textures[PLASMID], textures[PLASMID], type, faction, level, immune);
                         break;
                     default:
                         enemy = null;
@@ -153,7 +156,14 @@ namespace Pathogenesis
             public Level loadLevel(int num)
             {
                 //return levels[num];
-                return new Level(800, 800, textures[BACKGROUND1], textures[WALL]);
+
+                // TODO Should all be loaded from file
+                List<GameUnit> goals = new List<GameUnit>();
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(800, 800), false));
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1000, 200), false));
+                Level level = new Level(2000, 2000, textures[BACKGROUND1], textures[WALL], goals);
+                level.PlayerStart = new Vector2(2, 2);
+                return level;
             }
 
             // Returns the game font

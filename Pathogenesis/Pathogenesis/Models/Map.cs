@@ -176,7 +176,7 @@ namespace Pathogenesis.Models
             if ((int)start.X/TILE_SIZE == (int)end.X/TILE_SIZE && (int)start.Y/TILE_SIZE == (int)end.Y/TILE_SIZE
                 || !canMoveToWorldPos(start) || !canMoveToWorldPos(end) || diff.Length() < Map.TILE_SIZE)
             {
-                return false;
+                return true;
             }
 
             bool steep = Math.Abs(diff.X) <= Math.Abs(diff.Y);

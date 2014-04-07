@@ -20,6 +20,7 @@ namespace Pathogenesis
     {
         MAIN_MENU,  // Player is at the main menu
         IN_GAME,    // Player is playing the game
+        VICTORY,    // Player has completed the level
         PAUSED      // Player has activated the pause menu
     }
     #endregion
@@ -63,13 +64,6 @@ namespace Pathogenesis
             canvas = new GameCanvas(this);
             factory = new ContentFactory(new ContentManager(Services));
             camera = new Camera(canvas.Width, canvas.Height);
-
-            input_controller = new InputController();
-            collision_controller = new CollisionController();
-
-            level_controller = new LevelController();
-            unit_controller = new GameUnitController(factory);
-            item_controller = new ItemController();
         }
 
         /// <summary>
@@ -86,10 +80,20 @@ namespace Pathogenesis
             // Game starts at the main menu
             game_state = GameState.MAIN_MENU;
 
+            // Initialize controllers
+            input_controller = new InputController();
+            collision_controller = new CollisionController();
+
+            level_controller = new LevelController();
+            unit_controller = new GameUnitController(factory);
+            item_controller = new ItemController();
+
+
+
             // TEST
-            unit_controller.Player = factory.createPlayer(new Vector2(100, 100));
             HUD_display = factory.createHUD(unit_controller.Player);
-            level_controller.NextLevel(factory);
+            level_controller.NextLevel(factory, unit_controller, item_controller);
+            unit_controller.SetLevel(level_controller.CurLevel);
 
             bool test = level_controller.CurLevel.Map.rayCastHasObstacle(
                 new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE),
@@ -145,7 +149,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 50)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 200)
                     {
                         int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
@@ -163,7 +167,7 @@ namespace Pathogenesis
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, 1,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)), false));
                     }
-                    if (input_controller.Spawn_Ally)
+                    if (input_controller.Spawn_Ally && unit_controller.Player != null)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY, 1,
                             unit_controller.Player.Position + new Vector2(1, 1), false));
@@ -173,33 +177,21 @@ namespace Pathogenesis
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             ItemType.PLASMID));
                     }
-                    //
                     //Restart
                     if (input_controller.Restart)
                     {
                         Initialize();
-                        unit_controller.Reset();
+                        level_controller.ResetLevel(factory, unit_controller, item_controller);
                         item_controller.Reset();
                     }
 
-                    //Pickup items
-                    /*
-                    List<Item> itemsRemove = new List<Item>();
-                    foreach (Item item in item_controller.Items)
-                    {
-                        if ((unit_controller.Player.Position.X > item.Position.X - 10 && unit_controller.Player.Position.X < item.Position.X + 30)
-                            && (unit_controller.Player.Position.Y > item.Position.Y - 10 && unit_controller.Player.Position.Y < item.Position.Y + 30))
-                        {
-                            itemsRemove.Add(item);
-                        }
-                    }
-                    foreach (Item removeitem in itemsRemove)
-                    {
-                        item_controller.RemoveItem(removeitem);
-                    }*/
-
                     // Process level environment logic
-                    level_controller.Update();
+                    bool victory = level_controller.Update();
+                    if (victory)
+                    {
+                        level_controller.NextLevel(factory, unit_controller, item_controller);
+                    }
+
                     // Process and update all units
                     unit_controller.Update(level_controller.CurLevel, input_controller);
                     // Process and handle collisions
@@ -229,10 +221,22 @@ namespace Pathogenesis
             canvas.Reset();
             canvas.BeginSpritePass(BlendState.AlphaBlend, camera);
 
-            level_controller.Draw(canvas);
-            HUD_display.Draw(canvas, unit_controller.Units);
-            item_controller.Draw(canvas);
-            unit_controller.Draw(canvas);
+            switch (game_state)
+            {
+                case GameState.IN_GAME:
+                    level_controller.Draw(canvas);
+                    HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
+                    item_controller.Draw(canvas);
+                    unit_controller.Draw(canvas);
+                    HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player);
+                    break;
+                case GameState.MAIN_MENU:
+                    break;
+                case GameState.PAUSED:
+                    break;
+                case GameState.VICTORY:
+                    break;
+            }
 
             canvas.EndSpritePass();
             base.Draw(gameTime);

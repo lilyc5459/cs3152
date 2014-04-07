@@ -16,24 +16,49 @@ namespace Pathogenesis
 
         public LevelController()
         {
+            CurLevelNum = 0;
         }
 
-        public void Update()
+        /*
+         * Update the currentl level
+         * 
+         * Returns true if the level is completed
+         */
+        public bool Update()
         {
             // Update level logic here
+            return CurLevel.BossesDefeated == CurLevel.NumBosses;
         }
 
         #region Methods
-        public void NextLevel(ContentFactory gameContentFactory){
-            //Load Next Level via content factory
+        /*
+         * Loads the next level
+         */
+        public void NextLevel(ContentFactory factory, GameUnitController unit_controller,
+            ItemController item_controller){
+            LoadLevel(factory, unit_controller, item_controller, CurLevelNum);
             CurLevelNum++;
-            CurLevel = gameContentFactory.loadLevel(CurLevelNum);
         }
 
-        public void ResetLevel(ContentFactory gameContentFactory){
-            //Load Next Level via content factory
-            CurLevelNum = 0;
-            CurLevel = gameContentFactory.loadLevel(CurLevelNum);
+        /*
+         * Reloads the current level
+         */
+        public void ResetLevel(ContentFactory factory, GameUnitController unit_controller,
+            ItemController item_controller)
+        {
+            LoadLevel(factory, unit_controller, item_controller, CurLevelNum);
+        }
+
+        /*
+         * Loads the specified level
+         */
+        public void LoadLevel(ContentFactory factory, GameUnitController unit_controller, 
+            ItemController item_controller, int level_num)
+        {
+            CurLevel = factory.loadLevel(level_num);
+            item_controller.Reset();
+            unit_controller.Reset();
+            unit_controller.SetLevel(CurLevel);
         }
         #endregion
 

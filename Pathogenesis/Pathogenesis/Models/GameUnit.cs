@@ -63,6 +63,7 @@ namespace Pathogenesis
 
         public int max_health = 100;
         public int max_infection_vitality = 250;
+
         #region Properties
         // Textures
         public Texture2D Texture_L { get; set; }
@@ -129,7 +130,12 @@ namespace Pathogenesis
 
             max_health = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
             Health = max_health;
+
             max_infection_vitality = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
+            if (Type == UnitType.BOSS)
+            {
+                max_infection_vitality = (int)Math.Pow(2, Level + 1) * BASE_INFECTION_VITALITY;
+            }
             InfectionVitality = max_infection_vitality;
 
             AttackCoolDown = 0;
@@ -160,6 +166,11 @@ namespace Pathogenesis
             {
                 Mass = 5f;
             }
+
+            if (Type == UnitType.BOSS)
+            {
+                Static = true;
+            }
         }
         #endregion
 
@@ -176,16 +187,26 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             // test
-            if (Exists)
-            {
-                Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
+            Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
 
-                canvas.DrawSprite(texture,
-                    Immune? Color.Gold : new Color(250, (int)Health+150, (int)Health+150, 250),
-                    new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
-                    new Rectangle(0, 0, texture.Width, texture.Height));
-                canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            Color color = Color.White;
+            if (Immune)
+            {
+                color = new Color(50, (int)Health + 150, (int)Health + 150, 250);
             }
+            else
+            {
+                color = new Color(250, (int)Health + 150, (int)Health + 150, 250);
+            }
+            if (!Exists)
+            {
+                color = Color.Gray;
+            }
+
+            canvas.DrawSprite(texture, color,
+                new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
+                new Rectangle(0, 0, texture.Width, texture.Height));
+            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }

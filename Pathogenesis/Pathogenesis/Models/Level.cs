@@ -18,7 +18,13 @@ namespace Pathogenesis.Models
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public Level(int width, int height, Texture2D bg_texture, Texture2D wall_texture)
+        public Vector2 PlayerStart { get; set; }        // Player starting position tile coordinates
+        public List<GameUnit> Bosses { get; set; }      // List of Boss units in this level
+
+        public int NumBosses { get; set; }              // The number of bosses in this level
+        public int BossesDefeated { get; set; }         // The number of bosses that the player has defeated
+
+        public Level(int width, int height, Texture2D bg_texture, Texture2D wall_texture, List<GameUnit> bosses)
         {
             Width = width;
             Height = height;
@@ -26,6 +32,9 @@ namespace Pathogenesis.Models
             BackgroundTexture = bg_texture;
 
             Map = new Map(width, height, wall_texture);
+            Bosses = bosses;
+            NumBosses = bosses.Count;
+            BossesDefeated = 0;
         }
 
         public void Draw(GameCanvas canvas)

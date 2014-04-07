@@ -38,8 +38,11 @@ namespace Pathogenesis
                 ProcessCollisions(unit, level.Map);
             }
 
-            ProcessCollisions(player, level.Map);
-            ProcessItems(player, item_controller);
+            if (player != null)
+            {
+                ProcessCollisions(player, level.Map);
+                ProcessItems(player, item_controller);
+            }
         }
 
         /*
@@ -65,15 +68,18 @@ namespace Pathogenesis
                 grid[y_index, x_index].Add(unit);
             }
 
-            int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
-            int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
-            if (grid[y_indexp, x_indexp] == null)
+            if (player != null)
             {
-                grid[y_indexp, x_indexp] = new List<GameUnit>();
-            }
-            grid[y_indexp, x_indexp].Add(player);
+                int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
+                int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
+                if (grid[y_indexp, x_indexp] == null)
+                {
+                    grid[y_indexp, x_indexp] = new List<GameUnit>();
+                }
+                grid[y_indexp, x_indexp].Add(player);
 
-            cellGrid = grid;
+                cellGrid = grid;
+            }
 
             // Contruct item collision grid
             itemGrid = new List<Item>[(int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
@@ -95,6 +101,8 @@ namespace Pathogenesis
          */
         public void ProcessCollisions(GameUnit unit, Map map)
         {
+            if (unit == null) return;
+
             int x_index = (int)MathHelper.Clamp((unit.Position.X / CELL_SIZE),
                 0, cellGrid.GetLength(1) - 1);
             int y_index = (int)MathHelper.Clamp((unit.Position.Y / CELL_SIZE),
@@ -160,16 +168,27 @@ namespace Pathogenesis
             {
                 //System.Diagnostics.Debug.WriteLine("1 pos: " + g1.Position + " 2pos: " + g2.Position +
                 //    " 1size: " + g1.Size + " 2size: " + g2.Size + " norm: " + normal + " dist: " + distance);
-                g1.Position += normal * ((g1.Size+g2.Size)/2 - distance)/2; 
-                g2.Position -= normal * ((g2.Size+g1.Size)/2 - distance)/2;
+                if (g1.Static)
+                {
+                    g2.Position -= normal * ((g2.Size + g1.Size) / 2 - distance);
+                }
+                else if (g2.Static)
+                {
+                    g1.Position += normal * ((g1.Size + g2.Size) / 2 - distance);
+                }
+                else
+                {
+                    g1.Position += normal * ((g1.Size + g2.Size) / 2 - distance) / 2;
+                    g2.Position -= normal * ((g2.Size + g1.Size) / 2 - distance) / 2;
+                }
                 //System.Diagnostics.Debug.WriteLine(g1.Position + " " + g2.Position);
 
                 Vector2 relVel = g1.Vel - g2.Vel;
 
                 float impulse = (-(1 + COLL_COEFF) * Vector2.Dot(normal, relVel)) / (Vector2.Dot(normal, normal) * (1 / g1.Mass + 1 / g2.Mass));
 
-                g1.Vel += (impulse / g1.Mass) * normal;
-                g2.Vel -= (impulse / g2.Mass) * normal;
+                if(!g1.Static) g1.Vel += (impulse / g1.Mass) * normal;
+                if(!g2.Static) g2.Vel -= (impulse / g2.Mass) * normal;
             }
         }
 
