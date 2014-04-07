@@ -37,6 +37,8 @@ namespace Pathogenesis.Pathfinding
             while (node_queue.Count > 0)
             {
                 PathNode current = node_queue.RemoveRoot(); // O(logn)
+                PathNode current2 = getMin(node_queue.GetList());
+
                 if (!exploreAll && current.Pos.Equals(endPoint))
                 {
                     return constructPath(current);
@@ -104,6 +106,19 @@ namespace Pathogenesis.Pathfinding
             }
 
             return null;
+        }
+
+        private static PathNode getMin(List<PathNode> list)
+        {
+            PathNode current = null;
+            foreach (PathNode p in list)
+            {
+                if (current == null || p.Cost < current.Cost)
+                {
+                    current = p;
+                }
+            }
+            return current;
         }
 
         // Returns the node, if any, with the specified coordinate position

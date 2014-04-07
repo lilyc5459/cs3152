@@ -16,15 +16,13 @@ namespace Pathogenesis
          * some collisions won't be detected.
          */
         private const float COLL_COEFF = 0.1f;
-        private const int CELL_SIZE = 50;
+        private const int CELL_SIZE = 100;
 
         // Collisions cell structures
         private List<GameUnit>[,] cellGrid;
         private List<Item>[,] itemGrid;
 
-        public CollisionController()
-        {
-        }
+        public CollisionController() {}
 
         /*
          * Calculates and processes all collisions that occur,
@@ -35,17 +33,12 @@ namespace Pathogenesis
         {
             ConstructCollisionGrids(units, item_controller.Items, player, level);
 
-            for (int ii = 0; ii < cellGrid.GetLength(0); ii++)
+            foreach (GameUnit unit in units)
             {
-                for (int jj = 0; jj < cellGrid.GetLength(1); jj++)
-                {
-                    if (cellGrid[ii, jj] != null)
-                    {
-                        ProcessCollisions(jj, ii, level.Map);
-                    }
-                }
+                ProcessCollisions(unit, level.Map);
             }
-            
+
+            ProcessCollisions(player, level.Map);
             ProcessItems(player, item_controller);
         }
 
@@ -100,24 +93,26 @@ namespace Pathogenesis
         /*
          * Process collisions for every unit
          */
-        public void ProcessCollisions(int x, int y, Map map)
+        public void ProcessCollisions(GameUnit unit, Map map)
         {
-            List<Point> adjacent = getAdjacent(new Point(x, y));
-            foreach (GameUnit unit in cellGrid[y, x])
+            int x_index = (int)MathHelper.Clamp((unit.Position.X / CELL_SIZE),
+                0, cellGrid.GetLength(1) - 1);
+            int y_index = (int)MathHelper.Clamp((unit.Position.Y / CELL_SIZE),
+                0, cellGrid.GetLength(0) - 1);
+
+            List<Point> adjacent = getAdjacent(new Point(x_index, y_index));
+            foreach (Point loc in adjacent)
             {
-                foreach (Point loc in adjacent)
+                foreach (GameUnit other in cellGrid[loc.Y, loc.X])
                 {
-                    foreach (GameUnit other in cellGrid[loc.Y, loc.X])
+                    // Don't check collision for the same units or if they are in the same position (will crash)
+                    if (unit != other && unit.Position != other.Position && !unit.Ghost)
                     {
-                        // Don't check collision for the same units or if they are in the same position (will crash)
-                        if (unit != other && unit.Position != other.Position && !unit.Ghost)
-                        {
-                            CheckUnitCollision(unit, other);
-                        }
+                        CheckUnitCollision(unit, other);
                     }
                 }
-                CheckWallCollision(unit, map);
             }
+            CheckWallCollision(unit, map);
         }
 
         /*
@@ -148,15 +143,17 @@ namespace Pathogenesis
          */
         public void CheckUnitCollision(GameUnit g1, GameUnit g2)
         {
+            Vector2 normal = g1.Position - g2.Position;
+            float distance = normal.Length();
+
             // Don't check collision between player and ally
             if (g1.Faction == UnitFaction.ALLY && g2.Type == UnitType.PLAYER ||
-                g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER)
+                g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER ||
+                distance == 0)
             {
                 return;
             }
 
-            Vector2 normal = g1.Position - g2.Position;
-            float distance = normal.Length();
             normal.Normalize();
 
             if (distance < (g1.Size + g2.Size)/2)
@@ -200,17 +197,6 @@ namespace Pathogenesis
                     {
                         unit.Position -= dir;
                     }
-
-                    Vector2 vel = unit.Vel;
-                    float length = vel.Length();
-                    //if (dir.X != 0) vel.X = 0;
-                    //if (dir.Y != 0) vel.Y = 0;
-                    if (vel.Length() != 0)
-                    {
-                        vel.Normalize();
-                        vel *= length;
-                    }
-                    unit.Vel = vel;
                 }
             }
         }

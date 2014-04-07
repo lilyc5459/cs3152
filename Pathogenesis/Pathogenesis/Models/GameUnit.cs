@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Pathogenesis.Models;
 
 
 namespace Pathogenesis
@@ -22,7 +23,8 @@ namespace Pathogenesis
         RANGED,     // High speed, low defense, ranged attack
         FLYING,     // Can fly
         PLAYER,     // Controlled by player, able to use player powers
-        BOSS
+        BOSS,
+        FINDER      // Pathfinding unit, not visible
     };
 
     /// <summary>
@@ -86,6 +88,7 @@ namespace Pathogenesis
         // Attacking fields
         public int AttackCoolDown { get; set; }
         public int AttackRange { get; set; }
+        public GameUnit Attacking { get; set; }     // currently targetting this unit
 
         // Unit stat fields
         public float Health { get; set; }
@@ -149,7 +152,7 @@ namespace Pathogenesis
                 Decel = 0.5f;
             }
             Attack = 10 * (Level-1) * BASE_ATTACK + BASE_ATTACK;
-            AttackRange = Size/2 + 15;
+            AttackRange = Size/2 + 35;
             Defense = 5 * (Level - 1);
             Mass = 0.5f;
         }

@@ -121,7 +121,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Spawn_Enemy
             {
-                get { return keyStates[SPAWN_ENEMY] == KeyState.DOWN; }
+                get { return keyStates[SPAWN_ENEMY] == KeyState.HELD; }
             }
 
             /// <summary>

@@ -16,9 +16,12 @@ namespace Pathogenesis
     public class GameUnitController
     {
         #region Constants
+        public const int COMBAT_GRID_CELL_SIZE = 100; // Must be enough to accomodate the largest unit size
+        public const int NUM_ALLY_FINDERS = 10;
+
         public const int PLAYER_PATHFIND_FIELD_SIZE = 15;
         public const int MAX_PLAYER_CONVERSION_POINTS = 1000; // Maximum conversion points for the player
-        public const int MAX_ASTAR_DIST = 15;
+        public const int MAX_ASTAR_DIST = 20;
         public const int LOST_ALLY_DISTANCE = 500;
 
         public const int ENEMY_CHASE_RANGE = 250;   // Distance at which an enemy will start chasing the player
@@ -46,6 +49,10 @@ namespace Pathogenesis
 
         // The player object
         public Player Player { get; set; }
+
+        private List<GameUnit>[,] combatRangeGrid;
+        private int curAllyFinder = 0;
+
         private Vector2[,] playerLocationField;
         private List<GameUnit> lostUnits;
 
@@ -87,14 +94,18 @@ namespace Pathogenesis
          */
         public void Update(Level level, InputController input_controller)
         {
+            ConstructCombatGrid(level);
+
             //Pathfinder.findPath(level.Map, Player.Front, Player.Front, PLAYER_PATHFIND_FIELD_SIZE, true);
             //playerLocationField = Pathfinder.pointLocMap;
             //lostUnits.Clear();
 
             // Set next moves
+            bool playerFrontBlocked =
+                level.Map.rayCastHasObstacle(Player.Position, Player.Front, Map.TILE_SIZE / 3);
             foreach (GameUnit unit in Units)
             {
-                setNextMove(unit, level);
+                setNextMove(unit, level, playerFrontBlocked);
             }
 
             // Handle lost units
@@ -254,14 +265,17 @@ namespace Pathogenesis
          * Determine the next move for this unit with
          * targeting specific to each unit type AI
          */ 
-        public void setNextMove(GameUnit unit, Level level)
+        public void setNextMove(GameUnit unit, Level level, bool playerFrontBlocked)
         {
             if (unit.Position.X < 0 || unit.Position.Y < 0) return;
 
-            // Select target
-            Vector2 prev_move = unit.NextMove;
             
-            if (unit.Faction == UnitFaction.ALLY && unit.Lost)
+            Vector2 prev_move = unit.NextMove;
+
+            UnitFaction faction = unit.Faction;     // Unit faction, only called once
+            
+            // If an ally unit is lost, do this
+            if (faction == UnitFaction.ALLY && unit.Lost)
             {
                 if (rand.NextDouble() < 0.01)
                 {
@@ -276,24 +290,27 @@ namespace Pathogenesis
                 return;
             }
 
+            // Select target
+            bool random_walk = false;
             switch (unit.Type)
             {
                 case UnitType.TANK:
                     // tank AI
                     if (Player != null && Player.Exists &&
-                        unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, ENEMY_CHASE_RANGE))
+                        faction == UnitFaction.ENEMY && Player.inRange(unit, ENEMY_CHASE_RANGE))
                     {
                         unit.Target = Player.Position;
                     }
                     else if (rand.NextDouble() < 0.05)
                     {
                         // Random walk
+                        random_walk = true;
                         unit.Target = unit.Position + new Vector2(rand.Next(600)-300, rand.Next(600)-300);
                     }
 
-                    if (unit.Faction == UnitFaction.ALLY)
+                    if (faction == UnitFaction.ALLY)
                     {
-                        if (level.Map.rayCastHasObstacle(Player.Position, Player.Front, Map.TILE_SIZE / 3))
+                        if (playerFrontBlocked)
                         {
                             unit.Target = Player.Position;
                         }
@@ -302,15 +319,16 @@ namespace Pathogenesis
                             unit.Target = Player.Front;
                         }
                     }
-                    foreach (GameUnit other in Units)
+
+                    // Chase the closest enemy in range
+                    GameUnit closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    if (closest != null)
                     {
-                        if (other != unit && other.Faction != unit.Faction && other.inRange(unit, ATTACK_LOCK_RANGE))
-                        {
-                            unit.Target = other.Position;
-                            break;
-                        }
+                        unit.Target = closest.Position;
+                        unit.Attacking = closest;
                     }
-                    if(unit.Faction == UnitFaction.ALLY && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
+
+                    if(faction == UnitFaction.ALLY && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
                     {
                         unit.Target = Player.Position;
                     }
@@ -338,13 +356,20 @@ namespace Pathogenesis
                     Vector2 moveToPlayerTile = findMoveToPlayer(unit, level.Map);
                     unit.NextMove = new Vector2(moveToPlayerTile.X * Map.TILE_SIZE,
                         moveToPlayerTile.Y * Map.TILE_SIZE);
-                }
-                 * */
+                }*/
 
                 // Pathfind to target if necessary
-                if (level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size/2))
+                if (rand.NextDouble() < 0.1)
                 {
-                    findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
+                    if (!random_walk &&
+                        level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size / 2))
+                    {
+                        findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
+                    }
+                }
+                else
+                {
+                    unit.NextMove = prev_move;
                 }
             }
         }
@@ -423,7 +448,7 @@ namespace Pathogenesis
         /*
          * A* to target
          */
-        private void findTarget(GameUnit unit, Vector2 target, Map map, int limit)
+        private bool findTarget(GameUnit unit, Vector2 target, Map map, int limit)
         {
             List<Vector2> path = Pathfinder.findPath(map, unit.Position, unit.Target, limit, false);
             // Set the next move to the last node in the path with no obstacles in the way
@@ -435,13 +460,18 @@ namespace Pathogenesis
                     {
                         unit.NextMove = path[i];
                         unit.Lost = false;
-                        return;
+                        return true;
                     }
                 }
+                return true;
             }
-            else if (unit.Faction == UnitFaction.ALLY)
+            else
             {
-                unit.Lost = true;
+                if (unit.Faction == UnitFaction.ALLY)
+                {
+                    unit.Lost = true;
+                }
+                return false;
             }
         }
 
@@ -453,6 +483,70 @@ namespace Pathogenesis
             return playerLocationField[(int)unit.Position.Y / Map.TILE_SIZE, (int)unit.Position.X / Map.TILE_SIZE];
         }
 
+        /*
+         * Returns the closest unit of a different faction from the specified one
+         */
+        private GameUnit findClosestEnemyInRange(GameUnit unit, int range)
+        {
+            UnitFaction faction = unit.Faction;
+
+            int x_index = (int)MathHelper.Clamp((unit.Position.X / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(1) - 1);
+            int y_index = (int)MathHelper.Clamp((unit.Position.Y / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(0) - 1);
+
+            // Find the closeset unit according to the combatRangeGrid. Performance optimized.
+            GameUnit closest = null;
+            double closestDistance = Double.MaxValue;
+
+            List<Point> adjacent = getAdjacent(new Point(x_index, y_index));
+            foreach (Point loc in adjacent)
+            {
+                foreach (GameUnit other in combatRangeGrid[loc.Y, loc.X])
+                {
+                    //double distance_sq = unit.distance_sq(other);
+
+                    float xdiff = other.Position.X - unit.Position.X;
+                    float ydiff = other.Position.Y - unit.Position.Y;
+                    double distance_sq = xdiff * xdiff + ydiff * ydiff;
+
+                    if (unit != other && faction != other.Faction && (distance_sq < range*range) &&
+                        (closest == null || distance_sq < closestDistance))
+                    {
+                        closest = other;
+                        closestDistance = distance_sq;
+                    }
+                }
+            }
+            return closest;
+        }
+
+        // Returns all the adjacent positions from the specified one
+        private List<Point> getAdjacent(Point pos)
+        {
+            List<Point> adjacent = new List<Point>();
+            List<Point> dirs = new List<Point>();
+            dirs.Add(new Point(0, 0));
+            dirs.Add(new Point(0, 1));
+            dirs.Add(new Point(1, 0));
+            dirs.Add(new Point(0, -1));
+            dirs.Add(new Point(-1, 0));
+            dirs.Add(new Point(1, 1));
+            dirs.Add(new Point(1, -1));
+            dirs.Add(new Point(-1, 1));
+            dirs.Add(new Point(-1, -1));
+            foreach (Point dir in dirs)
+            {
+                Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
+                if (loc.Y > 0 && loc.X > 0 &&
+                    loc.Y < combatRangeGrid.GetLength(0) && loc.X < combatRangeGrid.GetLength(1) &&
+                        combatRangeGrid[loc.Y, loc.X] != null)
+                {
+                    adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));
+                }
+            }
+            return adjacent;
+        }
         #endregion
 
         #region Conversion
@@ -481,24 +575,55 @@ namespace Pathogenesis
         #endregion
 
         #region Combat
+        /*
+         * Construct the combat grid by placing units in cells where
+         * they are in range of other cells
+         */
+        private void ConstructCombatGrid(Level level)
+        {
+            combatRangeGrid = new List<GameUnit>[
+                level.Height / COMBAT_GRID_CELL_SIZE,
+                level.Width / COMBAT_GRID_CELL_SIZE];
+
+            foreach (GameUnit unit in Units)
+            {
+                int x_index = (int)MathHelper.Clamp((unit.Position.X / COMBAT_GRID_CELL_SIZE),
+                    0, combatRangeGrid.GetLength(1) - 1);
+                int y_index = (int)MathHelper.Clamp((unit.Position.Y / COMBAT_GRID_CELL_SIZE),
+                    0, combatRangeGrid.GetLength(0) - 1);
+
+                if (combatRangeGrid[y_index, x_index] == null)
+                {
+                    combatRangeGrid[y_index, x_index] = new List<GameUnit>();
+                }
+                combatRangeGrid[y_index, x_index].Add(unit);
+            }
+            int x_indexp = (int)MathHelper.Clamp((Player.Position.X / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(1) - 1);
+            int y_indexp = (int)MathHelper.Clamp((Player.Position.Y / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(0) - 1);
+
+            if (combatRangeGrid[y_indexp, x_indexp] == null)
+            {
+                combatRangeGrid[y_indexp, x_indexp] = new List<GameUnit>();
+            }
+            combatRangeGrid[y_indexp, x_indexp].Add(Player);
+        }
+
+        /*
+         * Process combat between two units
+         */
         private void ProcessCombat(GameUnit unit)
         {
             if (unit.AttackCoolDown > 0) return;
-
-            // Attack other units
-            //TODO make this more efficient by only checking nearby units
-            GameUnit closest = null;
-            foreach (GameUnit other in Units)
+            if (unit.Attacking != null && unit.inRange(unit.Attacking, unit.AttackRange))
             {
-                // Change to use hitboxes so we don't have to use other.Size/2
-                if (other != unit && other.Faction != unit.Faction && unit.inRange(other, unit.AttackRange+other.Size/2) &&
-                    (closest == null || unit.distance(other) < unit.distance(closest)))
-                {
-                    closest = other;
-                }
+                Attack(unit, unit.Attacking);
+                unit.Attacking = null;
             }
 
             // Attack other unit. If no other, attack player
+            /*
             if(closest != null) {
                 Attack(unit, closest);
             }
@@ -506,7 +631,7 @@ namespace Pathogenesis
                 unit.Faction == UnitFaction.ENEMY && unit.inRange(Player, unit.AttackRange+Player.Size/2))
             {
                 Attack(unit, Player);
-            }
+            }*/
         }
 
         private void Attack(GameUnit aggressor, GameUnit victim)

@@ -160,8 +160,10 @@ namespace Pathogenesis.Models
 
         public bool canMoveToWorldPos(Vector2 position)
         {
-            Vector2 worldPos = translateWorldToMap(position);
-            return canMoveTo((int)worldPos.X, (int)worldPos.Y);
+            float x = position.X / TILE_SIZE;
+            float y = position.Y / TILE_SIZE;
+            return x >= 0 && y >= 0 && x < tiles.GetLength(1) && y < tiles.GetLength(0) &&
+                tiles[(int)y, (int)x] != 1;
         }
 
         /*
