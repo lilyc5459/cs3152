@@ -231,7 +231,7 @@ namespace Pathogenesis
             foreach (Point dir in dirs)
             {
                 Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
-                if (loc.Y > 0 && loc.X > 0 && loc.Y < cellGrid.GetLength(0) && loc.X < cellGrid.GetLength(1) &&
+                if (loc.Y >= 0 && loc.X >= 0 && loc.Y < cellGrid.GetLength(0) && loc.X < cellGrid.GetLength(1) &&
                         cellGrid[loc.Y, loc.X] != null)
                 {
                     adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));

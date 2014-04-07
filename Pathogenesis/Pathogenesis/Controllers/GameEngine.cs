@@ -145,7 +145,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 200)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 50)
                     {
                         int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
@@ -166,7 +166,7 @@ namespace Pathogenesis
                     if (input_controller.Spawn_Ally)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY, 1,
-                            unit_controller.Player.Position, false));
+                            unit_controller.Player.Position + new Vector2(1, 1), false));
                     }
                     if (input_controller.Spawn_Plasmid)
                     {

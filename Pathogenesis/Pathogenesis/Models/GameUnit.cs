@@ -55,8 +55,8 @@ namespace Pathogenesis
         public const int BASE_INFECTION_VITALITY = 100;
         
 
-        public const int BASE_ATTACK = 5;
-        public const int MAX_ATTACK = 5;
+        public const int BASE_ATTACK = 10;
+        public const int MAX_ATTACK = 10;
 
         public const int BASE_DEFENSE = 0;
         public const int MAX_DEFENSE = 0;
@@ -151,10 +151,15 @@ namespace Pathogenesis
                 Accel = 1.1f;
                 Decel = 0.5f;
             }
-            Attack = 10 * (Level-1) * BASE_ATTACK + BASE_ATTACK;
-            AttackRange = Size/2 + 35;
-            Defense = 5 * (Level - 1);
-            Mass = 0.5f;
+            Attack = 5 * (Level-1) * BASE_ATTACK + BASE_ATTACK;
+            AttackRange = 15;
+            //Defense = 5 * (Level - 1);
+            Mass = 0.1f;
+
+            if (Level == 2)
+            {
+                Mass = 5f;
+            }
         }
         #endregion
 
@@ -174,8 +179,9 @@ namespace Pathogenesis
             if (Exists)
             {
                 Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
+
                 canvas.DrawSprite(texture,
-                    Immune? Color.Gold : new Color(250, InfectionVitality+150, InfectionVitality+150, 250),
+                    Immune? Color.Gold : new Color(250, (int)Health+150, (int)Health+150, 250),
                     new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
                     new Rectangle(0, 0, texture.Width, texture.Height));
                 canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));

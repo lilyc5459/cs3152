@@ -510,7 +510,8 @@ namespace Pathogenesis
                     float ydiff = other.Position.Y - unit.Position.Y;
                     double distance_sq = xdiff * xdiff + ydiff * ydiff;
 
-                    if (unit != other && faction != other.Faction && (distance_sq < range*range) &&
+                    if (unit != other && faction != other.Faction &&
+                        distance_sq < (range + unit.Size/2 + other.Size/2)*(range + unit.Size/2 + other.Size/2) &&
                         (closest == null || distance_sq < closestDistance))
                     {
                         closest = other;
@@ -538,7 +539,7 @@ namespace Pathogenesis
             foreach (Point dir in dirs)
             {
                 Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
-                if (loc.Y > 0 && loc.X > 0 &&
+                if (loc.Y >= 0 && loc.X >= 0 &&
                     loc.Y < combatRangeGrid.GetLength(0) && loc.X < combatRangeGrid.GetLength(1) &&
                         combatRangeGrid[loc.Y, loc.X] != null)
                 {
@@ -598,16 +599,20 @@ namespace Pathogenesis
                 }
                 combatRangeGrid[y_index, x_index].Add(unit);
             }
-            int x_indexp = (int)MathHelper.Clamp((Player.Position.X / COMBAT_GRID_CELL_SIZE),
-                0, combatRangeGrid.GetLength(1) - 1);
-            int y_indexp = (int)MathHelper.Clamp((Player.Position.Y / COMBAT_GRID_CELL_SIZE),
-                0, combatRangeGrid.GetLength(0) - 1);
 
-            if (combatRangeGrid[y_indexp, x_indexp] == null)
+            if (Player.Exists)
             {
-                combatRangeGrid[y_indexp, x_indexp] = new List<GameUnit>();
+                int x_indexp = (int)MathHelper.Clamp((Player.Position.X / COMBAT_GRID_CELL_SIZE),
+                    0, combatRangeGrid.GetLength(1) - 1);
+                int y_indexp = (int)MathHelper.Clamp((Player.Position.Y / COMBAT_GRID_CELL_SIZE),
+                    0, combatRangeGrid.GetLength(0) - 1);
+
+                if (combatRangeGrid[y_indexp, x_indexp] == null)
+                {
+                    combatRangeGrid[y_indexp, x_indexp] = new List<GameUnit>();
+                }
+                combatRangeGrid[y_indexp, x_indexp].Add(Player);
             }
-            combatRangeGrid[y_indexp, x_indexp].Add(Player);
         }
 
         /*
@@ -616,7 +621,8 @@ namespace Pathogenesis
         private void ProcessCombat(GameUnit unit)
         {
             if (unit.AttackCoolDown > 0) return;
-            if (unit.Attacking != null && unit.inRange(unit.Attacking, unit.AttackRange))
+            if (unit.Attacking != null &&
+                unit.inRange(unit.Attacking, unit.AttackRange + unit.Size/2 + unit.Attacking.Size/2))
             {
                 Attack(unit, unit.Attacking);
                 unit.Attacking = null;

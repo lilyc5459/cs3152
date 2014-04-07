@@ -40,9 +40,10 @@ namespace Pathogenesis.Models
                     //Attack indicator
                     if (unit.AttackCoolDown != 0)
                     {
+                        int range = unit.AttackRange + unit.Size / 2;
                         canvas.DrawSprite(InfectTexture,
                             new Color(70, 20, 20, (int)(unit.AttackCoolDown * 2.5)),
-                            new Rectangle((int)unit.Position.X - unit.AttackRange, (int)unit.Position.Y - unit.AttackRange, unit.AttackRange*2, unit.AttackRange*2),
+                            new Rectangle((int)unit.Position.X - range, (int)unit.Position.Y - range, range*2, range*2),
                             new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                         /*
                         canvas.DrawSprite(InfectTexture,
