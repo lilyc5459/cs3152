@@ -74,7 +74,8 @@ namespace Pathogenesis.Models
 
         public void setTiles(int[][] tiles)
         {
-            this.tiles = tiles;
+            //this.tiles = tiles;
+            /*
             for (int i = 0; i < tiles.Length; i++)
             {
                 for (int j = 0; j < tiles[0].Length; j++)
@@ -139,9 +140,8 @@ namespace Pathogenesis.Models
 
                 }
             }
+            */
         }
-
-
 
         #region Map Methods
         public int getTileAt(int x, int y)

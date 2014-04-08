@@ -202,14 +202,16 @@ namespace Pathogenesis
                 List<GameUnit> goals = new List<GameUnit>();
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1900, 1200), false));
+                /*
                 Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
                 level.PlayerStart = new Vector2(2, 2);
+                 */
                 //return level;
 
                 //load from memory
                 Level loadedLevel = null;
 
-                using (FileStream stream = new FileStream("dmap.xml", FileMode.Open))
+                using (FileStream stream = new FileStream("level.xml", FileMode.Open))
                 {
                     using (XmlReader reader = XmlReader.Create(stream))
                     {
@@ -224,6 +226,7 @@ namespace Pathogenesis
                 loadedLevel.NumBosses = goals.Count;
                 loadedLevel.BossesDefeated = 0;
                 loadedLevel.PlayerStart = new Vector2(2, 2);
+
                 return loadedLevel;
             }
 
