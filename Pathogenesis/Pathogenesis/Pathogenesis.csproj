@@ -149,6 +149,12 @@
     <Compile Include="Controllers\GameEngine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\sound_paths.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\texture_paths.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
   </ItemGroup>

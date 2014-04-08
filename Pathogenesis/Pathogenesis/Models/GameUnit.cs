@@ -39,6 +39,15 @@ namespace Pathogenesis
         ENEMY      // Fights against player
     };
 
+    // Facing Direction
+    public enum Direction
+    {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
+
 #endregion
 
     /// <summary>
@@ -75,6 +84,7 @@ namespace Pathogenesis
         public bool Immune { get; set; }
 
         // Unit movement data
+        public Direction Facing { get; set; }
         public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
         public Vector2 NextMove { get; set; }
@@ -208,10 +218,21 @@ namespace Pathogenesis
         {
             // test
             Texture2D texture = null;
-            if(Vel.X > 0.5) texture = Texture_R;
-            else texture = Texture_L;
-            if (Vel.Y > Speed/2) texture = Texture_D;
-            else if(Vel.Y < -Speed/2) texture = Texture_U;
+            switch (Facing)
+            {
+                case Direction.RIGHT:
+                    texture = Texture_R;
+                    break;
+                case Direction.LEFT:
+                    texture = Texture_L;
+                    break;
+                case Direction.UP:
+                    texture = Texture_U;
+                    break;
+                case Direction.DOWN:
+                    texture = Texture_D;
+                    break;
+            }
 
             Color color = Color.White;
             if (Immune)
@@ -228,7 +249,8 @@ namespace Pathogenesis
             }
 
             canvas.DrawSprite(texture, color,
-                new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
+                new Rectangle((int)(Position.X - texture.Width/2), (int)(Position.Y - texture.Height/2),
+                    texture.Width, texture.Height),
                 new Rectangle(0, 0, texture.Width, texture.Height));
             canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Pathogenesis.Models;
 using Microsoft.Xna.Framework.Audio;
+using System.IO;
 
 namespace Pathogenesis
 {
@@ -89,10 +90,40 @@ namespace Pathogenesis
             // Loads all content from content directory
             public void LoadAllContent()
             {
+                try
+                {
+                    // Load Textures
+                    String line;
+                    StreamReader sr = new StreamReader("Config/texture_paths.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] {','});
+                        if(strings.Length < 2) continue;
+                        textures.Add(strings[0], content.Load<Texture2D>(strings[1].Trim()));
+                    }
+
+                    // Load Sounds
+                    sr = new StreamReader("Config/sound_paths.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] { ',' });
+                        if (strings.Length < 2) continue;
+                        sounds.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
+
+                /*
                 // Load textures into the textures map
                 textures.Add(SOLID, content.Load<Texture2D>(SOLID));
 
-                textures.Add(MAINPLAYER_r, content.Load<Texture2D>(MAINPLAYER_r));
+                //textures.Add(MAINPLAYER_r, );
                 textures.Add(MAINPLAYER_l, content.Load<Texture2D>(MAINPLAYER_l));
                 textures.Add(MAINPLAYER_u, content.Load<Texture2D>(MAINPLAYER_u));
                 textures.Add(MAINPLAYER_d, content.Load<Texture2D>(MAINPLAYER_d));
@@ -128,7 +159,7 @@ namespace Pathogenesis
 
                 // Loads sounds into the audio clip map
                 sounds.Add(MUSIC1, content.Load<SoundEffect>(MUSIC1));
-
+                */
                 // Load fonts
                 font = content.Load<SpriteFont>("Fonts/font");
             }
@@ -143,33 +174,56 @@ namespace Pathogenesis
             // Returns an instance of Player
             public Player createPlayer(Vector2 pos)
             {
-                Player p = new Player(textures[MAINPLAYER_l], textures[MAINPLAYER_r],
-                    textures[MAINPLAYER_u], textures[MAINPLAYER_d]);
+                Player p = new Player(textures["player_left"], textures["player_right"],
+                    textures["player_back"], textures["player_front"]);
                 p.Position = pos;
                 return p;
             }
 
             public HUD createHUD(Player player)
             {
-                return new HUD(textures[INFECT_RANGE], textures[HEALTH_BAR]);
+                return new HUD(textures["infect_range"], textures["health_bar"]);
             }
         
             // Returns an instance of a unit of the given type and faction
             public GameUnit createUnit(UnitType type, UnitFaction faction, int level, Vector2 pos, bool immune)
             {
-                GameUnit enemy;
+                GameUnit enemy = null;
                 switch (type)
                 {
                     case UnitType.TANK:
                         if (faction == UnitFaction.ALLY)
                         {
-                            enemy = new GameUnit(textures[ALLY_TANK_l], textures[ALLY_TANK_r],
-                                textures[ALLY_TANK_r], textures[ALLY_TANK_r], type, faction, level, immune);
+                            switch(level) {
+                                case 1: 
+                                    enemy = new GameUnit(textures["ally1_left"], textures["ally1_right"],
+                                        textures["ally1_back"], textures["ally1_front"], type, faction, level, immune);
+                                    break;
+                                case 2:
+                                    enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
+                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                    break;
+                                case 3:
+                                    enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
+                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                    break;
+                            }
                         }
                         else
                         {
-                            enemy = new GameUnit(textures[ENEMY_TANK_l], textures[ENEMY_TANK_r],
-                                textures[ENEMY_TANK_u], textures[ENEMY_TANK_d], type, faction, level, immune);
+                            switch (level)
+                            {
+                                case 1:
+                                    enemy = new GameUnit(textures["enemy1_left"], textures["enemy1_right"],
+                                        textures["enemy1_back"], textures["enemy1_front"], type, faction, level, immune);
+                                    break;
+                                case 2:
+                                    enemy = new GameUnit(textures["enemy2_left"], textures["enemy2_right"],
+                                        textures["enemy2_back"], textures["enemy2_front"], type, faction, level, immune);
+                                    break;
+                                case 3:
+                                    break;
+                            }
                         }
                         break;
                     case UnitType.RANGED:
@@ -185,18 +239,17 @@ namespace Pathogenesis
                                 textures[ENEMY_RANGED_r], textures[ENEMY_RANGED_r], type, faction, level, immune);
                         }
                          * */
-                        enemy = null;
                         break;
                     case UnitType.FLYING:
                         if (faction == UnitFaction.ALLY)
                         {
-                            enemy = new GameUnit(textures[ALLY_FLYING_l], textures[ALLY_FLYING_r],
-                                textures[ALLY_FLYING_u], textures[ALLY_FLYING_d], type, faction, level, immune);
+                            enemy = new GameUnit(textures["ally3_left"], textures["ally3_right"],
+                                textures["ally3_back"], textures["ally3_front"], type, faction, level, immune);
                         }
                         else
                         {
-                            enemy = new GameUnit(textures[ENEMY_FLYING_l], textures[ENEMY_FLYING_r],
-                                textures[ENEMY_FLYING_u], textures[ENEMY_FLYING_d], type, faction, level, immune);
+                            enemy = new GameUnit(textures["enemy3_left"], textures["enemy3_right"],
+                                textures["enemy3_back"], textures["enemy3_front"], type, faction, level, immune);
                         }
                         break;
                     case UnitType.BOSS:
@@ -238,7 +291,7 @@ namespace Pathogenesis
 
             public Menu createMenu(MenuType type)
             {
-                return new Menu(type, textures[SOLID]);
+                return new Menu(type, textures["solid"]);
             }
 
             public Dictionary<String, SoundEffect> getSounds()

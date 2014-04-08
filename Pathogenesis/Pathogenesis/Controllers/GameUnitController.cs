@@ -466,6 +466,20 @@ namespace Pathogenesis
             else if (Math.Abs(vel.Y) < unit.Decel * 3 / 4) vel.Y = 0;
             unit.Vel = vel;
             unit.Position += unit.Vel;
+
+            if (unit.Faction == UnitFaction.ALLY && unit != Player && Player != null)
+            {
+                unit.Facing = Player.Facing;
+            }
+            else
+            {
+                Direction dir = Direction.DOWN;
+                if (vel_mod.X < -0.1) dir = Direction.LEFT;
+                else if (vel_mod.X > 0.1) dir = Direction.RIGHT;
+                if (vel_mod.Y < -0.1) dir = Direction.UP;
+                else if (vel_mod.Y > 0.1) dir = Direction.DOWN;
+                unit.Facing = dir;
+            }
         }
 
         /*
