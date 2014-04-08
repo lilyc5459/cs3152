@@ -117,6 +117,8 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
+        public GameUnit() { }
+
         public GameUnit(Texture2D texture, UnitType type, UnitFaction faction, int level, bool immune)
         {
             Texture_L = texture;

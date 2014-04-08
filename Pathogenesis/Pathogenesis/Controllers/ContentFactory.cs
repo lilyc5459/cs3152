@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Pathogenesis.Models;
 using Microsoft.Xna.Framework.Audio;
 using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Pathogenesis
 {
@@ -196,12 +198,33 @@ namespace Pathogenesis
                 //return levels[num];
 
                 // TODO Should all be loaded from file
+                
                 List<GameUnit> goals = new List<GameUnit>();
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1900, 1200), false));
                 Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
                 level.PlayerStart = new Vector2(2, 2);
-                return level;
+                //return level;
+
+                //load from memory
+                Level loadedLevel = null;
+
+                using (FileStream stream = new FileStream("dmap.xml", FileMode.Open))
+                {
+                    using (XmlReader reader = XmlReader.Create(stream))
+                    {
+                        XmlSerializer x = new XmlSerializer(typeof(Level));
+                        loadedLevel = (Level)x.Deserialize(reader);
+                    }
+                }
+
+                loadedLevel.BackgroundTexture = textures["background"];
+                loadedLevel.Map.WallTexture = textures["wall"];
+                loadedLevel.Bosses = goals;
+                loadedLevel.NumBosses = goals.Count;
+                loadedLevel.BossesDefeated = 0;
+                loadedLevel.PlayerStart = new Vector2(2, 2);
+                return loadedLevel;
             }
 
             public Menu createMenu(MenuType type)

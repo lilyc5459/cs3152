@@ -24,6 +24,8 @@ namespace Pathogenesis.Models
         public int NumBosses { get; set; }              // The number of bosses in this level
         public int BossesDefeated { get; set; }         // The number of bosses that the player has defeated
 
+        public Level() { }
+
         public Level(int width, int height, Texture2D bg_texture, Texture2D wall_texture, List<GameUnit> bosses)
         {
             Width = width;
