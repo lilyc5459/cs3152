@@ -48,6 +48,14 @@ div.empty{
 	background-color: blue;
 }
 
+div.goalBoss{
+	background-color: yellow;
+}
+
+div.eSpwaner{
+	background-color: green;
+}
+
 div.tile:hover {
     opacity: 0.6;
 }
