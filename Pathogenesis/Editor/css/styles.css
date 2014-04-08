@@ -1,0 +1,70 @@
+h1{
+	text-decoration: underline
+}
+
+div#page{
+	width: auto;
+	height: auto;
+}
+
+div#sidebar{
+	padding: 5px;
+	float: left;
+	width: 240px;
+	height: auto;
+	border: solid black;
+}
+
+div#wall_sel{
+	width: 50px;
+	height: 50px;	
+}
+
+div#container{
+	float: left;
+	width: 510px;
+	height: 102px;
+	background-color: green;
+	line-height: 0;
+	border: solid black;
+	border-width: 0 1px 1px 0;
+}
+
+div.tile{
+	float: left;
+	width: 50px;
+	height: 50px;
+	display:inline-block;
+	border: solid black;
+	border-width: 1px 0 0 1px;
+}
+
+div#new{
+	margin-top: 10px;
+	margin-left: center;
+}
+
+div.empty{
+	background-color: blue;
+}
+
+div.tile:hover {
+    opacity: 0.6;
+}
+
+.test{
+	background-color: black;
+}
+
+div.entity{
+	width: 50px;
+	height: 50px;
+	border: grey solid;
+}
+
+div.wall{
+	background-image:url("../img/wall_square.png");
+	background-size: contain;
+}
+
+div#butCont{}
