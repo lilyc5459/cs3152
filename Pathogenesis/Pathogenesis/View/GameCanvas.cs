@@ -89,7 +89,7 @@ namespace Pathogenesis
         #region Constants
         // Default window size.  This belongs in the view, not the game engine.
         private const int GAME_WIDTH = 1024;
-        private const int GAME_HEIGHT = 800;
+        private const int GAME_HEIGHT = 768;
         #endregion
 
         #region Fields

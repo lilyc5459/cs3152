@@ -36,32 +36,32 @@ namespace Pathogenesis
 
             private const string SOLID = ENVIRONMENT_DIR + "solid";
 
-            private const string MAINPLAYER_r = CHARACTERS_DIR + "mainplayer_r";
-            private const string MAINPLAYER_l = CHARACTERS_DIR + "mainplayer_l";
-            private const string MAINPLAYER_u = CHARACTERS_DIR + "mainplayer_u";
-            private const string MAINPLAYER_d = CHARACTERS_DIR + "mainplayer_d";
+            private const string MAINPLAYER_r = CHARACTERS_DIR + "main-right";
+            private const string MAINPLAYER_l = CHARACTERS_DIR + "main-left";
+            private const string MAINPLAYER_u = CHARACTERS_DIR + "main-back";
+            private const string MAINPLAYER_d = CHARACTERS_DIR + "main-front";
             private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
             private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
 
-            private const string ENEMY_TANK_r = CHARACTERS_DIR + "enemy_right";
-            private const string ENEMY_TANK_l = CHARACTERS_DIR + "enemy_left";
-            private const string ENEMY_TANK_u = CHARACTERS_DIR + "enemy_up";
-            private const string ENEMY_TANK_d = CHARACTERS_DIR + "enemy_down";
+            private const string ENEMY_TANK_r = CHARACTERS_DIR + "enemy1-right";
+            private const string ENEMY_TANK_l = CHARACTERS_DIR + "enemy1-left";
+            private const string ENEMY_TANK_u = CHARACTERS_DIR + "enemy1-back";
+            private const string ENEMY_TANK_d = CHARACTERS_DIR + "enemy1-front";
             private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
-            private const string ENEMY_FLYING_r = CHARACTERS_DIR + "enemy_flying_right";
-            private const string ENEMY_FLYING_l = CHARACTERS_DIR + "enemy_flying_left";
-            private const string ENEMY_FLYING_u = CHARACTERS_DIR + "enemy_flying_up";
-            private const string ENEMY_FLYING_d = CHARACTERS_DIR + "enemy_flying_down";
+            private const string ENEMY_FLYING_r = CHARACTERS_DIR + "enemy2-right";
+            private const string ENEMY_FLYING_l = CHARACTERS_DIR + "enemy2-left";
+            private const string ENEMY_FLYING_u = CHARACTERS_DIR + "enemy2-back";
+            private const string ENEMY_FLYING_d = CHARACTERS_DIR + "enemy2-front";
 
-            private const string ALLY_TANK_r = CHARACTERS_DIR + "ally_right";
-            private const string ALLY_TANK_l = CHARACTERS_DIR + "ally_left";
-            private const string ALLY_TANK_u = CHARACTERS_DIR + "ally_up";
-            private const string ALLY_TANK_d = CHARACTERS_DIR + "ally_down";
+            private const string ALLY_TANK_r = CHARACTERS_DIR + "ally1-right";
+            private const string ALLY_TANK_l = CHARACTERS_DIR + "ally1-left";
+            private const string ALLY_TANK_u = CHARACTERS_DIR + "ally1-back";
+            private const string ALLY_TANK_d = CHARACTERS_DIR + "ally1-front";
             private const string ALLY_RANGED = CHARACTERS_DIR + "ally_ranged";
-            private const string ALLY_FLYING_r = CHARACTERS_DIR + "ally_flying_right";
-            private const string ALLY_FLYING_l = CHARACTERS_DIR + "ally_flying_left";
-            private const string ALLY_FLYING_u = CHARACTERS_DIR + "ally_flying_up";
-            private const string ALLY_FLYING_d = CHARACTERS_DIR + "ally_flying_down";
+            private const string ALLY_FLYING_r = CHARACTERS_DIR + "ally2-right";
+            private const string ALLY_FLYING_l = CHARACTERS_DIR + "ally2-left";
+            private const string ALLY_FLYING_u = CHARACTERS_DIR + "ally2-back";
+            private const string ALLY_FLYING_d = CHARACTERS_DIR + "ally2-front";
 
             private const string PLASMID = CHARACTERS_DIR + "plasmid";
 
@@ -143,7 +143,7 @@ namespace Pathogenesis
             // Returns an instance of Player
             public Player createPlayer(Vector2 pos)
             {
-                Player p = new Player(textures[MAINPLAYER_r], textures[MAINPLAYER_l],
+                Player p = new Player(textures[MAINPLAYER_l], textures[MAINPLAYER_r],
                     textures[MAINPLAYER_u], textures[MAINPLAYER_d]);
                 p.Position = pos;
                 return p;
@@ -169,7 +169,7 @@ namespace Pathogenesis
                         else
                         {
                             enemy = new GameUnit(textures[ENEMY_TANK_l], textures[ENEMY_TANK_r],
-                                textures[ENEMY_TANK_r], textures[ENEMY_TANK_r], type, faction, level, immune);
+                                textures[ENEMY_TANK_u], textures[ENEMY_TANK_d], type, faction, level, immune);
                         }
                         break;
                     case UnitType.RANGED:
@@ -191,12 +191,12 @@ namespace Pathogenesis
                         if (faction == UnitFaction.ALLY)
                         {
                             enemy = new GameUnit(textures[ALLY_FLYING_l], textures[ALLY_FLYING_r],
-                                textures[ALLY_FLYING_r], textures[ALLY_FLYING_r], type, faction, level, immune);
+                                textures[ALLY_FLYING_u], textures[ALLY_FLYING_d], type, faction, level, immune);
                         }
                         else
                         {
                             enemy = new GameUnit(textures[ENEMY_FLYING_l], textures[ENEMY_FLYING_r],
-                                textures[ENEMY_FLYING_r], textures[ENEMY_FLYING_r], type, faction, level, immune);
+                                textures[ENEMY_FLYING_u], textures[ENEMY_FLYING_d], type, faction, level, immune);
                         }
                         break;
                     case UnitType.BOSS:

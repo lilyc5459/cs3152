@@ -11,8 +11,8 @@ namespace Pathogenesis
     public class LevelController
     {
         #region Fields
-        public Level CurLevel { get; set; }       // Stores Current Level Object
-        public int CurLevelNum { get; set; }            // Stores Current Level Number
+        public Level CurLevel { get; set; }     // Stores Current Level Object
+        public int CurLevelNum { get; set; }    // Stores Current Level Number
         #endregion
 
         public LevelController()

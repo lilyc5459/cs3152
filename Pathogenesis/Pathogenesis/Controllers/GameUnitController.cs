@@ -288,8 +288,7 @@ namespace Pathogenesis
         public void setNextMove(GameUnit unit, Level level, bool playerFrontBlocked)
         {
             if (unit.Position.X < 0 || unit.Position.Y < 0) return;
-
-            
+ 
             Vector2 prev_move = unit.NextMove;
 
             UnitFaction faction = unit.Faction;     // Unit faction, only called once
@@ -358,6 +357,8 @@ namespace Pathogenesis
                     break;
                 case UnitType.FLYING:
                     // flying AI
+                    //TEMPPP
+                    goto case UnitType.TANK;
                     break;
                 default:
                     // Player case, do nothing
