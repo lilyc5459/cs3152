@@ -18,7 +18,7 @@ namespace Pathogenesis
 
     public class Item : GameEntity
     {
-        public const int ITEM_SIZE = 20;
+        public const int ITEM_SIZE = 30;
 
         public Texture2D Texture { get; set; }
 

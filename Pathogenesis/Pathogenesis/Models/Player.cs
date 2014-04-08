@@ -51,13 +51,26 @@ namespace Pathogenesis
         {
             pickups = new List<Item>();
             InfectionPoints = GameUnitController.MAX_PLAYER_CONVERSION_POINTS;
-
+            Health = 150;
+            max_health = 150; //TEMP
             Alive = true;
         }
 
         // Adds items to player's pickup list
-        public void PickupItem(Item item) {
+        public bool PickupItem(Item item) {
+            switch (item.Type)
+            {
+                case ItemType.PLASMID:
+                    if (InfectionPoints == GameUnitController.MAX_PLAYER_CONVERSION_POINTS) return false;
+                    break;
+                case ItemType.HEALTH:
+                    if (Health == max_health) return false;
+                    break;
+                case ItemType.ATTACK:
+                    break;
+            }
             pickups.Add(item);
+            return true;
         }
     }
 }

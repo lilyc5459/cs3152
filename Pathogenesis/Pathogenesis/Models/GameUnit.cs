@@ -109,7 +109,7 @@ namespace Pathogenesis
 
         public int Attack { get; set; }
         public int Defense { get; set; }
-        public int Speed { get; set; }
+        public float Speed { get; set; }
         public int Range { get; set; }
         public int AttackSpeed { get; set; }
 
@@ -128,6 +128,11 @@ namespace Pathogenesis
             Faction = faction;
             Level = level;
             Immune = immune;
+
+            Target = new Vector2(-1, -1);
+            NextMove = new Vector2(-1, -1);
+
+            Initialize();
         }
 
         public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
@@ -161,7 +166,7 @@ namespace Pathogenesis
             max_health = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
             Health = max_health;
 
-            max_infection_vitality = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
+            max_infection_vitality = (int)Math.Pow(3, Level - 1) * BASE_INFECTION_VITALITY;
             if (Type == UnitType.BOSS)
             {
                 max_infection_vitality = (int)Math.Pow(2, Level + 1) * BASE_INFECTION_VITALITY;
@@ -195,6 +200,7 @@ namespace Pathogenesis
             if (Level == 2)
             {
                 Mass = 5f;
+                Speed *= 2.0f / 3;
             }
 
             if (Type == UnitType.BOSS)
@@ -234,14 +240,14 @@ namespace Pathogenesis
                     break;
             }
 
-            Color color = Color.White;
+            Color color = Color.Lerp(Color.Red, Color.White, (Health+10) / max_health);
             if (Immune)
             {
-                color = Color.Lerp(Color.Red, Color.Goldenrod, (Health+30) /max_health);
+                color = Color.Lerp(Color.Red, Color.Blue, (Health+10) /max_health);
             }
-            else
+            if (Faction == UnitFaction.ALLY)    //TEMP tell them to make color darker
             {
-                color = color = Color.Lerp(Color.Red, Color.White, (Health+30) / max_health); ;
+                color = Color.Lerp(Color.Red, Color.LightGray, (Health + 10) / max_health);
             }
             if (!Exists)
             {
@@ -252,7 +258,7 @@ namespace Pathogenesis
                 new Rectangle((int)(Position.X - texture.Width/2), (int)(Position.Y - texture.Height/2),
                     texture.Width, texture.Height),
                 new Rectangle(0, 0, texture.Width, texture.Height));
-            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }

@@ -45,8 +45,14 @@ namespace Pathogenesis
         // Calculates the euclidean distance between the entities
         public double distance(GameEntity other)
         {
-            if (other == null) return 0.0;
+            if (other == null) return -1;
             return (other.Position - Position).Length();
+        }
+
+        // Calculates the euclidean distance between this entity and a point
+        public double distance(Vector2 pos)
+        {
+            return (pos - Position).Length();
         }
 
         public double distance_sq(GameEntity other)

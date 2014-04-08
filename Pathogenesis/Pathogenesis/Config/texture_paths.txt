@@ -9,6 +9,7 @@ wall, Environment/wall_square
 background, Backgrounds/background_long2
 
 //Characters
+boss1, Characters/infectpoint
 player_left, Characters/main-left
 player_right, Characters/main-right
 player_front, Characters/main-front
@@ -35,5 +36,5 @@ ally2_front, Characters/ally2_front
 ally2_back, Characters/ally2_back
 ally3_left, Characters/ally3_left
 ally3_right, Characters/ally3_right
-//ally3_front, Characters/ally3_front
+ally3_front, Characters/ally3_front
 ally3_back, Characters/ally3_back

@@ -366,7 +366,7 @@ namespace Pathogenesis
             }
 
             unit.NextMove = unit.Target;
-            if (unit.HasTarget())
+            if (unit.HasTarget() && unit.Type != UnitType.FLYING)
             {
                 /*
                 // If the target is the player, use the player location map
@@ -409,7 +409,9 @@ namespace Pathogenesis
                 Vector2 vel_mod = unit.NextMove - unit.Position;
 
                 // If the unit is close enough to target don't move
-                if (unit.NextMove == unit.Target && vel_mod.Length() < TARGET_STOP_DIST)
+                if (unit.NextMove == unit.Target &&  vel_mod.Length() < TARGET_STOP_DIST ||
+                    unit.Attacking != null && unit.Target == unit.Attacking.Position && // TEMP
+                    unit.inRange(unit.Attacking, unit.AttackRange + unit.Size / 2 + unit.Attacking.Size / 2))
                 {
                     vel_mod = Vector2.Zero;
                 }
