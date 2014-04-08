@@ -460,6 +460,14 @@ namespace Pathogenesis
             state = DrawState.Inactive;
         }
 
+        /*
+         * Sets the background color to the specified one
+         */
+        public void SetBackground(Color color)
+        {
+            graphics.GraphicsDevice.Clear(color);
+        }
+
         #region Sprite Pass
 
         /// <summary>

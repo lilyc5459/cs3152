@@ -13,6 +13,7 @@ namespace Pathogenesis
         private const int ALLY_FRONT_DISTANCE = 100;
 
         #region Fields and Properties
+        public bool Alive;
 
         // The position of the player's front in the direction they are going
         public Vector2 Front
@@ -45,11 +46,13 @@ namespace Pathogenesis
         }
         #endregion
 
-        public Player(Texture2D texture_l, Texture2D texture_r)
-            : base(texture_l, texture_r, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
+        public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d)
+            : base(texture_l, texture_r, texture_u, texture_d, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
             pickups = new List<Item>();
             InfectionPoints = GameUnitController.MAX_PLAYER_CONVERSION_POINTS;
+
+            Alive = true;
         }
 
         // Adds items to player's pickup list

@@ -30,7 +30,7 @@ namespace Pathogenesis
         public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
         public const int MOVE_STOP_DIST = 5;
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_LOCK_RANGE = 70;    // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_LOCK_RANGE = 50;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
         public const float INFECTION_RECOVER_SPEED = 0.5f;
@@ -68,7 +68,6 @@ namespace Pathogenesis
             lostUnits = new List<GameUnit>();
 
             rand = new Random();
-            Player = factory.createPlayer(new Vector2(0, 0));
         }
 
         public void Reset()
@@ -97,6 +96,10 @@ namespace Pathogenesis
             foreach (GameUnit boss in level.Bosses)
             {
                 Units.Add(boss);
+            }
+            if (Player == null)
+            {
+                Player = factory.createPlayer(new Vector2(0, 0));
             }
             Player.Position = level.PlayerStart * Map.TILE_SIZE;
             Player.Health = Player.max_health;

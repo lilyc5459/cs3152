@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Pathogenesis.Models;
 using Microsoft.Xna.Framework;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -16,7 +17,7 @@ namespace Pathogenesis
 
         public LevelController()
         {
-            CurLevelNum = 0;
+            CurLevelNum = -1;
         }
 
         /*
@@ -35,30 +36,49 @@ namespace Pathogenesis
          * Loads the next level
          */
         public void NextLevel(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller){
-            LoadLevel(factory, unit_controller, item_controller, CurLevelNum);
+            ItemController item_controller, SoundController sound_controller){
             CurLevelNum++;
+            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
         }
 
         /*
          * Reloads the current level
          */
         public void ResetLevel(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller)
+            ItemController item_controller, SoundController sound_controller)
         {
-            LoadLevel(factory, unit_controller, item_controller, CurLevelNum);
+            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
+        }
+
+        /*
+         * Reloads the current level
+         */
+        public void Restart(ContentFactory factory, GameUnitController unit_controller,
+            ItemController item_controller, SoundController sound_controller)
+        {
+            CurLevelNum = 0;
+            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
         }
 
         /*
          * Loads the specified level
          */
         public void LoadLevel(ContentFactory factory, GameUnitController unit_controller, 
-            ItemController item_controller, int level_num)
+            ItemController item_controller, SoundController sound_controller, int level_num)
         {
             CurLevel = factory.loadLevel(level_num);
             item_controller.Reset();
             unit_controller.Reset();
             unit_controller.SetLevel(CurLevel);
+            
+            switch (level_num)
+            {
+                case 0:
+                    sound_controller.play("music1");
+                    break;
+                default:
+                    break;
+            }
         }
         #endregion
 

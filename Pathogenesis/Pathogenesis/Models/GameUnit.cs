@@ -68,6 +68,8 @@ namespace Pathogenesis
         // Textures
         public Texture2D Texture_L { get; set; }
         public Texture2D Texture_R { get; set; }
+        public Texture2D Texture_U { get; set; }
+        public Texture2D Texture_D { get; set; }
 
         public bool Lost { get; set; }
         public bool Immune { get; set; }
@@ -105,11 +107,26 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
-        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type,
-            UnitFaction faction, int level, bool immune)
+        public GameUnit(Texture2D texture, UnitType type, UnitFaction faction, int level, bool immune)
+        {
+            Texture_L = texture;
+            Texture_R = texture;
+            Texture_D = texture;
+            Texture_U = texture;
+
+            Type = type;
+            Faction = faction;
+            Level = level;
+            Immune = immune;
+        }
+
+        public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
+            UnitType type, UnitFaction faction, int level, bool immune)
         {
             Texture_L = texture_l;
             Texture_R = texture_r;
+            Texture_U = texture_u;
+            Texture_D = texture_d;
 
             Type = type;
             Faction = faction;
@@ -119,10 +136,13 @@ namespace Pathogenesis
             Target = new Vector2(-1, -1);
             NextMove = new Vector2(-1, -1);
 
-            InitStats();
+            Initialize();
         }
 
-        private void InitStats()
+        /*
+         * Initializes all stats
+         */
+        private void Initialize()
         {
             // TODO load stats from a config file
             // Test
@@ -187,16 +207,20 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             // test
-            Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
+            Texture2D texture = null;
+            if(Vel.X > 0.5) texture = Texture_R;
+            else texture = Texture_L;
+            if (Vel.Y > Speed/2) texture = Texture_D;
+            else if(Vel.Y < -Speed/2) texture = Texture_U;
 
             Color color = Color.White;
             if (Immune)
             {
-                color = new Color(50, (int)Health + 150, (int)Health + 150, 250);
+                color = Color.Lerp(Color.Red, Color.Goldenrod, (Health+30) /max_health);
             }
             else
             {
-                color = new Color(250, (int)Health + 150, (int)Health + 150, 250);
+                color = color = Color.Lerp(Color.Red, Color.White, (Health+30) / max_health); ;
             }
             if (!Exists)
             {

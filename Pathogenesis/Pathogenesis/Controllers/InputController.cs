@@ -161,6 +161,7 @@ namespace Pathogenesis
                 keyStates.Add(RALLY, KeyState.UP);
                 keyStates.Add(PAUSE, KeyState.UP);
                 keyStates.Add(TOGGLE_HUD, KeyState.UP);
+                keyStates.Add(ENTER, KeyState.UP);
                 keyStates.Add(RESTART, KeyState.UP);
                 keyStates.Add(SPAWN_ENEMY, KeyState.UP);
                 keyStates.Add(SPAWN_ALLY, KeyState.UP);
@@ -180,9 +181,6 @@ namespace Pathogenesis
                     {
                         if (keyStates[k] == KeyState.UP) keyStates[k] = KeyState.DOWN;
                         else keyStates[k] = KeyState.HELD;
-
-                        //if(
-
                     }
                     else
                     {

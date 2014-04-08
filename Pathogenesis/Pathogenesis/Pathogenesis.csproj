@@ -123,10 +123,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CollisionController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\SoundController.cs" />
     <Compile Include="Models\HUD.cs" />
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\Map.cs" />
     <Compile Include="Models\Menu.cs" />
+    <Compile Include="Models\Sound.cs" />
     <Compile Include="Pathfinding\BinaryHeap.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\PathNode.cs" />
