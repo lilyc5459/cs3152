@@ -48,6 +48,10 @@ div.empty{
 	background-color: blue;
 }
 
+div.pStart{
+	background-color: coral;
+}
+
 div.goalBoss{
 	background-color: yellow;
 }
