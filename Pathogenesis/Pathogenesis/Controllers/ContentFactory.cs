@@ -201,7 +201,7 @@ namespace Pathogenesis
                 
                 List<GameUnit> goals = new List<GameUnit>();
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
-                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1900, 1200), false));
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
                 /*
                 Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
                 level.PlayerStart = new Vector2(2, 2);
@@ -225,7 +225,7 @@ namespace Pathogenesis
                 loadedLevel.Bosses = goals;
                 loadedLevel.NumBosses = goals.Count;
                 loadedLevel.BossesDefeated = 0;
-                loadedLevel.PlayerStart = new Vector2(2, 2);
+                loadedLevel.PlayerStart = new Vector2(3, 3);
 
                 return loadedLevel;
             }

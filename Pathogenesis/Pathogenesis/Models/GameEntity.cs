@@ -11,6 +11,7 @@ namespace Pathogenesis
     public class GameEntity
     {
         #region Properties
+        public static int CurEntityID = 0;
         public int ID { get; set; }
 
         // Positioning
@@ -24,7 +25,6 @@ namespace Pathogenesis
         }
         public Vector2 Screen_pos { get; set; }
 
-
         public bool Exists { get; set; }    // Indicates if the entity exists in the game
         public bool Static { get; set; }    // Indicates if the entity is immovable
 
@@ -34,6 +34,7 @@ namespace Pathogenesis
         public GameEntity()
         {
             Exists = true;
+            ID = CurEntityID++;
         }
 
         // Returns true if the other entity is within the specified range

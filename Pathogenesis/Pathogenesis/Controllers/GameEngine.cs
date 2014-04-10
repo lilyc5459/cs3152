@@ -156,12 +156,16 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 50)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 100)
                     {
-                        int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 2 : 2) : 1;
-                        unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
-                            new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
-                            rand.NextDouble() < 0.1 ? true : false));
+                        Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
+                        if(level_controller.CurLevel.Map.canMoveToWorldPos(pos))
+                        {
+                            int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 2 : 2) : 1;
+                            unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
+                                pos,
+                                rand.NextDouble() < 0.1 ? true : false));
+                        }
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             rand.NextDouble() < 0.2? ItemType.HEALTH : ItemType.PLASMID));
                     }
@@ -202,7 +206,7 @@ namespace Pathogenesis
                     // Process and update all units
                     unit_controller.Update(level_controller.CurLevel, input_controller);
                     // Process and handle collisions
-                    collision_controller.Update(unit_controller.Units, unit_controller.Player,
+                    collision_controller.Update(unit_controller.Units, unit_controller.Player, unit_controller.PreviousPositions,
                         level_controller.CurLevel, item_controller);
                     // Update the HUD
                     HUD_display.Update(input_controller);

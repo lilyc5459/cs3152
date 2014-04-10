@@ -25,7 +25,6 @@ namespace Pathogenesis
         public const int LOST_ALLY_DISTANCE = 300;
 
         public const int ENEMY_CHASE_RANGE = 250;   // Distance at which an enemy will start chasing the player
-        public const int INFECT_RANGE = 200;        // Range of the infection ability
         public const int MAX_ALLIES = 100;          // Maximum number of allies allowed
         public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
         public const int MOVE_STOP_DIST = 5;
@@ -50,10 +49,13 @@ namespace Pathogenesis
         // The player object
         public Player Player { get; set; }
 
+        // Combat processing grid to reduce number of checks
         private List<GameUnit>[,] combatRangeGrid;
 
+        // A dictionary of <unit ID, Position> of each unit's previous position. Used for collision.
+        public Dictionary<int, Vector2> PreviousPositions { get; set; }
+
         private Vector2[,] playerLocationField;
-        
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
@@ -66,6 +68,7 @@ namespace Pathogenesis
             DeadUnits = new List<GameUnit>();
             ConvertedUnits = new List<GameUnit>();
             lostUnits = new List<GameUnit>();
+            PreviousPositions = new Dictionary<int, Vector2>();
 
             rand = new Random();
         }
@@ -83,7 +86,6 @@ namespace Pathogenesis
          */
         public void AddUnit(GameUnit unit)
         {
-            unit.ID = Units.Count;
             Units.Add(unit);
         }
 
@@ -114,6 +116,8 @@ namespace Pathogenesis
         public void Update(Level level, InputController input_controller)
         {
             ConstructCombatGrid(level);
+            ConvertedUnits.Clear();
+            DeadUnits.Clear();
             
             //Pathfinder.findPath(level.Map, Player.Front, Player.Front, PLAYER_PATHFIND_FIELD_SIZE, true);
             //playerLocationField = Pathfinder.pointLocMap;
@@ -123,6 +127,7 @@ namespace Pathogenesis
             bool playerFrontBlocked = false;
             if (Player != null)
             {
+                UpdatePreviousPosition(Player, level.Map);
                 playerFrontBlocked =
                     level.Map.rayCastHasObstacle(Player.Position, Player.Front, Map.TILE_SIZE / 3);
                 CheckPlayerInput(input_controller);
@@ -148,6 +153,12 @@ namespace Pathogenesis
                 }
             }*/
 
+            // Record each unit's position
+            foreach (GameUnit unit in Units)
+            {
+                UpdatePreviousPosition(unit, level.Map);
+            }
+
             // Execute moves and actions
             foreach (GameUnit unit in Units)
             {
@@ -161,9 +172,8 @@ namespace Pathogenesis
             // Convert units
             foreach (GameUnit unit in ConvertedUnits)
             {
-                Convert(unit);
+                UpdatePreviousPosition(Convert(unit), level.Map);
             }
-            ConvertedUnits.Clear();
 
             // Dispose of dead units
             foreach (GameUnit unit in DeadUnits)
@@ -174,10 +184,9 @@ namespace Pathogenesis
                     Player = null;
                 }
                 else Units.Remove(unit);
+                PreviousPositions.Remove(unit.ID);
             }
-            DeadUnits.Clear();
         }
-
         #endregion
 
         #region Player logic
@@ -218,7 +227,7 @@ namespace Pathogenesis
             if (Player.Infecting != null)
             {
                 if (Player.InfectionPoints > 0 && Player.Infecting.InfectionVitality > 0 && 
-                    Player.Infecting.inRange(Player, INFECT_RANGE))
+                    Player.Infecting.inRange(Player, Player.InfectionRange))
                 {
                     Player.Infecting.InfectionVitality -= INFECTION_SPEED;
 
@@ -237,7 +246,7 @@ namespace Pathogenesis
                 GameUnit closestInRange = null;
                 foreach (GameUnit unit in Units)
                 {
-                    if (!unit.Immune && unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, INFECT_RANGE))
+                    if (!unit.Immune && unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, Player.InfectionRange))
                     {
                         if (closestInRange == null || Player.distance(unit) < Player.distance(closestInRange))
                         {
@@ -402,10 +411,10 @@ namespace Pathogenesis
          */
         private void setVelocity(GameUnit unit)
         {
+            Vector2 vel = unit.Vel;
             if (unit.HasNextMove())
             {
                 // Calculate direction of acceleration
-                Vector2 vel = unit.Vel;
                 Vector2 vel_mod = unit.NextMove - unit.Position;
 
                 // If the unit is close enough to target don't move
@@ -436,14 +445,15 @@ namespace Pathogenesis
 
                 // Clamp values to max speeds
                 vel += vel_mod;
-
-                if (vel.Length() > unit.Speed)
-                {
-                    vel.Normalize();
-                    vel *= unit.Speed;
-                }
-                unit.Vel = vel;
             }
+
+            if (vel.Length() > unit.Speed)
+            {
+                vel *= unit.Speed / vel.Length();
+                //vel.Normalize();
+                //vel *= unit.Speed;
+            }
+            unit.Vel = vel;
         }
 
         /*
@@ -589,15 +599,23 @@ namespace Pathogenesis
             }
             return adjacent;
         }
+
+        private Vector2 clampVector(Vector2 v, float limit)
+        {
+            float x = v.X * v.X;
+            float y = v.Y * v.Y;
+
+            return v * limit / v.Length();
+        }
         #endregion
 
         #region Conversion
         /*
          * Converts an enemy to an ally or vice versa, handling stat changes as necessary
          */
-        private void Convert(GameUnit unit)
+        private GameUnit Convert(GameUnit unit)
         {
-            if (Player == null) return;
+            if (Player == null) return null;
             if (unit.Faction == UnitFaction.ALLY)
             {
                 unit.Faction = UnitFaction.ENEMY;
@@ -611,8 +629,10 @@ namespace Pathogenesis
                 if (Player.NumAllies >= MAX_ALLIES) { Player.MaxAllies = true; }
             }
 
-            Units.Remove(unit);
-            AddUnit(factory.createUnit(unit.Type, unit.Faction, unit.Level, unit.Position, unit.Immune));
+            DeadUnits.Add(unit);
+            GameUnit newUnit = factory.createUnit(unit.Type, unit.Faction, unit.Level, unit.Position, unit.Immune);
+            AddUnit(newUnit);
+            return newUnit;
             // Change stats like speed etc as necessary
         }
         #endregion
@@ -734,6 +754,22 @@ namespace Pathogenesis
             if (unit.Health <= 0)
             {
                 DeadUnits.Add(unit);
+            }
+        }
+
+        private void UpdatePreviousPosition(GameUnit unit, Map map)
+        {
+            if (unit == null) return;
+            if (map.canMoveToWorldPos(unit.Position))
+            {
+                if (PreviousPositions.ContainsKey(unit.ID))
+                {
+                    PreviousPositions[unit.ID] = unit.Position;
+                }
+                else
+                {
+                    PreviousPositions.Add(unit.ID, unit.Position);
+                }
             }
         }
         #endregion

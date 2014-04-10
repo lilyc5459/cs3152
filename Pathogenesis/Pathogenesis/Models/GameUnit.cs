@@ -62,7 +62,6 @@ namespace Pathogenesis
         public const int BASE_UNIT_SIZE = 40;
         public const int BASE_HEALTH = 100;
         public const int BASE_INFECTION_VITALITY = 100;
-        
 
         public const int BASE_ATTACK = 10;
         public const int MAX_ATTACK = 10;
