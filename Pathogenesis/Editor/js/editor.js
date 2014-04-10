@@ -32,7 +32,7 @@ function drawing(){
     x = $cur.attr('x');
     y = $cur.attr('y');
     console.log('['+x+','+y+']');
-    ArrayOfInt[x][y] = selectedType;
+    ArrayOfInt[y][x] = selectedType;
   }
 
   //Drawing Stuff
@@ -55,7 +55,7 @@ function setup(){
   */
     var lvlWidth = $( "#lvlWidth" ),
     lvlHeight = $( "#lvlHeight" ),
-    filename = $("#filename"),
+    filename = $("#filename");
     allFields = $( [] ).add( lvlWidth ).add( lvlHeight );
 
 
