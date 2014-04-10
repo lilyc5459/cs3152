@@ -1,4 +1,3 @@
-
 function init() {
 //Define Constants:
 TILE_LENGTH = 40;
@@ -8,21 +7,57 @@ TILE_REAL_LENGTH = 40;
 ArrayOfInt = [];
 realWidth = 0;
 realHeight = 0;
+selectedTile = 'empty';
+selectedType = 0;
+noStart = false;
 
 defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
 Level = JSON.parse(defaultLevelJson);
 }
 
-$(function() {
-  init();
+function drawing(){
+
+  //Functions to draw on tiles
+  function draw($cur){
+    //If drawing player spawn
+    /*
+    if (selectedTile == 'pStart'){
+
+    }
+    */
+    $cur.removeClass();
+    $cur.addClass('tile');
+    $cur.addClass(selectedTile);
+    $cur.attr('type', selectedType);
+    x = $cur.attr('x');
+    y = $cur.attr('y');
+    console.log('['+x+','+y+']');
+    ArrayOfInt[y][x] = selectedType;
+  }
+
+  //Drawing Stuff
+  $(document).mousedown(function() {
+      $("#container div").bind('mouseover',function(){
+          draw($(this));
+      });
+  })
+  .mouseup(function() {
+    $("#container div").unbind('mouseover');
+  });
+  $(".tile").mousedown(function() {
+    draw($(this));
+  });
+}
+
+function setup(){
   /*
   Creating, Saving, Loading Functions
   */
-  	var lvlWidth = $( "#lvlWidth" ),
-  	lvlHeight = $( "#lvlHeight" ),
-  	allFields = $( [] ).add( lvlWidth ).add( lvlHeight );
-    var selectedTile = 'empty';
-    var selectedType = 0;
+    var lvlWidth = $( "#lvlWidth" ),
+    lvlHeight = $( "#lvlHeight" ),
+    filename = $("#filename");
+    allFields = $( [] ).add( lvlWidth ).add( lvlHeight );
+
 
 
   /*
@@ -80,7 +115,7 @@ $(function() {
           bValid = bValid && $.isNumeric(lvlWidth.val());
           bValid = bValid && $.isNumeric(lvlHeight.val());
 
-         //Create defaulted map 
+          //Create map 
           if ( bValid ) {
             finWidth = lvlWidth.val() * TILE_BORDER + lvlWidth.val() * TILE_LENGTH;
             finHeight = lvlHeight.val() * TILE_BORDER + lvlHeight.val() * TILE_LENGTH;
@@ -102,10 +137,8 @@ $(function() {
             }
 
 
-            
             $('#container').width(finWidth);
             $('#container').height(finHeight);
-
 
             $('#container').empty();
             $('#output').empty();
@@ -119,30 +152,7 @@ $(function() {
             $(".tile").width(TILE_LENGTH);
             $(".tile").height(TILE_LENGTH);
 
-            //Functions to draw on tiles
-            function draw($cur){
-              $cur.removeClass();
-              $cur.addClass('tile');
-              $cur.addClass(selectedTile);
-              $cur.attr('type', selectedType);
-              x = $cur.attr('x');
-              y = $cur.attr('y');
-              console.log('['+x+','+y+']');
-              ArrayOfInt[x][y] = selectedType;
-            }
-
-            //Drawing Stuff
-            $(document).mousedown(function() {
-                $("#container div").bind('mouseover',function(){
-                    draw($(this));
-                });
-            })
-            .mouseup(function() {
-              $("#container div").unbind('mouseover');
-            });
-            $("#container div").mousedown(function() {
-              draw($(this));
-            });
+            drawing();
 
             $( this ).dialog( "close" );
           }
@@ -152,76 +162,56 @@ $(function() {
         }
       }
     });
-
-
-
-
-
-  /*
-  Creating XML file
-  */
-  function xml(filename){
-  var x2js = new X2JS();
-
-  var WallTexture = {
-    name: ""
-  }
-
-  for (var i=0; i<ArrayOfInt.length; i++){
-    ArrayOfInt[i] = {
-      int: ArrayOfInt[i]
-    }
-  }
-
-  var tiles = {
-    ArrayOfInt : ArrayOfInt
-  }
-
-  var Map = {
-    tiles: tiles,
-    Width: realWidth,
-    Height: realHeight,
-    WallTexture: WallTexture
-  }
-
-  var BackgroundTexture = {
-    name: ""
-  }
-
-  Level.Level.Width = realWidth;
-  Level.Level.Height = realHeight;
-  Level.Level.Map = Map;
-  Level.Level.BackgroundTexture = BackgroundTexture;
-
-  console.log(Level);
-
-  var JSONlevel = JSON.stringify(Level);
-  console.log(JSONlevel);
-  var XMLlevel = x2js.json2xml_str($.parseJSON(JSONlevel));
-  console.log(XMLlevel);
-
-  $("#output").text(XMLlevel);
+}
 
 /*
-  jsontest = '{"Level":{"Map":{"tiles":{"ArrayOfInt":[{"int":["1","1","0"]},{"int":["1","1","0"]},{"int":["1","1","0"]}]},"Width":"2020","Height":"1020","WallTexture":{"Name":""}},"BackgroundTexture":{"Name":""},"Width":"2020","Height":"1020","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
-  xmltest = '<?xml version="1.0" encoding="UTF-8"?><MyTest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><elf>23</elf><hello>Hello World</hello><testPoint><X>1</X><Y>1</Y></testPoint><tList /></MyTest>';
-  var parsedJson = JSON.parse(jsontest);
-
-  console.log(parsedJson);
-
-  var myJSONText = JSON.stringify(parsedJson);
-
-  console.log('myJSONText:'+myJSONText);
-
-
-  var json2xml = x2js.json2xml_str($.parseJSON(myJSONText));
-
-  console.log('json2xml -- xml: '+json2xml);
-
-  var xml2json = x2js.xml_str2json(xmltest);
-
-  console.log(xml2json);
+Creating XML file
 */
+function xml(filename){
+var x2js = new X2JS();
 
-  };
+var WallTexture = {
+  name: ""
+}
+
+for (var i=0; i<ArrayOfInt.length; i++){
+  ArrayOfInt[i] = {
+    int: ArrayOfInt[i]
+  }
+}
+
+var tiles = {
+  ArrayOfInt : ArrayOfInt
+}
+
+var Map = {
+  tiles: tiles,
+  Width: realWidth,
+  Height: realHeight,
+  WallTexture: WallTexture
+}
+
+var BackgroundTexture = {
+  name: ""
+}
+
+Level.Level.Width = realWidth;
+Level.Level.Height = realHeight;
+Level.Level.Map = Map;
+Level.Level.BackgroundTexture = BackgroundTexture;
+
+console.log(Level);
+
+var JSONlevel = JSON.stringify(Level);
+console.log(JSONlevel);
+var XMLlevel = x2js.json2xml_str($.parseJSON(JSONlevel));
+console.log(XMLlevel);
+
+$("#output").text(XMLlevel);
+
+};
+
+$(function() {
+  init();
+  setup();
 });
