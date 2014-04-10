@@ -25,6 +25,13 @@ namespace Pathogenesis
         }
         public Vector2 Screen_pos { get; set; }
 
+        // Animation
+        public int Frame { get; set; }
+        public int NumFrames { get; set; }
+        public Vector2 FrameSize { get; set; }
+        public int FrameSpeed { get; set; }
+        public int FrameTimeCounter { get; set; }
+
         public bool Exists { get; set; }    // Indicates if the entity exists in the game
         public bool Static { get; set; }    // Indicates if the entity is immovable
 

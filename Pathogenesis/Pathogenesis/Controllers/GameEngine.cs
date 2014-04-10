@@ -156,18 +156,19 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 100)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 0)
                     {
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
-                        if(level_controller.CurLevel.Map.canMoveToWorldPos(pos))
+                        if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))
                         {
-                            int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 2 : 2) : 1;
+                            int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
                             unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
                                 rand.NextDouble() < 0.1 ? true : false));
+
+                            item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
+                                rand.NextDouble() < 0.2 ? ItemType.HEALTH : ItemType.PLASMID));
                         }
-                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
-                            rand.NextDouble() < 0.2? ItemType.HEALTH : ItemType.PLASMID));
                     }
                     //
                     /* TODO: Remove DEBUG CODE HERE (remove later)

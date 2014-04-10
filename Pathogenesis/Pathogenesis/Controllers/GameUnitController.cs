@@ -195,6 +195,8 @@ namespace Pathogenesis
          */
         private void CheckPlayerInput(InputController input_controller)
         {
+            Player.UpdateAnimation();
+
             Vector2 vel = Player.Vel;
             if (input_controller.Left) { vel.X -= Player.Accel; }
             if (input_controller.Right) { vel.X += Player.Accel; }
@@ -713,6 +715,9 @@ namespace Pathogenesis
         private void UpdateUnit(GameUnit unit, Level level)
         {
             if (!unit.Exists) return;
+            
+            // Increment animation frame
+            unit.UpdateAnimation();
 
             // Infection vitality update
             if (unit.Lost)

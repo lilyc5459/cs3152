@@ -90,8 +90,9 @@ namespace Pathogenesis
             public Player createPlayer(Vector2 pos)
             {
                 Player p = new Player(textures["player_left"], textures["player_right"],
-                    textures["player_back"], textures["player_front"]);
+                    textures["player_back"], textures["player_front"], 2, new Vector2(60, 47));
                 p.Position = pos;
+                p.FrameSpeed = 9;
                 return p;
             }
 
@@ -112,15 +113,15 @@ namespace Pathogenesis
                             switch(level) {
                                 case 1: 
                                     enemy = new GameUnit(textures["ally1_left"], textures["ally1_right"],
-                                        textures["ally1_back"], textures["ally1_front"], type, faction, level, immune);
+                                        textures["ally1_back"], textures["ally1_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                                 case 2:
                                     enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
-                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                        textures["ally2_back"], textures["ally2_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                                 case 3:
                                     enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
-                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                        textures["ally2_back"], textures["ally2_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                             }
                         }
@@ -130,15 +131,15 @@ namespace Pathogenesis
                             {
                                 case 1:
                                     enemy = new GameUnit(textures["enemy1_left"], textures["enemy1_right"],
-                                        textures["enemy1_back"], textures["enemy1_front"], type, faction, level, immune);
+                                        textures["enemy1_back"], textures["enemy1_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                                 case 2:
                                     enemy = new GameUnit(textures["enemy2_left"], textures["enemy2_right"],
-                                        textures["enemy2_back"], textures["enemy2_front"], type, faction, level, immune);
+                                        textures["enemy2_back"], textures["enemy2_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                                 case 3:
                                     enemy = new GameUnit(textures["enemy2_left"], textures["enemy2_right"],
-                                        textures["enemy2_back"], textures["enemy2_front"], type, faction, level, immune);
+                                        textures["enemy2_back"], textures["enemy2_front"], 1, new Vector2(), type, faction, level, immune);
                                     break;
                             }
                         }
@@ -161,16 +162,16 @@ namespace Pathogenesis
                         if (faction == UnitFaction.ALLY)
                         {
                             enemy = new GameUnit(textures["ally3_left"], textures["ally3_right"],
-                                textures["ally3_back"], textures["ally3_front"], type, faction, level, immune);
+                                textures["ally3_back"], textures["ally3_front"], 1, new Vector2(), type, faction, level, immune);
                         }
                         else
                         {
                             enemy = new GameUnit(textures["enemy3_left"], textures["enemy3_right"],
-                                textures["enemy3_back"], textures["enemy3_front"], type, faction, level, immune);
+                                textures["enemy3_back"], textures["enemy3_front"], 1, new Vector2(), type, faction, level, immune);
                         }
                         break;
                     case UnitType.BOSS:
-                        enemy = new GameUnit(textures["boss1"], type, faction, level, immune);
+                        enemy = new GameUnit(textures["boss1"], 1, new Vector2(), type, faction, level, immune);
                         break;
                     default:
                         enemy = null;

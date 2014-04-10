@@ -46,8 +46,8 @@ namespace Pathogenesis
         }
         #endregion
 
-        public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d)
-            : base(texture_l, texture_r, texture_u, texture_d, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
+        public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d, int numFrames, Vector2 block_dim)
+            : base(texture_l, texture_r, texture_u, texture_d, numFrames, block_dim, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
             pickups = new List<Item>();
             InfectionPoints = GameUnitController.MAX_PLAYER_CONVERSION_POINTS;
