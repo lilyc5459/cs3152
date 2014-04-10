@@ -295,7 +295,7 @@ namespace Pathogenesis
                         texture.Width, texture.Height),
                     new Rectangle(0, 0, texture.Width, texture.Height));
             }
-            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }

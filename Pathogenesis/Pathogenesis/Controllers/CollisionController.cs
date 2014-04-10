@@ -226,6 +226,8 @@ namespace Pathogenesis
          */ 
         public void CheckWallCollision(GameUnit unit, Map map, Dictionary<int, Vector2> previousPositions)
         {
+            if (!previousPositions.ContainsKey(unit.ID)) return;
+
             Vector2 pos_change = unit.Position - previousPositions[unit.ID];
             float change_length = pos_change.Length();
 

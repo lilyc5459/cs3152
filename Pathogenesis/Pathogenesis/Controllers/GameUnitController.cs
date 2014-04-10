@@ -499,32 +499,35 @@ namespace Pathogenesis
         /*
          * A* to target
          */
-        private bool findTarget(GameUnit unit, Vector2 target, Map map, int limit)
+        private void findTarget(GameUnit unit, Vector2 target, Map map, int limit)
         {
             List<Vector2> path = Pathfinder.findPath(map, unit.Position, unit.Target, limit, false);
             // Set the next move to the last node in the path with no obstacles in the way
-            if (path != null)
+            if (path != null && path.Count > 1)
             {
+                bool found = false;
                 for (int i = path.Count - 1; i > 0; i--)
                 {
-                    if (!map.rayCastHasObstacle(unit.Position, path[i], unit.Size / 2))
+                    if (!map.rayCastHasObstacle(unit.Position, path[i], unit.Size / 3))
                     {
                         unit.NextMove = path[i];
                         unit.Lost = false;
-                        return true;
+                        found = true;
+                        break;
                     }
                 }
-                return true;
+                if (!found)
+                {
+                    unit.NextMove = path[1];
+                }
             }
             else
             {
-                double d = unit.distance(Player);
                 if (unit.Faction == UnitFaction.ALLY && 
                     (Player == null || unit.distance(Player) > LOST_ALLY_DISTANCE))
                 {
                     unit.Lost = true;
                 }
-                return false;
             }
         }
 
