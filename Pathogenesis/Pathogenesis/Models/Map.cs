@@ -61,8 +61,7 @@ namespace Pathogenesis.Models
             {
                 tiles[k] = new int[width / TILE_SIZE];
             }
-            //tiles[0].GetLength(0)
-            // [width/TILE_SIZE]
+
             Width = width;
             Height = height;
 
@@ -74,73 +73,6 @@ namespace Pathogenesis.Models
 
         public void setTiles(int[][] tiles)
         {
-            //this.tiles = tiles;
-            /*
-            for (int i = 0; i < tiles.Length; i++)
-            {
-                for (int j = 0; j < tiles[0].Length; j++)
-                {
-                    //Map Borders
-                    if (i == 0 || j == 0 || i == tiles.Length - 1 || j == tiles[0].Length - 1)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    //Test
-                    if (i == 10 && j > 5 && j < 7)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (i == 15 && j > 15 && j < 20)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (i == 20 && j > 40 && j < 60)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (j == 40 && i > 21 && i < 40)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (j == 10 && i > 18 && i < 27)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (i == 40 && j > 50 && j < 70)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (i == 40 && j > 80 && j < 100)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (j == 10 && i > 10 && i < 15)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (j == 80 && i > 10 && i < 15)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-                    if (j == 80 && i > 25 && i < 35)
-                    {
-                        tiles[i][j] = 1;
-                    }
-
-
-                }
-            }
-            */
         }
 
         #region Map Methods
@@ -163,8 +95,36 @@ namespace Pathogenesis.Models
 
         public bool canMoveToWorldPos(Vector2 position)
         {
-            Vector2 worldPos = translateWorldToMap(position);
-            return canMoveTo((int)worldPos.X, (int)worldPos.Y);
+            Vector2 pos = position / TILE_SIZE;
+            return pos.X >= 0 && pos.Y >= 0 && pos.Y < tiles.Length && pos.X < tiles[0].Length &&
+                tiles[(int)pos.Y][(int)pos.X] != 1;
+        }
+
+        /*
+         * Indicates if a hitbox collides with a wall on the map
+         * 
+         * Size is the length and width of the square box
+         */
+        public bool boxCollidesWithMap(Vector2 pos, int size)
+        {
+            List<Vector2> dirs = new List<Vector2>();
+            dirs.Add(new Vector2(1, 0));
+            dirs.Add(new Vector2(-1, 0));
+            dirs.Add(new Vector2(0, 1));
+            dirs.Add(new Vector2(0, -1));
+            dirs.Add(new Vector2(-1, 1));
+            dirs.Add(new Vector2(1, -1));
+            dirs.Add(new Vector2(-1, -1));
+            dirs.Add(new Vector2(1, 1));
+
+            foreach (Vector2 dir in dirs)
+            {
+                if (!canMoveToWorldPos(pos + dir * size/2))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /*
@@ -211,7 +171,7 @@ namespace Pathogenesis.Models
             float b = y0 - slope * x0;
 
             // Casts two lines account for the cast width
-            for (int i = x0; i <= x1; i += TILE_SIZE / 4)
+            for (int i = x0; i <= x1; i += TILE_SIZE / 10)
             {
                 int x_offset = (int)(cast_width / 2 * Math.Cos(Math.Atan(-1 / slope)));
                 int y_offset = (int)(cast_width / 2 * Math.Sin(Math.Atan(-1 / slope)));

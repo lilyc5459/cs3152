@@ -22,26 +22,38 @@ namespace Pathogenesis
         private List<GameUnit>[,] cellGrid;
         private List<Item>[,] itemGrid;
 
-        public CollisionController() {}
+        public CollisionController()
+        {
+        }
 
         /*
          * Calculates and processes all collisions that occur,
          * using the collision cell optimization structure
          */
 
-        public void Update(List<GameUnit> units, Player player, Level level, ItemController item_controller)
+        public void Update(List<GameUnit> units, Player player, Dictionary<int, Vector2> previousPositions,
+            Level level, ItemController item_controller)
         {
             ConstructCollisionGrids(units, item_controller.Items, player, level);
 
             foreach (GameUnit unit in units)
             {
-                ProcessCollisions(unit, level.Map);
+                ProcessUnitCollisions(unit);
+            }
+
+            foreach (GameUnit unit in units)
+            {
+                if (unit.Type != UnitType.FLYING)
+                {
+                    CheckWallCollision(unit, level.Map, previousPositions);
+                }
             }
 
             if (player != null)
             {
-                ProcessCollisions(player, level.Map);
+                ProcessUnitCollisions(player);
                 ProcessItems(player, item_controller);
+                CheckWallCollision(player, level.Map, previousPositions);
             }
         }
 
@@ -99,7 +111,7 @@ namespace Pathogenesis
         /*
          * Process collisions for every unit
          */
-        public void ProcessCollisions(GameUnit unit, Map map)
+        public void ProcessUnitCollisions(GameUnit unit)
         {
             if (unit == null) return;
 
@@ -119,10 +131,6 @@ namespace Pathogenesis
                         CheckUnitCollision(unit, other);
                     }
                 }
-            }
-            if (unit.Type != UnitType.FLYING)
-            {
-                CheckWallCollision(unit, map);
             }
         }
 
@@ -189,36 +197,98 @@ namespace Pathogenesis
                 }
                 //System.Diagnostics.Debug.WriteLine(g1.Position + " " + g2.Position);
 
+                // Calculate and apply impulse
                 Vector2 relVel = g1.Vel - g2.Vel;
-
-                float impulse = (-(1 + COLL_COEFF) * Vector2.Dot(normal, relVel)) / (Vector2.Dot(normal, normal) * (1 / g1.Mass + 1 / g2.Mass));
-
+                float impulse = (-(1 + COLL_COEFF) * Vector2.Dot(normal, relVel)) /
+                    (Vector2.Dot(normal, normal) * (1 / g1.Mass + 1 / g2.Mass));
                 if(!g1.Static) g1.Vel += (impulse / g1.Mass) * normal;
                 if(!g2.Static) g2.Vel -= (impulse / g2.Mass) * normal;
+
+                // Clamp velocities to speed
+                Vector2 vel1 = g1.Vel;
+                if (vel1.Length() > g1.Speed)
+                {
+                    vel1 *= g1.Speed / vel1.Length();
+                }
+                g1.Vel = vel1;
+
+                Vector2 vel2 = g2.Vel;
+                if (vel2.Length() > g2.Speed)
+                {
+                    vel2 *= g2.Speed / vel2.Length();
+                }
+                g2.Vel = vel2;
             }
         }
 
         /*
          * Handle a collision between a unit and wall
          */ 
-        public void CheckWallCollision(GameUnit unit, Map map)
+        public void CheckWallCollision(GameUnit unit, Map map, Dictionary<int, Vector2> previousPositions)
         {
+            if (!previousPositions.ContainsKey(unit.ID)) return;
+
+            Vector2 pos_change = unit.Position - previousPositions[unit.ID];
+            float change_length = pos_change.Length();
+
+            /*
+            if(change_length > 0)
+            {
+                if (pos_change.X != 0 && pos_change.Y != 0)
+                {
+
+                }
+                pos_change.Normalize();
+                // Check if the unit position is allowable. If the unit has moved far, use continuous collision detection
+                //!map.canMoveToWorldPos(unit.Position + pos_change * unit.Size / 2)
+                if (map.boxCollidesWithMap(unit.Position, unit.Size) ||
+                    change_length > 20 && map.rayCastHasObstacle(previousPositions[unit.ID], unit.Position + pos_change * unit.Size/2, 0))
+                {
+                    int i = 0;
+                    Vector2 newPos = previousPositions[unit.ID];
+                    while (i <= unit.Size && !map.boxCollidesWithMap(newPos + pos_change, unit.Size))
+                    {
+                        newPos += pos_change;
+                        i++;
+                    }
+                    unit.Position = newPos;
+                }
+            }*/
+
+            // Maybe the previous position thing is wrong cause it gets updated to a new, unwalkable position
+            //// Maybe keep track of the last known uncollided previous position, update previous positions only if their new position is walkable
             List<Vector2> dirs = new List<Vector2>();
-            dirs.Add(new Vector2(0, 1));
-            dirs.Add(new Vector2(1, 0));
-            dirs.Add(new Vector2(0, -1));
-            dirs.Add(new Vector2(-1, 0));
-            dirs.Add(new Vector2(1, 1));
-            dirs.Add(new Vector2(1, -1));
-            dirs.Add(new Vector2(-1, 1));
-            dirs.Add(new Vector2(-1, -1));
+            if (pos_change.X > 0)
+            {
+                dirs.Add(new Vector2(1, 0));
+            }
+            else if(pos_change.X < 0)
+            {
+                dirs.Add(new Vector2(-1, 0));
+            }
+            if (pos_change.Y > 0)
+            {
+                dirs.Add(new Vector2(0, 1));
+            }
+            else if(pos_change.Y < 0)
+            {
+                dirs.Add(new Vector2(0, -1));
+            }
+
+            if (pos_change.X != 0 && pos_change.Y != 0)
+            {
+                dirs.Add(new Vector2(1, 1));
+                dirs.Add(new Vector2(-1, -1));
+                dirs.Add(new Vector2(1, -1));
+                dirs.Add(new Vector2(-1, 1));
+            }
 
             foreach (Vector2 dir in dirs)
             {
                 if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
                 {
                     int i = 0;
-                    while (i++ < unit.Size && !map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
+                    while (i++ < unit.Size*3 && !map.canMoveToWorldPos(unit.Position + dir * unit.Size / 2))
                     {
                         unit.Position -= dir;
                     }

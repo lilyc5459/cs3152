@@ -12,7 +12,7 @@ background, Backgrounds/background_long2
 boss1, Characters/infectpoint
 player_left, Characters/main-left
 player_right, Characters/main-right
-player_front, Characters/main-front
+player_front, Characters/main-front-ani
 player_back, Characters/main-back
 enemy1_left, Characters/enemy1_left
 enemy1_right, Characters/enemy1_right

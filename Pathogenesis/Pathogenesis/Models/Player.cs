@@ -11,6 +11,7 @@ namespace Pathogenesis
     {
         // Distance from player that allies will target when player moves in a direction
         private const int ALLY_FRONT_DISTANCE = 100;
+        private const int BASE_INFECTION_RANGE = 250;
 
         #region Fields and Properties
         public bool Alive;
@@ -32,12 +33,11 @@ namespace Pathogenesis
         public int NumAllies { get; set; }
         public bool MaxAllies { get; set; }
 
-        // Unit that the player is currently infecting
-        public GameUnit Infecting { get; set; }
-        // Current infection points
-        public int InfectionPoints { get; set; }
+        public GameUnit Infecting { get; set; }     // Unit that the player is currently infecting
+        public int InfectionPoints { get; set; }    // Current infection points
+        public int InfectionRange { get; set; }     // Player's infection range
 
-        // Items that the player has picked up, will be applied in update phase
+        // Items that the player has picked up. Effects will be applied in update player phase
         private List<Item> pickups;
         public List<Item> Items
         {
@@ -46,13 +46,14 @@ namespace Pathogenesis
         }
         #endregion
 
-        public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d)
-            : base(texture_l, texture_r, texture_u, texture_d, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
+        public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d, int numFrames, Vector2 block_dim)
+            : base(texture_l, texture_r, texture_u, texture_d, numFrames, block_dim, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
             pickups = new List<Item>();
             InfectionPoints = GameUnitController.MAX_PLAYER_CONVERSION_POINTS;
             Health = 150;
             max_health = 150; //TEMP
+            InfectionRange = BASE_INFECTION_RANGE;
             Alive = true;
         }
 

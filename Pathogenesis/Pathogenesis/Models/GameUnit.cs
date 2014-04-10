@@ -62,7 +62,6 @@ namespace Pathogenesis
         public const int BASE_UNIT_SIZE = 40;
         public const int BASE_HEALTH = 100;
         public const int BASE_INFECTION_VITALITY = 100;
-        
 
         public const int BASE_ATTACK = 10;
         public const int MAX_ATTACK = 10;
@@ -119,12 +118,16 @@ namespace Pathogenesis
         #region Initialization
         public GameUnit() { }
 
-        public GameUnit(Texture2D texture, UnitType type, UnitFaction faction, int level, bool immune)
+        public GameUnit(Texture2D texture, int numFrames, Vector2 block_dim, UnitType type, UnitFaction faction,
+            int level, bool immune)
         {
             Texture_L = texture;
             Texture_R = texture;
             Texture_D = texture;
             Texture_U = texture;
+
+            NumFrames = numFrames;
+            FrameSize = block_dim;
 
             Type = type;
             Faction = faction;
@@ -138,12 +141,15 @@ namespace Pathogenesis
         }
 
         public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
-            UnitType type, UnitFaction faction, int level, bool immune)
+            int num_frames, Vector2 block_dim, UnitType type, UnitFaction faction, int level, bool immune)
         {
             Texture_L = texture_l;
             Texture_R = texture_r;
             Texture_U = texture_u;
             Texture_D = texture_d;
+
+            NumFrames = num_frames;
+            FrameSize = block_dim;
 
             Type = type;
             Faction = faction;
@@ -161,7 +167,7 @@ namespace Pathogenesis
          */
         private void Initialize()
         {
-            // TODO load stats from a config file
+            // TODO load all stats from a config file
             // Test
             Size = (int)(Math.Pow(2, Level - 1) * BASE_UNIT_SIZE);
 
@@ -212,6 +218,23 @@ namespace Pathogenesis
         }
         #endregion
 
+        #region Update Functions
+        // Increments animation frame according to the specified speed
+        public void UpdateAnimation()
+        {
+            if (NumFrames > 0 && Vel.Length() > 0)
+            {
+                FrameTimeCounter++;
+                if (FrameTimeCounter >= FrameSpeed)
+                {
+                    Frame = (Frame + 1) % NumFrames;
+                    FrameTimeCounter = 0;
+                }
+            }
+        }
+        #endregion
+
+        
         public bool HasTarget()
         {
             return Target.X >= 0 && Target.Y >= 0;
@@ -256,11 +279,23 @@ namespace Pathogenesis
                 color = Color.Gray;
             }
 
-            canvas.DrawSprite(texture, color,
-                new Rectangle((int)(Position.X - texture.Width/2), (int)(Position.Y - texture.Height/2),
-                    texture.Width, texture.Height),
-                new Rectangle(0, 0, texture.Width, texture.Height));
-            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            //TEMP
+            if (FrameSize.X > 0 && FrameSize.Y > 0)
+            {
+                canvas.DrawSprite(texture, color,
+                    new Rectangle((int)(Position.X - FrameSize.X / 2), (int)(Position.Y - FrameSize.Y / 2),
+                        (int)FrameSize.X, (int)FrameSize.Y),
+                    new Rectangle(Frame * (int)FrameSize.X, 0, (int)FrameSize.X, (int)FrameSize.Y));
+            }
+            else
+            {
+                // get rid of this later when everything has animation frames
+                canvas.DrawSprite(texture, color,
+                    new Rectangle((int)(Position.X - texture.Width / 2), (int)(Position.Y - texture.Height / 2),
+                        texture.Width, texture.Height),
+                    new Rectangle(0, 0, texture.Width, texture.Height));
+            }
+            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }
