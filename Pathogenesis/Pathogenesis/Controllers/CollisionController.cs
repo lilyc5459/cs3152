@@ -120,7 +120,10 @@ namespace Pathogenesis
                     }
                 }
             }
-            CheckWallCollision(unit, map);
+            if (unit.Type != UnitType.FLYING)
+            {
+                CheckWallCollision(unit, map);
+            }
         }
 
         /*
@@ -154,9 +157,12 @@ namespace Pathogenesis
             Vector2 normal = g1.Position - g2.Position;
             float distance = normal.Length();
 
-            // Don't check collision between player and ally
+            // Don't check collision between player and ally,
+            // or between flying and non-flying units
             if (g1.Faction == UnitFaction.ALLY && g2.Type == UnitType.PLAYER ||
                 g2.Faction == UnitFaction.ALLY && g1.Type == UnitType.PLAYER ||
+                g1.Type == UnitType.FLYING && g2.Type != UnitType.FLYING ||
+                g2.Type == UnitType.FLYING && g1.Type != UnitType.FLYING ||
                 distance == 0)
             {
                 return;
@@ -227,8 +233,7 @@ namespace Pathogenesis
         {
             if (player.distance(item) < (player.Size + Item.ITEM_SIZE)/2)
             {
-                player.PickupItem(item);
-                return true;
+                return player.PickupItem(item);
             }
             return false;
         }

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Pathogenesis.Models;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -21,6 +22,7 @@ namespace Pathogenesis
         MAIN_MENU,  // Player is at the main menu
         IN_GAME,    // Player is playing the game
         VICTORY,    // Player has completed the level
+        LOSE,       // Player has died
         PAUSED      // Player has activated the pause menu
     }
     #endregion
@@ -47,12 +49,14 @@ namespace Pathogenesis
 
         // Game operation controllers
         private InputController input_controller;
+        private SoundController sound_controller;
         private CollisionController collision_controller;
 
         // Game entity controllers
         private GameUnitController unit_controller;
         private ItemController item_controller;
         private LevelController level_controller;
+        private Menu win_menu, lose_menu;
 
         private HUD HUD_display;
         private GameState game_state;
@@ -82,18 +86,19 @@ namespace Pathogenesis
 
             // Initialize controllers
             input_controller = new InputController();
+            sound_controller = new SoundController(factory);
             collision_controller = new CollisionController();
 
             level_controller = new LevelController();
             unit_controller = new GameUnitController(factory);
             item_controller = new ItemController();
 
-
-
             // TEST
+            win_menu = factory.createMenu(MenuType.WIN);
+            lose_menu = factory.createMenu(MenuType.LOSE);
+
             HUD_display = factory.createHUD(unit_controller.Player);
-            level_controller.NextLevel(factory, unit_controller, item_controller);
-            unit_controller.SetLevel(level_controller.CurLevel);
+            level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
 
             bool test = level_controller.CurLevel.Map.rayCastHasObstacle(
                 new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE),
@@ -140,6 +145,8 @@ namespace Pathogenesis
                 this.Exit();
             
             input_controller.Update();    // Receive and process input
+            sound_controller.Update();
+
             switch (game_state)
             {
                 case GameState.MAIN_MENU:
@@ -149,10 +156,10 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 200)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 50)
                     {
-                        int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 3 : 2) : 1;
-                        unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, level,
+                        int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2? 2 : 2) : 1;
+                        unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                             new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             rand.NextDouble() < 0.1 ? true : false));
                         item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
@@ -180,16 +187,16 @@ namespace Pathogenesis
                     //Restart
                     if (input_controller.Restart)
                     {
-                        Initialize();
-                        level_controller.ResetLevel(factory, unit_controller, item_controller);
-                        item_controller.Reset();
+                        level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
                     }
 
                     // Process level environment logic
                     bool victory = level_controller.Update();
-                    if (victory)
+
+                    //Auto win
+                    if (input_controller.Enter)
                     {
-                        level_controller.NextLevel(factory, unit_controller, item_controller);
+                        victory = true;
                     }
 
                     // Process and update all units
@@ -200,6 +207,15 @@ namespace Pathogenesis
                     // Update the HUD
                     HUD_display.Update(input_controller);
                     
+                    if (victory)
+                    {
+                        game_state = GameState.VICTORY;
+                    }
+                    if (unit_controller.Player == null)
+                    {
+                        game_state = GameState.LOSE;
+                    }
+
                     if (unit_controller.Player != null)
                     {
                         camera.Position = unit_controller.Player.Position;
@@ -207,6 +223,21 @@ namespace Pathogenesis
                     break;
                 case GameState.PAUSED:
                     break;
+                case GameState.VICTORY:
+                    if (input_controller.Enter)
+                    {
+                        level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
+                        game_state = GameState.IN_GAME;
+                    }
+                    break;
+                case GameState.LOSE:
+                    if (input_controller.Enter)
+                    {
+                        level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
+                        game_state = GameState.IN_GAME;
+                    }
+                    break;
+
             }
 
             base.Update(gameTime);
@@ -224,22 +255,33 @@ namespace Pathogenesis
             switch (game_state)
             {
                 case GameState.IN_GAME:
-                    level_controller.Draw(canvas);
-                    HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
-                    item_controller.Draw(canvas);
-                    unit_controller.Draw(canvas);
-                    HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player);
+                    DrawGame(canvas);
+                    break;
+                case GameState.VICTORY:
+                    DrawGame(canvas);
+                    win_menu.Draw(canvas, camera.Position);
+                    break;
+                case GameState.LOSE:
+                    DrawGame(canvas);
+                    lose_menu.Draw(canvas, camera.Position);
                     break;
                 case GameState.MAIN_MENU:
                     break;
                 case GameState.PAUSED:
                     break;
-                case GameState.VICTORY:
-                    break;
             }
 
             canvas.EndSpritePass();
             base.Draw(gameTime);
+        }
+
+        private void DrawGame(GameCanvas canvas)
+        {
+            level_controller.Draw(canvas);
+            HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
+            item_controller.Draw(canvas);
+            unit_controller.Draw(canvas);
+            HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player);
         }
         #endregion
     }

@@ -7,6 +7,10 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Pathogenesis.Models;
+using Microsoft.Xna.Framework.Audio;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Pathogenesis
 {
@@ -17,38 +21,14 @@ namespace Pathogenesis
             protected ContentManager content;
 
             // Dictionary of all textures mapped as <filename, texture>
-            protected Dictionary<String, Texture2D> textures;
+            private Dictionary<String, Texture2D> textures;
+            // Dictionary of all audio clips mapped as <filename, clip>
+            private Dictionary<String, SoundEffect> sounds;
 
             // List of levels in the order they appear in the game
             private List<Level> levels;
 
             protected SpriteFont font;
-
-            // Content directories and filenames
-            private const string CHARACTERS_DIR = "Characters/";
-            private const string BACKGROUNDS_DIR = "Backgrounds/";
-            private const string ENVIRONMENT_DIR = "Environment/";
-
-            private const string MAINPLAYER = CHARACTERS_DIR + "mainplayer";
-            private const string INFECT_RANGE = CHARACTERS_DIR + "infect";
-            private const string HEALTH_BAR = CHARACTERS_DIR + "healthbar";
-
-            private const string ENEMY_TANK_r = CHARACTERS_DIR + "enemy_right";
-            private const string ENEMY_TANK_l = CHARACTERS_DIR + "enemy_left";
-            private const string ENEMY_RANGED = CHARACTERS_DIR + "enemy_ranged";
-            private const string ENEMY_FLYING = CHARACTERS_DIR + "enemy_flying";
-
-            private const string ALLY_TANK_r = CHARACTERS_DIR + "ally_right";
-            private const string ALLY_TANK_l = CHARACTERS_DIR + "ally_left";
-            private const string ALLY_RANGED = CHARACTERS_DIR + "ally_ranged";
-            private const string ALLY_FLYING = CHARACTERS_DIR + "ally_flying";
-
-            private const string PLASMID = CHARACTERS_DIR + "plasmid";
-
-            private const string WALL = BACKGROUNDS_DIR + "wall_square";
-            private const string BACKGROUND1 = BACKGROUNDS_DIR + "background_long2";
-            private const string BACKGROUND2 = BACKGROUNDS_DIR + "background2";
-            private const string BACKGROUND3 = BACKGROUNDS_DIR + "background3";
         #endregion
 
         #region Initialization
@@ -59,33 +39,41 @@ namespace Pathogenesis
                 content.RootDirectory = "Content";
 
                 textures = new Dictionary<string, Texture2D>();
+                sounds = new Dictionary<string, SoundEffect>();
                 levels = new List<Level>();
             }
 
             // Loads all content from content directory
             public void LoadAllContent()
             {
-                // Load textures into the textures map
-                textures.Add(MAINPLAYER, content.Load<Texture2D>(MAINPLAYER));
-                textures.Add(INFECT_RANGE, content.Load<Texture2D>(INFECT_RANGE));
-                textures.Add(HEALTH_BAR, content.Load<Texture2D>(HEALTH_BAR));
+                try
+                {
+                    // Load Textures
+                    String line;
+                    StreamReader sr = new StreamReader("Config/texture_paths.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] {','});
+                        if(strings.Length < 2) continue;
+                        textures.Add(strings[0], content.Load<Texture2D>(strings[1].Trim()));
+                    }
 
-                textures.Add(ENEMY_TANK_r, content.Load<Texture2D>(ENEMY_TANK_r));
-                textures.Add(ENEMY_TANK_l, content.Load<Texture2D>(ENEMY_TANK_l));
-                textures.Add(ENEMY_RANGED, content.Load<Texture2D>(ENEMY_RANGED));
-                textures.Add(ENEMY_FLYING, content.Load<Texture2D>(ENEMY_FLYING));
-
-                textures.Add(ALLY_TANK_r, content.Load<Texture2D>(ALLY_TANK_r));
-                textures.Add(ALLY_TANK_l, content.Load<Texture2D>(ALLY_TANK_l));
-                textures.Add(ALLY_RANGED, content.Load<Texture2D>(ALLY_RANGED));
-                textures.Add(ALLY_FLYING, content.Load<Texture2D>(ALLY_FLYING));
-
-                textures.Add(PLASMID, content.Load<Texture2D>(PLASMID));
-
-                textures.Add(WALL, content.Load<Texture2D>(WALL));
-                textures.Add(BACKGROUND1, content.Load<Texture2D>(BACKGROUND1));
-                textures.Add(BACKGROUND2, content.Load<Texture2D>(BACKGROUND2));
-                textures.Add(BACKGROUND3, content.Load<Texture2D>(BACKGROUND3));
+                    // Load Sounds
+                    sr = new StreamReader("Config/sound_paths.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] { ',' });
+                        if (strings.Length < 2) continue;
+                        sounds.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("The file could not be read:");
+                    Console.WriteLine(e.Message);
+                }
 
                 // Load fonts
                 font = content.Load<SpriteFont>("Fonts/font");
@@ -101,36 +89,88 @@ namespace Pathogenesis
             // Returns an instance of Player
             public Player createPlayer(Vector2 pos)
             {
-                Player p = new Player(textures[MAINPLAYER], textures[MAINPLAYER]);
+                Player p = new Player(textures["player_left"], textures["player_right"],
+                    textures["player_back"], textures["player_front"]);
                 p.Position = pos;
                 return p;
             }
 
             public HUD createHUD(Player player)
             {
-                return new HUD(textures[INFECT_RANGE], textures[HEALTH_BAR]);
+                return new HUD(textures["infect_range"], textures["health_bar"]);
             }
         
             // Returns an instance of a unit of the given type and faction
             public GameUnit createUnit(UnitType type, UnitFaction faction, int level, Vector2 pos, bool immune)
             {
-                GameUnit enemy;
+                GameUnit enemy = null;
                 switch (type)
                 {
                     case UnitType.TANK:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY? textures[ALLY_TANK_l] : textures[ENEMY_TANK_l],
-                            faction == UnitFaction.ALLY? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
+                        if (faction == UnitFaction.ALLY)
+                        {
+                            switch(level) {
+                                case 1: 
+                                    enemy = new GameUnit(textures["ally1_left"], textures["ally1_right"],
+                                        textures["ally1_back"], textures["ally1_front"], type, faction, level, immune);
+                                    break;
+                                case 2:
+                                    enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
+                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                    break;
+                                case 3:
+                                    enemy = new GameUnit(textures["ally2_left"], textures["ally2_right"],
+                                        textures["ally2_back"], textures["ally2_front"], type, faction, level, immune);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (level)
+                            {
+                                case 1:
+                                    enemy = new GameUnit(textures["enemy1_left"], textures["enemy1_right"],
+                                        textures["enemy1_back"], textures["enemy1_front"], type, faction, level, immune);
+                                    break;
+                                case 2:
+                                    enemy = new GameUnit(textures["enemy2_left"], textures["enemy2_right"],
+                                        textures["enemy2_back"], textures["enemy2_front"], type, faction, level, immune);
+                                    break;
+                                case 3:
+                                    enemy = new GameUnit(textures["enemy2_left"], textures["enemy2_right"],
+                                        textures["enemy2_back"], textures["enemy2_front"], type, faction, level, immune);
+                                    break;
+                            }
+                        }
                         break;
                     case UnitType.RANGED:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_RANGED] : textures[ENEMY_RANGED],
-                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
+                        /*
+                        if (faction == UnitFaction.ALLY)
+                        {
+                            enemy = new GameUnit(textures[ALLY_RANGED_l], textures[ALLY_RANGED_r],
+                                textures[ALLY_RANGED_r], textures[ALLY_RANGED_r], type, faction, level, immune);
+                        }
+                        else
+                        {
+                            enemy = new GameUnit(textures[ENEMY_RANGED_l], textures[ENEMY_RANGED_r],
+                                textures[ENEMY_RANGED_r], textures[ENEMY_RANGED_r], type, faction, level, immune);
+                        }
+                         * */
                         break;
                     case UnitType.FLYING:
-                        enemy = new GameUnit(faction == UnitFaction.ALLY ? textures[ALLY_FLYING] : textures[ENEMY_FLYING],
-                            faction == UnitFaction.ALLY ? textures[ALLY_TANK_r] : textures[ENEMY_TANK_r], type, faction, level, immune);
+                        if (faction == UnitFaction.ALLY)
+                        {
+                            enemy = new GameUnit(textures["ally3_left"], textures["ally3_right"],
+                                textures["ally3_back"], textures["ally3_front"], type, faction, level, immune);
+                        }
+                        else
+                        {
+                            enemy = new GameUnit(textures["enemy3_left"], textures["enemy3_right"],
+                                textures["enemy3_back"], textures["enemy3_front"], type, faction, level, immune);
+                        }
                         break;
                     case UnitType.BOSS:
-                        enemy = new GameUnit(textures[PLASMID], textures[PLASMID], type, faction, level, immune);
+                        enemy = new GameUnit(textures["boss1"], type, faction, level, immune);
                         break;
                     default:
                         enemy = null;
@@ -145,7 +185,7 @@ namespace Pathogenesis
 
             public Item createPickup(Vector2 pos, ItemType type)
             {
-                Item item = new Item(textures[PLASMID], type);
+                Item item = new Item(textures["plasmid"], type);
                 if (item != null)
                 {
                     item.Position = pos;
@@ -158,12 +198,46 @@ namespace Pathogenesis
                 //return levels[num];
 
                 // TODO Should all be loaded from file
+                
                 List<GameUnit> goals = new List<GameUnit>();
-                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(800, 800), false));
-                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1000, 200), false));
-                Level level = new Level(2000, 2000, textures[BACKGROUND1], textures[WALL], goals);
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1900, 1200), false));
+                /*
+                Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
                 level.PlayerStart = new Vector2(2, 2);
-                return level;
+                 */
+                //return level;
+
+                //load from memory
+                Level loadedLevel = null;
+
+                using (FileStream stream = new FileStream("level.xml", FileMode.Open))
+                {
+                    using (XmlReader reader = XmlReader.Create(stream))
+                    {
+                        XmlSerializer x = new XmlSerializer(typeof(Level));
+                        loadedLevel = (Level)x.Deserialize(reader);
+                    }
+                }
+
+                loadedLevel.BackgroundTexture = textures["background"];
+                loadedLevel.Map.WallTexture = textures["wall"];
+                loadedLevel.Bosses = goals;
+                loadedLevel.NumBosses = goals.Count;
+                loadedLevel.BossesDefeated = 0;
+                loadedLevel.PlayerStart = new Vector2(2, 2);
+
+                return loadedLevel;
+            }
+
+            public Menu createMenu(MenuType type)
+            {
+                return new Menu(type, textures["solid"]);
+            }
+
+            public Dictionary<String, SoundEffect> getSounds()
+            {
+                return sounds;
             }
 
             // Returns the game font

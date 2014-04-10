@@ -39,6 +39,15 @@ namespace Pathogenesis
         ENEMY      // Fights against player
     };
 
+    // Facing Direction
+    public enum Direction
+    {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
+
 #endregion
 
     /// <summary>
@@ -68,11 +77,14 @@ namespace Pathogenesis
         // Textures
         public Texture2D Texture_L { get; set; }
         public Texture2D Texture_R { get; set; }
+        public Texture2D Texture_U { get; set; }
+        public Texture2D Texture_D { get; set; }
 
         public bool Lost { get; set; }
         public bool Immune { get; set; }
 
         // Unit movement data
+        public Direction Facing { get; set; }
         public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
         public Vector2 NextMove { get; set; }
@@ -97,7 +109,7 @@ namespace Pathogenesis
 
         public int Attack { get; set; }
         public int Defense { get; set; }
-        public int Speed { get; set; }
+        public float Speed { get; set; }
         public int Range { get; set; }
         public int AttackSpeed { get; set; }
 
@@ -105,11 +117,14 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
-        public GameUnit(Texture2D texture_l, Texture2D texture_r, UnitType type,
-            UnitFaction faction, int level, bool immune)
+        public GameUnit() { }
+
+        public GameUnit(Texture2D texture, UnitType type, UnitFaction faction, int level, bool immune)
         {
-            Texture_L = texture_l;
-            Texture_R = texture_r;
+            Texture_L = texture;
+            Texture_R = texture;
+            Texture_D = texture;
+            Texture_U = texture;
 
             Type = type;
             Faction = faction;
@@ -119,10 +134,32 @@ namespace Pathogenesis
             Target = new Vector2(-1, -1);
             NextMove = new Vector2(-1, -1);
 
-            InitStats();
+            Initialize();
         }
 
-        private void InitStats()
+        public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
+            UnitType type, UnitFaction faction, int level, bool immune)
+        {
+            Texture_L = texture_l;
+            Texture_R = texture_r;
+            Texture_U = texture_u;
+            Texture_D = texture_d;
+
+            Type = type;
+            Faction = faction;
+            Level = level;
+            Immune = immune;
+
+            Target = new Vector2(-1, -1);
+            NextMove = new Vector2(-1, -1);
+
+            Initialize();
+        }
+
+        /*
+         * Initializes all stats
+         */
+        private void Initialize()
         {
             // TODO load stats from a config file
             // Test
@@ -131,7 +168,7 @@ namespace Pathogenesis
             max_health = (int)Math.Pow(2, Level-1) * BASE_HEALTH;
             Health = max_health;
 
-            max_infection_vitality = (int)Math.Pow(2, Level - 1) * BASE_INFECTION_VITALITY;
+            max_infection_vitality = (int)Math.Pow(3, Level - 1) * BASE_INFECTION_VITALITY;
             if (Type == UnitType.BOSS)
             {
                 max_infection_vitality = (int)Math.Pow(2, Level + 1) * BASE_INFECTION_VITALITY;
@@ -165,6 +202,7 @@ namespace Pathogenesis
             if (Level == 2)
             {
                 Mass = 5f;
+                Speed *= 2.0f / 3;
             }
 
             if (Type == UnitType.BOSS)
@@ -187,16 +225,31 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             // test
-            Texture2D texture = Vel.X > 0.5 ? Texture_R : Texture_L;
+            Texture2D texture = null;
+            switch (Facing)
+            {
+                case Direction.RIGHT:
+                    texture = Texture_R;
+                    break;
+                case Direction.LEFT:
+                    texture = Texture_L;
+                    break;
+                case Direction.UP:
+                    texture = Texture_U;
+                    break;
+                case Direction.DOWN:
+                    texture = Texture_D;
+                    break;
+            }
 
-            Color color = Color.White;
+            Color color = Color.Lerp(Color.Red, Color.White, (Health+10) / max_health);
             if (Immune)
             {
-                color = new Color(50, (int)Health + 150, (int)Health + 150, 250);
+                color = Color.Lerp(Color.Red, Color.Blue, (Health+10) /max_health);
             }
-            else
+            if (Faction == UnitFaction.ALLY)    //TEMP tell them to make color darker
             {
-                color = new Color(250, (int)Health + 150, (int)Health + 150, 250);
+                color = Color.Lerp(Color.Red, Color.LightGray, (Health + 10) / max_health);
             }
             if (!Exists)
             {
@@ -204,9 +257,10 @@ namespace Pathogenesis
             }
 
             canvas.DrawSprite(texture, color,
-                new Rectangle((int)(Position.X - Size/2), (int)(Position.Y - Size/2), Size, Size),
+                new Rectangle((int)(Position.X - texture.Width/2), (int)(Position.Y - texture.Height/2),
+                    texture.Width, texture.Height),
                 new Rectangle(0, 0, texture.Width, texture.Height));
-            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }

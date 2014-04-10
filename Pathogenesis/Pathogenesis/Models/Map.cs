@@ -74,7 +74,8 @@ namespace Pathogenesis.Models
 
         public void setTiles(int[][] tiles)
         {
-            this.tiles = tiles;
+            //this.tiles = tiles;
+            /*
             for (int i = 0; i < tiles.Length; i++)
             {
                 for (int j = 0; j < tiles[0].Length; j++)
@@ -139,9 +140,8 @@ namespace Pathogenesis.Models
 
                 }
             }
+            */
         }
-
-
 
         #region Map Methods
         public int getTileAt(int x, int y)
@@ -244,12 +244,12 @@ namespace Pathogenesis.Models
                 for (int j = 0; j < tiles[0].Length; j++)
                 {
                     //canvas.DrawText(i + "," + j, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE));
-
+                    /*
                     if (Pathfinder.pointLocMap != null)
                     {
                         Vector2 next = Pathfinder.pointLocMap[i, j];
                         canvas.DrawText((int)next.Y + "," + (int)next.X, Color.White, new Vector2(j * TILE_SIZE, i * TILE_SIZE));
-                    }
+                    }*/
 
                     if (tiles[i][j] == 1)
                     {

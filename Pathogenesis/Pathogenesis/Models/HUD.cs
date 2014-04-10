@@ -67,9 +67,10 @@ namespace Pathogenesis.Models
                     if (unit.InfectionVitality != unit.max_infection_vitality)
                     {
                         canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
-                                            new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)(0.5*(unit.max_infection_vitality - unit.InfectionVitality)), 8),
+                                            new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                     }
+                    /*
                     if (unit.Type != UnitType.BOSS)
                     {
                         //Health bar
@@ -77,18 +78,21 @@ namespace Pathogenesis.Models
                             new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 30, (int)(0.5 * unit.Health), 8),
                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                     }
+                     * */
                 }
                 if (player != null)
                 {
                     //Player health
+                    /*
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 0, 200),
                                             new Rectangle((int)player.Position.X - HealthBarTexture.Width / 2, (int)player.Position.Y - 30, (int)(0.5 * player.Health), 8),
                                             new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
+                    */
 
                     canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
                         new Rectangle((int)(player.Position.X - canvas.Width/2 + 10),
                             (int)(player.Position.Y - canvas.Height / 2 + 10),
-                            (int)(player.Health * 5), 30),
+                            (int)(MathHelper.Lerp(0, 500, player.Health/player.max_health)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
 
                     canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),

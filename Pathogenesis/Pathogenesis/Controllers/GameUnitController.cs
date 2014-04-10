@@ -30,7 +30,7 @@ namespace Pathogenesis
         public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
         public const int MOVE_STOP_DIST = 5;
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_LOCK_RANGE = 70;    // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_LOCK_RANGE = 50;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
         public const float INFECTION_RECOVER_SPEED = 0.5f;
@@ -68,7 +68,6 @@ namespace Pathogenesis
             lostUnits = new List<GameUnit>();
 
             rand = new Random();
-            Player = factory.createPlayer(new Vector2(0, 0));
         }
 
         public void Reset()
@@ -97,6 +96,10 @@ namespace Pathogenesis
             foreach (GameUnit boss in level.Bosses)
             {
                 Units.Add(boss);
+            }
+            if (Player == null)
+            {
+                Player = factory.createPlayer(new Vector2(0, 0));
             }
             Player.Position = level.PlayerStart * Map.TILE_SIZE;
             Player.Health = Player.max_health;
@@ -285,8 +288,7 @@ namespace Pathogenesis
         public void setNextMove(GameUnit unit, Level level, bool playerFrontBlocked)
         {
             if (unit.Position.X < 0 || unit.Position.Y < 0) return;
-
-            
+ 
             Vector2 prev_move = unit.NextMove;
 
             UnitFaction faction = unit.Faction;     // Unit faction, only called once
@@ -355,6 +357,8 @@ namespace Pathogenesis
                     break;
                 case UnitType.FLYING:
                     // flying AI
+                    //TEMPPP
+                    goto case UnitType.TANK;
                     break;
                 default:
                     // Player case, do nothing
@@ -362,7 +366,7 @@ namespace Pathogenesis
             }
 
             unit.NextMove = unit.Target;
-            if (unit.HasTarget())
+            if (unit.HasTarget() && unit.Type != UnitType.FLYING)
             {
                 /*
                 // If the target is the player, use the player location map
@@ -405,7 +409,9 @@ namespace Pathogenesis
                 Vector2 vel_mod = unit.NextMove - unit.Position;
 
                 // If the unit is close enough to target don't move
-                if (unit.NextMove == unit.Target && vel_mod.Length() < TARGET_STOP_DIST)
+                if (unit.NextMove == unit.Target &&  vel_mod.Length() < TARGET_STOP_DIST ||
+                    unit.Attacking != null && unit.Target == unit.Attacking.Position && // TEMP
+                    unit.inRange(unit.Attacking, unit.AttackRange + unit.Size / 2 + unit.Attacking.Size / 2))
                 {
                     vel_mod = Vector2.Zero;
                 }
@@ -462,6 +468,20 @@ namespace Pathogenesis
             else if (Math.Abs(vel.Y) < unit.Decel * 3 / 4) vel.Y = 0;
             unit.Vel = vel;
             unit.Position += unit.Vel;
+
+            if (unit.Faction == UnitFaction.ALLY && unit != Player && Player != null)
+            {
+                unit.Facing = Player.Facing;
+            }
+            else
+            {
+                Direction dir = Direction.DOWN;
+                if (vel_mod.X < -0.1) dir = Direction.LEFT;
+                else if (vel_mod.X > 0.1) dir = Direction.RIGHT;
+                if (vel_mod.Y < -0.1) dir = Direction.UP;
+                else if (vel_mod.Y > 0.1) dir = Direction.DOWN;
+                unit.Facing = dir;
+            }
         }
 
         /*

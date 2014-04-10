@@ -89,7 +89,7 @@ namespace Pathogenesis
         #region Constants
         // Default window size.  This belongs in the view, not the game engine.
         private const int GAME_WIDTH = 1024;
-        private const int GAME_HEIGHT = 800;
+        private const int GAME_HEIGHT = 768;
         #endregion
 
         #region Fields
@@ -458,6 +458,14 @@ namespace Pathogenesis
 
             // Allow either pass to follow.
             state = DrawState.Inactive;
+        }
+
+        /*
+         * Sets the background color to the specified one
+         */
+        public void SetBackground(Color color)
+        {
+            graphics.GraphicsDevice.Clear(color);
         }
 
         #region Sprite Pass
