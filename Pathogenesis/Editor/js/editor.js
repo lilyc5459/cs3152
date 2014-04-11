@@ -55,8 +55,8 @@ function setup(){
   */
     var lvlWidth = $( "#lvlWidth" ),
     lvlHeight = $( "#lvlHeight" ),
-    filename = $("#filename");
-    allFields = $( [] ).add( lvlWidth ).add( lvlHeight );
+    filename = $("#filename"),
+    allFields = $( [] ).add( lvlWidth ).add( lvlHeight ).add( filename );
 
 
 
@@ -85,15 +85,15 @@ function setup(){
 
     $( "#save-form" ).dialog({
       autoOpen: false,
-      height: 300,
+      height: 240,
       width: 350,
       modal: true,
       buttons: {
         "Save a level": function() {
           allFields.removeClass( "ui-state-error" );
-          //TODO: fix input
-          filename = "map.xml";
-          xml(filename);
+          LevelXML = CreateXML();
+          SaveXML(LevelXML, filename.val());
+
             $( this ).dialog( "close" );
         },
         Cancel: function() {
@@ -167,7 +167,7 @@ function setup(){
 /*
 Creating XML file
 */
-function xml(filename){
+function CreateXML(){
 var x2js = new X2JS();
 
 var WallTexture = {
@@ -200,18 +200,23 @@ Level.Level.Height = realHeight;
 Level.Level.Map = Map;
 Level.Level.BackgroundTexture = BackgroundTexture;
 
-console.log(Level);
-
 var JSONlevel = JSON.stringify(Level);
-console.log(JSONlevel);
 var XMLlevel = x2js.json2xml_str($.parseJSON(JSONlevel));
-console.log(XMLlevel);
 
-$("#output").text(XMLlevel);
+//$("#output").text(XMLlevel);
 
+return XMLlevel;
+//I/O
 };
 
-$(function() {
+function SaveXML(xml, filename){
+  var blob = new Blob([xml], {type: "application/xhtml+xml;charset=ISO-8859-1"});
+  saveAs(blob, filename);
+};
+
+$(function(view) {
   init();
   setup();
+
 });
+
