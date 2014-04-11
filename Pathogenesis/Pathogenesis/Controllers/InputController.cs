@@ -45,7 +45,15 @@ namespace Pathogenesis
             }
 
             /// <summary>
-            /// Whether the rally button is pressed.
+            /// Whether the infection button is pressed.
+            /// </summary>
+            public bool StartConverting
+            {
+                get { return keyStates[CONVERT] == KeyState.DOWN; }
+            }
+
+            /// <summary>
+            /// Whether the infection button is held.
             /// </summary>
             public bool Converting
             {

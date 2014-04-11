@@ -12,6 +12,7 @@ namespace Pathogenesis
         // Distance from player that allies will target when player moves in a direction
         private const int ALLY_FRONT_DISTANCE = 100;
         private const int BASE_INFECTION_RANGE = 250;
+        private const float BASE_INFECTION_RECOVERY = 0.5f;
 
         #region Fields and Properties
         public bool Alive;
@@ -34,8 +35,9 @@ namespace Pathogenesis
         public bool MaxAllies { get; set; }
 
         public GameUnit Infecting { get; set; }     // Unit that the player is currently infecting
-        public int InfectionPoints { get; set; }    // Current infection points
+        public float InfectionPoints { get; set; }    // Current infection points
         public int InfectionRange { get; set; }     // Player's infection range
+        public float InfectionRecovery { get; set; }
 
         // Items that the player has picked up. Effects will be applied in update player phase
         private List<Item> pickups;
@@ -54,6 +56,7 @@ namespace Pathogenesis
             Health = 150;
             max_health = 150; //TEMP
             InfectionRange = BASE_INFECTION_RANGE;
+            InfectionRecovery = BASE_INFECTION_RECOVERY;
             Alive = true;
         }
 

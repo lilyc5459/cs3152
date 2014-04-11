@@ -211,9 +211,13 @@ namespace Pathogenesis
             }
             
             Player.Vel = vel;
-            if (input_controller.Converting)
+            if (input_controller.StartConverting)
             {
-                PlayerInfect();
+                BeginInfection();
+            }
+            else if (input_controller.Converting)
+            {
+                Infect();
             }
             else
             {
@@ -224,11 +228,12 @@ namespace Pathogenesis
         /*
          * Searches for the closest enemy within infection range and converts it to an ally
          */
-        private void PlayerInfect()
+        private void Infect()
         {
             if (Player.Infecting != null)
             {
-                if (Player.InfectionPoints > 0 && Player.Infecting.InfectionVitality > 0 && 
+                if (Player.InfectionPoints > Player.InfectionRecovery &&
+                    Player.Infecting.InfectionVitality > 0 && 
                     Player.Infecting.inRange(Player, Player.InfectionRange))
                 {
                     Player.Infecting.InfectionVitality -= INFECTION_SPEED;
@@ -242,26 +247,27 @@ namespace Pathogenesis
                     Player.Infecting = null;                    
                 }
             }
-            else
+        }
+
+        private void BeginInfection()
+        {
+            // Search for closest enemy within infection range
+            GameUnit closestInRange = null;
+            foreach (GameUnit unit in Units)
             {
-                // Search for closest enemy within infection range
-                GameUnit closestInRange = null;
-                foreach (GameUnit unit in Units)
+                if (!unit.Immune && unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, Player.InfectionRange))
                 {
-                    if (!unit.Immune && unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, Player.InfectionRange))
+                    if (closestInRange == null || Player.distance(unit) < Player.distance(closestInRange))
                     {
-                        if (closestInRange == null || Player.distance(unit) < Player.distance(closestInRange))
-                        {
-                            closestInRange = unit;
-                        }
+                        closestInRange = unit;
                     }
                 }
+            }
 
-                // Convert the enemy!
-                if (closestInRange != null && !Player.MaxAllies)
-                {
-                    Player.Infecting = closestInRange;
-                }
+            // Convert the enemy!
+            if (closestInRange != null && !Player.MaxAllies)
+            {
+                Player.Infecting = closestInRange;
             }
         }
 
@@ -269,23 +275,32 @@ namespace Pathogenesis
         {
             if (Player.Health <= 0) DeadUnits.Add(Player);
 
+            // Apply recovery. Only recover when the player is not currently infecting (otherwise they have infinite conversion power)
+            if (Player.Infecting == null)
+            {
+                Player.InfectionPoints += Player.InfectionRecovery;
+            }
+
+            // Apply items
             foreach(Item item in Player.Items)
             {
                 switch (item.Type)
                 {
                     case ItemType.PLASMID:
                         Player.InfectionPoints += PLASMID_POINTS;
-                        Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
-                            0, MAX_PLAYER_CONVERSION_POINTS);
                         break;
                     case ItemType.HEALTH:
                         Player.Health += HEALTH_POINTS;
-                        Player.Health = MathHelper.Clamp(Player.Health, 0, Player.max_health);
                         break;
                     case ItemType.ATTACK:
                         break;
                 }
             }
+
+            // Set field limits
+            Player.InfectionPoints = MathHelper.Clamp(Player.InfectionPoints,
+                0, MAX_PLAYER_CONVERSION_POINTS);
+            Player.Health = MathHelper.Clamp(Player.Health, 0, Player.max_health);
             Player.Items = new List<Item>();
         }
         #endregion
@@ -358,8 +373,10 @@ namespace Pathogenesis
                         unit.Attacking = closest;
                     }
 
-                    if(faction == UnitFaction.ALLY && Player != null && !Player.inRange(unit, ALLY_FOLLOW_RANGE))
+                    if(faction == UnitFaction.ALLY && (Player != null && !Player.inRange(unit, ALLY_FOLLOW_RANGE) ||
+                        Player.Infecting != null))
                     {
+                        unit.Attacking = null;
                         unit.Target = Player.Position;
                     }
                     break;
@@ -392,18 +409,18 @@ namespace Pathogenesis
 
                 // Pathfind to target if necessary
 
-                    if (!random_walk &&
-                        level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size / 2))
+                if (!random_walk &&
+                    level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size / 2))
+                {
+                    if (rand.NextDouble() < 0.1)
                     {
-                        if (rand.NextDouble() < 0.1)
-                        {
-                            findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
-                        }
-                        else
-                        {
-                            unit.NextMove = prev_move;
-                        }
+                        findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
                     }
+                    else
+                    {
+                        unit.NextMove = prev_move;
+                    }
+                }
 
             }
         }
