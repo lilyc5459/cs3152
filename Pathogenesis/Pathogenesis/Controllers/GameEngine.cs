@@ -156,7 +156,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
-                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 0)
+                    if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 100)
                     {
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
                         if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))

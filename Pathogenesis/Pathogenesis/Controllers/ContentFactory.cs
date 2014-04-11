@@ -89,8 +89,8 @@ namespace Pathogenesis
             // Returns an instance of Player
             public Player createPlayer(Vector2 pos)
             {
-                Player p = new Player(textures["player_left"], textures["player_right"],
-                    textures["player_back"], textures["player_front"], 2, new Vector2(60, 47));
+                Player p = new Player(textures["player_sheet"], textures["player_right"],
+                    textures["player_back"], textures["player_front"], 3, new Vector2(60, 47));
                 p.Position = pos;
                 p.FrameSpeed = 9;
                 return p;

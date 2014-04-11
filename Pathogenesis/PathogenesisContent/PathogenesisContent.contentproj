@@ -42,78 +42,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\enemy1_back.png">
-      <Name>enemy1_back</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy1_front.png">
-      <Name>enemy1_front</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy1_left.png">
-      <Name>enemy1_left</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy1_right.png">
-      <Name>enemy1_right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy2_back.png">
-      <Name>enemy2_back</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy2_front.png">
-      <Name>enemy2_front</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy2_left.png">
-      <Name>enemy2_left</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy2_right.png">
-      <Name>enemy2_right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy2.png">
-      <Name>enemy2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\main-back.png">
-      <Name>main-back</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\main-front.png">
-      <Name>main-front</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\main-left.png">
-      <Name>main-left</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\main-right.png">
-      <Name>main-right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\main.png">
-      <Name>main</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Backgrounds\background2.png">
       <Name>background2</Name>
       <Importer>TextureImporter</Importer>
@@ -136,53 +64,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally_flying.png">
-      <Name>ally_flying</Name>
+    <Compile Include="Characters\banner.jpg">
+      <Name>banner</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\ally_left.png">
-      <Name>ally_left</Name>
+    <Compile Include="Characters\infectpoint.png">
+      <Name>infectpoint</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\ally_ranged.png">
-      <Name>ally_ranged</Name>
+    <Compile Include="Characters\main-left.png">
+      <Name>main-left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\ally_right.png">
-      <Name>ally_right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\ally_tank.png">
-      <Name>ally_tank</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy_flying.png">
-      <Name>enemy_flying</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy_left.png">
-      <Name>enemy_left</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy_ranged.png">
-      <Name>enemy_ranged</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy_right.png">
-      <Name>enemy_right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy_tank.png">
-      <Name>enemy_tank</Name>
+    <Compile Include="Characters\main-right.png">
+      <Name>main-right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -193,11 +91,6 @@
     </Compile>
     <Compile Include="Environment\infect.png">
       <Name>infect</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\mainplayer.png">
-      <Name>mainplayer</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -262,123 +155,217 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally2_right.png">
-      <Name>ally2_right</Name>
+    <Compile Include="Characters\main-spritesheet.png">
+      <Name>main-spritesheet</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally1_back.png">
+    <Compile Include="Characters\ally1\ally1_back.png">
       <Name>ally1_back</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\ally1_front.png">
+    <Compile Include="Characters\ally1\ally1_front.png">
       <Name>ally1_front</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\ally1_left.png">
+    <Compile Include="Characters\ally1\ally1_left.png">
       <Name>ally1_left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\ally1_right.png">
+    <Compile Include="Characters\ally1\ally1_right.png">
       <Name>ally1_right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally2_back.png">
+    <Compile Include="Characters\ally2\ally2_back.png">
       <Name>ally2_back</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\ally2_front.png">
+    <Compile Include="Characters\ally2\ally2_front.png">
       <Name>ally2_front</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\ally2_left.png">
+    <Compile Include="Characters\ally2\ally2_left.png">
       <Name>ally2_left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Characters\ally2\ally2_right.png">
+      <Name>ally2_right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally3_back.png">
+    <Compile Include="Characters\ally3\ally3_back.png">
       <Name>ally3_back</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\ally3_left.png">
+    <Compile Include="Characters\ally3\ally3_front.png">
+      <Name>ally3_front</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\ally3\ally3_left.png">
       <Name>ally3_left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\ally3_right.png">
+    <Compile Include="Characters\ally3\ally3_right.png">
       <Name>ally3_right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\banner.jpg">
-      <Name>banner</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy1.png">
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Characters\enemy1\enemy1.png">
       <Name>enemy1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\enemy3_back.png">
+    <Compile Include="Characters\enemy1\enemy1_back.png">
+      <Name>enemy1_back</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy1\enemy1_front.png">
+      <Name>enemy1_front</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy1\enemy1_left.png">
+      <Name>enemy1_left</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy1\enemy1_right.png">
+      <Name>enemy1_right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Characters\enemy2\enemy2.png">
+      <Name>enemy2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy2\enemy2_back.png">
+      <Name>enemy2_back</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy2\enemy2_front.png">
+      <Name>enemy2_front</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy2\enemy2_left.png">
+      <Name>enemy2_left</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\enemy2\enemy2_right.png">
+      <Name>enemy2_right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Characters\enemy3\enemy3_back.png">
       <Name>enemy3_back</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\enemy3_front.png">
+    <Compile Include="Characters\enemy3\enemy3_front.png">
       <Name>enemy3_front</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\enemy3_left.png">
+    <Compile Include="Characters\enemy3\enemy3_left.png">
       <Name>enemy3_left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\enemy3_right.png">
+    <Compile Include="Characters\enemy3\enemy3_right.png">
       <Name>enemy3_right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\ally3_front.png">
-      <Name>ally3_front</Name>
+    <Compile Include="Characters\main\main-back.png">
+      <Name>main-back</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Characters\infectpoint.png">
-      <Name>infectpoint</Name>
+    <Compile Include="Characters\main\main-back1.png">
+      <Name>main-back1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\main-front-ani.png">
-      <Name>main-front-ani</Name>
+    <Compile Include="Characters\main\main-back2.png">
+      <Name>main-back2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-front.png">
+      <Name>main-front</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-front1.png">
+      <Name>main-front1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-front2.png">
+      <Name>main-front2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-left.png">
+      <Name>main-left</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-left1.png">
+      <Name>main-left1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-left2.png">
+      <Name>main-left2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-right.png">
+      <Name>main-right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-right1.png">
+      <Name>main-right1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main-right2.png">
+      <Name>main-right2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\main\main.png">
+      <Name>main</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

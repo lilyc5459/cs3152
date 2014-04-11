@@ -248,21 +248,46 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas)
         {
             // test
-            Texture2D texture = null;
+            Texture2D texture = Texture_L;
+            int facingFrame = 0;
             switch (Facing)
             {
                 case Direction.RIGHT:
                     texture = Texture_R;
+                    facingFrame = 3;
                     break;
                 case Direction.LEFT:
                     texture = Texture_L;
+                    facingFrame = 2;
                     break;
                 case Direction.UP:
                     texture = Texture_U;
+                    facingFrame = 1;
                     break;
                 case Direction.DOWN:
                     texture = Texture_D;
+                    facingFrame = 0;
                     break;
+            }
+
+            if (Type == UnitType.PLAYER)
+            {
+                texture = Texture_L;
+                switch (Facing)
+                {
+                    case Direction.RIGHT:
+                        facingFrame = 3;
+                        break;
+                    case Direction.LEFT:
+                        facingFrame = 2;
+                        break;
+                    case Direction.UP:
+                        facingFrame = 1;
+                        break;
+                    case Direction.DOWN:
+                        facingFrame = 0;
+                        break;
+                }
             }
 
             Color color = Color.Lerp(Color.Red, Color.White, (Health+10) / max_health);
@@ -285,7 +310,7 @@ namespace Pathogenesis
                 canvas.DrawSprite(texture, color,
                     new Rectangle((int)(Position.X - FrameSize.X / 2), (int)(Position.Y - FrameSize.Y / 2),
                         (int)FrameSize.X, (int)FrameSize.Y),
-                    new Rectangle(Frame * (int)FrameSize.X, 0, (int)FrameSize.X, (int)FrameSize.Y));
+                    new Rectangle(Frame * (int)FrameSize.X, facingFrame * (int)FrameSize.Y, (int)FrameSize.X, (int)FrameSize.Y));
             }
             else
             {
@@ -295,7 +320,7 @@ namespace Pathogenesis
                         texture.Width, texture.Height),
                     new Rectangle(0, 0, texture.Width, texture.Height));
             }
-            canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
         }
     }
 }
