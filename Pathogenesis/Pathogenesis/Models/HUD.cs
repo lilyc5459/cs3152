@@ -46,6 +46,10 @@ namespace Pathogenesis.Models
                             new Rectangle((int)unit.Position.X - range, (int)unit.Position.Y - range, range * 2, range * 2),
                             new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                     }
+                    canvas.DrawSprite(InfectTexture,
+                            new Color(0, 0, 0, 100),
+                            new Rectangle((int)unit.Position.X - (unit.Size+10)/2 + 10, (int)unit.Position.Y + 10, unit.Size + 10, unit.Size/2),
+                            new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                 }
                 if (player != null)
                 {
@@ -81,12 +85,16 @@ namespace Pathogenesis.Models
                             (int)(player.Position.Y - canvas.Height / 2 + 10),
                             (int)(MathHelper.Lerp(0, 500, player.Health/player.max_health)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                    canvas.DrawText(player.Health + "/" + player.max_health, Color.White,
+                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 10));
 
                     canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
                         new Rectangle((int)(player.Position.X + 10),
                             (int)(player.Position.Y - canvas.Height / 2 + 10),
-                            (int)(player.InfectionPoints / 2), 30),
+                            (int)(MathHelper.Lerp(0, 500, player.InfectionPoints / player.MaxInfectionPoints)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                    canvas.DrawText(player.InfectionPoints + "/" + player.MaxInfectionPoints, Color.White,
+                        new Vector2(player.Position.X + 10, player.Position.Y - canvas.Height / 2 + 10));
                 }
             }
         }

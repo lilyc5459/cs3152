@@ -11,7 +11,7 @@ namespace Pathogenesis
     {
         // Distance from player that allies will target when player moves in a direction
         private const int ALLY_FRONT_DISTANCE = 100;
-        private const int BASE_INFECTION_RANGE = 250;
+        private const int BASE_INFECTION_RANGE = 150;
         private const float BASE_INFECTION_RECOVERY = 0.5f;
 
         #region Fields and Properties
@@ -33,6 +33,9 @@ namespace Pathogenesis
         }
         public int NumAllies { get; set; }
         public bool MaxAllies { get; set; }
+        public int MaxInfectionPoints { get; set; }
+
+        public bool AttackPowerActivated { get; set; }
 
         public GameUnit Infecting { get; set; }     // Unit that the player is currently infecting
         public float InfectionPoints { get; set; }    // Current infection points
@@ -52,9 +55,10 @@ namespace Pathogenesis
             : base(texture_l, texture_r, texture_u, texture_d, numFrames, block_dim, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
             pickups = new List<Item>();
-            InfectionPoints = GameUnitController.MAX_PLAYER_CONVERSION_POINTS;
+            InfectionPoints = MaxInfectionPoints;
             Health = 150;
             max_health = 150; //TEMP
+            MaxInfectionPoints = 1000;
             InfectionRange = BASE_INFECTION_RANGE;
             InfectionRecovery = BASE_INFECTION_RECOVERY;
             Alive = true;
@@ -65,7 +69,7 @@ namespace Pathogenesis
             switch (item.Type)
             {
                 case ItemType.PLASMID:
-                    if (InfectionPoints == GameUnitController.MAX_PLAYER_CONVERSION_POINTS) return false;
+                    if (InfectionPoints == MaxInfectionPoints) return false;
                     break;
                 case ItemType.HEALTH:
                     if (Health == max_health) return false;

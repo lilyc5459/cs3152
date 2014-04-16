@@ -74,7 +74,7 @@ namespace Pathogenesis
             switch (level_num)
             {
                 case 0:
-                    sound_controller.play("music1");
+                    sound_controller.loop("music1");
                     break;
                 default:
                     break;

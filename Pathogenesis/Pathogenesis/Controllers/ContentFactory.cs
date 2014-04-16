@@ -20,6 +20,9 @@ namespace Pathogenesis
             // Used to load the sounds and graphics (CONTROLLER CLASS)
             protected ContentManager content;
 
+            // Random num generator
+            private Random rand;
+
             // Dictionary of all textures mapped as <filename, texture>
             private Dictionary<String, Texture2D> textures;
             // Dictionary of all audio clips mapped as <filename, clip>
@@ -37,6 +40,8 @@ namespace Pathogenesis
                 // Tell the program to load all files relative to the "Content" directory.
                 this.content = content;
                 content.RootDirectory = "Content";
+
+                rand = new Random();
 
                 textures = new Dictionary<string, Texture2D>();
                 sounds = new Dictionary<string, SoundEffect>();
@@ -157,6 +162,7 @@ namespace Pathogenesis
                                 textures[ENEMY_RANGED_r], textures[ENEMY_RANGED_r], type, faction, level, immune);
                         }
                          * */
+                        goto case UnitType.FLYING;
                         break;
                     case UnitType.FLYING:
                         if (faction == UnitFaction.ALLY)
@@ -182,6 +188,30 @@ namespace Pathogenesis
                     enemy.Position = pos;
                 }
                 return enemy;
+            }
+
+            /*
+             * Creates a base level ally
+             */
+            public GameUnit createAlly(Vector2 pos)
+            {
+                //TODO don't hardcode probabilities
+                double typeProb = rand.NextDouble();
+                UnitType type = UnitType.TANK;
+                if (typeProb > 0.4)
+                {
+                    type = UnitType.TANK;
+                }
+                else if (typeProb > 0.1)
+                {
+                    type = UnitType.FLYING;
+                }
+                else
+                {
+                    type = UnitType.RANGED;
+                }
+                return createUnit(type, UnitFaction.ALLY, 1,
+                    pos + new Vector2((float)(rand.NextDouble() * 10 - 5), (float)(rand.NextDouble() * 10 - 5)), false);
             }
 
             public Item createPickup(Vector2 pos, ItemType type)

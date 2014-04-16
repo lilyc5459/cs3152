@@ -12,7 +12,14 @@ namespace Pathogenesis
     {
         PLASMID,    // Gives conversion juice
         HEALTH,     // Gives health
-        ATTACK      // Increases attack for a short period
+        ATTACK,     // Increases ally attack for a short period
+        ALLIES,     // Gives 3 free allies
+        RANGE,      // Increases infection range
+        SPEED,      // Increases speed
+        MAX_HEALTH, // Increases max health
+        MAX_INFECT, // Increases max infect points
+        INFECT_REGEN,   // Increases infection points regeneration speed
+        MYSTERY,    // Mystery effect, can be positive or negative
     };
     #endregion
 
@@ -42,6 +49,15 @@ namespace Pathogenesis
                     color = Color.White;
                     break;
                 case ItemType.ATTACK:
+                    color = Color.Yellow;
+                    break;
+                case ItemType.ALLIES:
+                    color = Color.Green;
+                    break;
+                case ItemType.RANGE:
+                    color = Color.Orange;
+                    break;
+                case ItemType.SPEED:
                     color = Color.Yellow;
                     break;
             }

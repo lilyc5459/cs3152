@@ -22,6 +22,15 @@ namespace Pathogenesis.Controllers
             }
         }
 
+        public void loop(String name)
+        {
+            if (!sounds[name].IsLooped)
+            {
+                sounds[name].IsLooped = true;
+            }
+            sounds[name].Restart();
+        }
+
         public void play(String name)
         {
             sounds[name].Restart();

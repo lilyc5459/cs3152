@@ -213,7 +213,9 @@ namespace Pathogenesis
 
             if (Type == UnitType.BOSS)
             {
-                Static = true;
+                Mass = 100f;
+                AttackRange = 400;
+                //Static = true;
             }
         }
         #endregion

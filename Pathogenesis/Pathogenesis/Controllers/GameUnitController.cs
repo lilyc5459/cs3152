@@ -20,7 +20,6 @@ namespace Pathogenesis
         public const int NUM_ALLY_FINDERS = 10;
 
         public const int PLAYER_PATHFIND_FIELD_SIZE = 15;
-        public const int MAX_PLAYER_CONVERSION_POINTS = 1000; // Maximum conversion points for the player
         public const int MAX_ASTAR_DIST = 20;
         public const int LOST_ALLY_DISTANCE = 300;
 
@@ -35,8 +34,20 @@ namespace Pathogenesis
         public const float INFECTION_RECOVER_SPEED = 0.5f;
         public const float ALLY_ATTRITION = 0.0f;
 
+        public const int MAX_PLAYER_INFECT_RANGE = 300;    // Max player infection range
+        public const float MAX_PLAYER_SPEED = 9;    // Max overall player speed
+        public const float MAX_PLAYER_HEALTH = 500;    // Max overall player health
+        public const int MAX_PLAYER_INFECTION_POINTS = 2000;    // Max overall player infection points
+        public const float MAX_PLAYER_INFECTION_REGEN = 1;    // Max overall player infection regen speed
+
         public const int PLASMID_POINTS = 120;      // Conversion points gained from picking up a plasmid
         public const int HEALTH_POINTS = 100;       // Health points gained from picking up a health item
+        public const int ITEM_FREE_ALLY_NUM = 3;    // The number of allies received from an item pickup
+        public const float ITEM_RANGE_INCREASE = 1.2f;  // The amount of range increse upon picking up range item
+        public const float ITEM_SPEED_INCREASE = 1.1f;  // The amount of speed increse upon picking up speed item
+        public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
+        public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
+        public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         #endregion
 
         private ContentFactory factory;
@@ -44,6 +55,8 @@ namespace Pathogenesis
         public List<GameUnit> Units { get; set; }           // A list of all the units currently in the game
         public List<GameUnit> DeadUnits { get; set; }       // Dead units to be destroyed this frame
         public List<GameUnit> ConvertedUnits { get; set; }  // Units to be converted this frame
+        public List<GameUnit> SpawnedUnits { get; set; }    // Units to be spawned this frame
+
         private List<GameUnit> lostUnits;                   // Lost allies
 
         // The player object
@@ -67,6 +80,7 @@ namespace Pathogenesis
             Units = new List<GameUnit>();
             DeadUnits = new List<GameUnit>();
             ConvertedUnits = new List<GameUnit>();
+            SpawnedUnits = new List<GameUnit>();
             lostUnits = new List<GameUnit>();
             PreviousPositions = new Dictionary<int, Vector2>();
 
@@ -78,6 +92,7 @@ namespace Pathogenesis
             Units.Clear();
             DeadUnits.Clear();
             ConvertedUnits.Clear();
+            SpawnedUnits.Clear();
             lostUnits.Clear();
         }
 
@@ -87,6 +102,25 @@ namespace Pathogenesis
         public void AddUnit(GameUnit unit)
         {
             Units.Add(unit);
+        }
+
+        /*
+         * Replace the given unit with an ally
+         */
+        public GameUnit AddAlly(GameUnit unit)
+        {
+            GameUnit newUnit = null;
+            if(unit == null)
+            {
+                newUnit = factory.createAlly(Player.Position); 
+            }
+            else
+            {
+                DeadUnits.Add(unit);
+                newUnit = factory.createUnit(unit.Type, unit.Faction, unit.Level, unit.Position, unit.Immune);
+            }
+            AddUnit(newUnit);
+            return newUnit;
         }
 
         /*
@@ -105,7 +139,7 @@ namespace Pathogenesis
             }
             Player.Position = level.PlayerStart * Map.TILE_SIZE;
             Player.Health = Player.max_health;
-            Player.InfectionPoints = MAX_PLAYER_CONVERSION_POINTS;
+            Player.InfectionPoints = Player.MaxInfectionPoints;
         }
         #endregion
 
@@ -117,6 +151,7 @@ namespace Pathogenesis
         {
             ConstructCombatGrid(level);
             ConvertedUnits.Clear();
+            SpawnedUnits.Clear();
             DeadUnits.Clear();
             
             //Pathfinder.findPath(level.Map, Player.Front, Player.Front, PLAYER_PATHFIND_FIELD_SIZE, true);
@@ -162,7 +197,15 @@ namespace Pathogenesis
             // Execute moves and actions
             foreach (GameUnit unit in Units)
             {
-                setNextMove(unit, level, playerFrontBlocked);   // Set next moves
+                // Set next moves
+                if (unit.Faction == UnitFaction.ALLY)
+                {
+                    setAllyTarget(unit, level, playerFrontBlocked);
+                }
+                else
+                {
+                    setEnemyTarget(unit, level);
+                }
                 setVelocity(unit);
                 moveUnit(unit);
                 ProcessCombat(unit);
@@ -173,6 +216,12 @@ namespace Pathogenesis
             foreach (GameUnit unit in ConvertedUnits)
             {
                 UpdatePreviousPosition(Convert(unit), level.Map);
+            }
+
+            // Spawn units
+            foreach (GameUnit unit in SpawnedUnits)
+            {
+                AddUnit(unit);
             }
 
             // Dispose of dead units
@@ -226,7 +275,7 @@ namespace Pathogenesis
         }
 
         /*
-         * Searches for the closest enemy within infection range and converts it to an ally
+         * Applies the infection effect to the current infection target
          */
         private void Infect()
         {
@@ -240,7 +289,7 @@ namespace Pathogenesis
 
                     Player.InfectionPoints -= (int)INFECTION_SPEED;
                     Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
-                        0, MAX_PLAYER_CONVERSION_POINTS);
+                        0, Player.MaxInfectionPoints);
                 }
                 else
                 {
@@ -249,6 +298,9 @@ namespace Pathogenesis
             }
         }
 
+        /*
+         * Searches for the closest enemy within infection range sets it as the player's infection target
+         */
         private void BeginInfection()
         {
             // Search for closest enemy within infection range
@@ -294,75 +346,88 @@ namespace Pathogenesis
                         break;
                     case ItemType.ATTACK:
                         break;
+                    case ItemType.ALLIES:
+                        for (int i = 0; i < ITEM_FREE_ALLY_NUM; i++)
+                        {
+                            AddAlly(null);
+                        }
+                        break;
+                    case ItemType.RANGE:
+                        Player.InfectionRange = (int)MathHelper.Clamp(
+                            Player.InfectionRange * ITEM_RANGE_INCREASE, 0, MAX_PLAYER_INFECT_RANGE);
+                        break;
+                    case ItemType.SPEED:
+                        Player.Speed = MathHelper.Clamp(
+                            Player.Speed * ITEM_SPEED_INCREASE, 0, MAX_PLAYER_SPEED);
+                        break;
+                    case ItemType.MAX_HEALTH:
+                        Player.max_health = (int)MathHelper.Clamp(
+                            Player.max_health * ITEM_MAX_HEALTH_INCREASE, 0, MAX_PLAYER_HEALTH);
+                        break;
+                    case ItemType.MAX_INFECT:
+                        Player.MaxInfectionPoints = (int)MathHelper.Clamp(
+                            Player.MaxInfectionPoints * ITEM_INFECT_POINTS_INCREASE, 0, MAX_PLAYER_INFECTION_POINTS);
+                        break;
+                    case ItemType.INFECT_REGEN:
+                        Player.InfectionRecovery = MathHelper.Clamp(
+                            Player.InfectionRecovery * ITEM_INFECTION_REGEN_INCREASE, 0, MAX_PLAYER_INFECTION_REGEN);
+                        break;
+                    case ItemType.MYSTERY:
+                        Player.Speed = MathHelper.Clamp(
+                            Player.Speed * ITEM_SPEED_INCREASE, 0, MAX_PLAYER_SPEED);
+                        break;
                 }
             }
 
             // Set field limits
             Player.InfectionPoints = MathHelper.Clamp(Player.InfectionPoints,
-                0, MAX_PLAYER_CONVERSION_POINTS);
+                0, Player.MaxInfectionPoints);
             Player.Health = MathHelper.Clamp(Player.Health, 0, Player.max_health);
             Player.Items = new List<Item>();
         }
         #endregion
 
-        #region Movement and Pathfinding
+        #region Targeting and Pathfinding
 
         /*
-         * Determine the next move for this unit with
+         * Determine the next move for this ally unit with
          * targeting specific to each unit type AI
-         */ 
-        public void setNextMove(GameUnit unit, Level level, bool playerFrontBlocked)
+         */
+        public void setAllyTarget(GameUnit unit, Level level, bool playerFrontBlocked)
         {
-            if (unit.Position.X < 0 || unit.Position.Y < 0) return;
- 
-            Vector2 prev_move = unit.NextMove;
+            if (!unit.Exists || unit.Position.X < 0 || unit.Position.Y < 0) return;
 
             UnitFaction faction = unit.Faction;     // Unit faction, only called once
-            
-            // If an ally unit is lost, do this
-            if (faction == UnitFaction.ALLY && unit.Lost)
+            Vector2 prev_move = unit.NextMove;
+            bool random_walk = false;
+
+            // Handle lost allies or dead player
+            if (unit.Lost || Player == null)
             {
-                if (rand.NextDouble() < 0.01 && Player != null)
+                if (rand.NextDouble() < 0.01 && Player != null)     // Look for the player
                 {
                     unit.Target = Player.Position;
                     findTarget(unit, Player.Position, level.Map, MAX_ASTAR_DIST);
                 }
-                else if(rand.NextDouble() < 0.05)
+                else if (rand.NextDouble() < 0.05)      // Random walk
                 {
                     unit.Target = unit.Position + new Vector2(rand.Next(600) - 300, rand.Next(600) - 300);
                     unit.NextMove = unit.Target;
+                    random_walk = true;
                 }
                 return;
             }
 
-            // Select target
-            bool random_walk = false;
             switch (unit.Type)
             {
                 case UnitType.TANK:
-                    // tank AI
-                    if (Player != null && Player.Exists &&
-                        faction == UnitFaction.ENEMY && Player.inRange(unit, ENEMY_CHASE_RANGE))
+                    if (playerFrontBlocked)
                     {
                         unit.Target = Player.Position;
                     }
-                    else if (rand.NextDouble() < 0.05)
+                    else
                     {
-                        // Random walk
-                        random_walk = true;
-                        unit.Target = unit.Position + new Vector2(rand.Next(600)-300, rand.Next(600)-300);
-                    }
-
-                    if (faction == UnitFaction.ALLY && Player != null)
-                    {
-                        if (playerFrontBlocked)
-                        {
-                            unit.Target = Player.Position;
-                        }
-                        else
-                        {
-                            unit.Target = Player.Front;
-                        }
+                        unit.Target = Player.Front;
                     }
 
                     // Chase the closest enemy in range
@@ -373,11 +438,66 @@ namespace Pathogenesis
                         unit.Attacking = closest;
                     }
 
-                    if(faction == UnitFaction.ALLY && (Player != null && !Player.inRange(unit, ALLY_FOLLOW_RANGE) ||
-                        Player.Infecting != null))
+                    if (!Player.inRange(unit, ALLY_FOLLOW_RANGE) || closest == Player.Infecting)
                     {
                         unit.Attacking = null;
                         unit.Target = Player.Position;
+                    }
+                    break;
+                case UnitType.RANGED:
+                    break;
+                case UnitType.FLYING:
+                    goto case UnitType.TANK;
+                    break;
+                default:
+                    break;
+            }
+            setNextMove(unit, level, prev_move, random_walk);
+        }
+
+        /*
+         * Determine the next move for this enemy unit with
+         * targeting specific to each unit type AI
+         */ 
+        public void setEnemyTarget(GameUnit unit, Level level)
+        {
+            if (!unit.Exists || unit.Position.X < 0 || unit.Position.Y < 0) return;
+
+            UnitFaction faction = unit.Faction;     // Unit faction, only called once
+            Vector2 prev_move = unit.NextMove;
+            bool random_walk = false;
+            
+            // Select target
+            switch (unit.Type)
+            {
+                case UnitType.TANK:     // tank AI
+                    GameUnit closest = null;
+                    if (unit.Immune && unit.Level == 1)
+                    {
+                        closest = findClosestOfTypeInRange(unit, unit.Type, 2, ATTACK_LOCK_RANGE);
+                        if (closest != null)
+                        {
+                            unit.Target = closest.Position;
+                        }
+                    }
+
+                    if (Player != null && Player.Exists && Player.inRange(unit, ENEMY_CHASE_RANGE))
+                    {
+                        unit.Target = Player.Position;
+                    }
+                    else if (rand.NextDouble() < 0.05)
+                    {
+                        // Random walk
+                        random_walk = true;
+                        unit.Target = unit.Position + new Vector2(rand.Next(600)-300, rand.Next(600)-300);
+                    }
+                    
+                    // Chase the closest enemy in range
+                    closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    if (closest != null)
+                    {
+                        unit.Target = closest.Position;
+                        unit.Attacking = closest;
                     }
                     break;
                 case UnitType.RANGED:
@@ -388,29 +508,38 @@ namespace Pathogenesis
                     //TEMPPP
                     goto case UnitType.TANK;
                     break;
+                case UnitType.BOSS:
+                    switch (unit.Level)
+                    {
+                        case 1:
+                            // Attack the player if in range
+                            if (Player != null && Player.inRange(unit, unit.AttackRange))
+                            {
+                                unit.Attacking = Player;
+                                unit.Target = Player.Position;
+                            }
+                            break;
+                        case 2:
+                            break;
+                    }
+                    break;
                 default:
                     // Player case, do nothing
                     break;
             }
+            setNextMove(unit, level, prev_move, random_walk);
+        }
 
+        /*
+         * Set the next move for the unit based on the visibility of its target
+         */
+        private void setNextMove(GameUnit unit, Level level, Vector2 prev_move, bool random_walk)
+        {
             unit.NextMove = unit.Target;
             if (unit.HasTarget() && unit.Type != UnitType.FLYING)
             {
-                /*
-                // If the target is the player, use the player location map
-                if (unit.Target.Equals(Player.Position) &&
-                    Math.Abs(unit.TilePosition.X - Player.TilePosition.X) +
-                    Math.Abs(unit.TilePosition.Y - Player.TilePosition.Y) < PLAYER_PATHFIND_FIELD_SIZE)
-                {
-                    Vector2 moveToPlayerTile = findMoveToPlayer(unit, level.Map);
-                    unit.NextMove = new Vector2(moveToPlayerTile.X * Map.TILE_SIZE,
-                        moveToPlayerTile.Y * Map.TILE_SIZE);
-                }*/
-
                 // Pathfind to target if necessary
-
-                if (!random_walk &&
-                    level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size / 2))
+                if (!random_walk && level.Map.rayCastHasObstacle(unit.Position, unit.Target, unit.Size / 2))
                 {
                     if (rand.NextDouble() < 0.1)
                     {
@@ -424,6 +553,147 @@ namespace Pathogenesis
 
             }
         }
+
+        /*
+         * A* to target
+         */
+        private void findTarget(GameUnit unit, Vector2 target, Map map, int limit)
+        {
+            List<Vector2> path = Pathfinder.findPath(map, unit.Position, unit.Target, limit, false);
+            // Set the next move to the last node in the path with no obstacles in the way
+            if (path != null && path.Count > 1)
+            {
+                bool found = false;
+                for (int i = path.Count - 1; i > 0; i--)
+                {
+                    if (!map.rayCastHasObstacle(unit.Position, path[i], unit.Size / 3))
+                    {
+                        unit.NextMove = path[i];
+                        unit.Lost = false;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    unit.NextMove = path[1];
+                }
+            }
+            else
+            {
+                if (unit.Faction == UnitFaction.ALLY &&
+                    (Player == null || unit.distance(Player) > LOST_ALLY_DISTANCE))
+                {
+                    unit.Lost = true;
+                }
+            }
+        }
+
+        /*
+         * Returns the closest unit of a different faction from the specified one
+         */
+        private GameUnit findClosestEnemyInRange(GameUnit unit, int range)
+        {
+            UnitFaction faction = unit.Faction;
+
+            int x_index = (int)MathHelper.Clamp((unit.Position.X / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(1) - 1);
+            int y_index = (int)MathHelper.Clamp((unit.Position.Y / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(0) - 1);
+
+            // Find the closeset unit according to the combatRangeGrid. Performance optimized.
+            GameUnit closest = null;
+            double closestDistance = Double.MaxValue;
+
+            List<Point> adjacent = getAdjacent(new Point(x_index, y_index));
+            foreach (Point loc in adjacent)
+            {
+                foreach (GameUnit other in combatRangeGrid[loc.Y, loc.X])
+                {
+                    //double distance_sq = unit.distance_sq(other);
+
+                    float xdiff = other.Position.X - unit.Position.X;
+                    float ydiff = other.Position.Y - unit.Position.Y;
+                    double distance_sq = xdiff * xdiff + ydiff * ydiff;
+
+                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS &&
+                        distance_sq < (range + unit.Size / 2 + other.Size / 2) * (range + unit.Size / 2 + other.Size / 2) &&
+                        (closest == null || distance_sq < closestDistance))
+                    {
+                        closest = other;
+                        closestDistance = distance_sq;
+                    }
+                }
+            }
+            return closest;
+        }
+
+        /*
+         * Returns the closest unit of a specified UnitType and level
+         */
+        private GameUnit findClosestOfTypeInRange(GameUnit unit, UnitType type, int level, int range)
+        {
+            int x_index = (int)MathHelper.Clamp((unit.Position.X / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(1) - 1);
+            int y_index = (int)MathHelper.Clamp((unit.Position.Y / COMBAT_GRID_CELL_SIZE),
+                0, combatRangeGrid.GetLength(0) - 1);
+
+            // Find the closeset unit according to the combatRangeGrid. Performance optimized.
+            GameUnit closest = null;
+            double closestDistance = Double.MaxValue;
+
+            List<Point> adjacent = getAdjacent(new Point(x_index, y_index));
+            foreach (Point loc in adjacent)
+            {
+                foreach (GameUnit other in combatRangeGrid[loc.Y, loc.X])
+                {
+                    float xdiff = other.Position.X - unit.Position.X;
+                    float ydiff = other.Position.Y - unit.Position.Y;
+                    double distance_sq = xdiff * xdiff + ydiff * ydiff;
+
+                    if (unit != other && other.Type == type && other.Level >= level &&
+                        distance_sq < (range + unit.Size / 2 + other.Size / 2) * (range + unit.Size / 2 + other.Size / 2) &&
+                        (closest == null || distance_sq < closestDistance))
+                    {
+                        closest = other;
+                        closestDistance = distance_sq;
+                    }
+                }
+            }
+            return closest;
+        }
+
+        /*
+         * Returns all the adjacent positions from the specified one
+         */
+        private List<Point> getAdjacent(Point pos)
+        {
+            List<Point> adjacent = new List<Point>();
+            List<Point> dirs = new List<Point>();
+            dirs.Add(new Point(0, 0));
+            dirs.Add(new Point(0, 1));
+            dirs.Add(new Point(1, 0));
+            dirs.Add(new Point(0, -1));
+            dirs.Add(new Point(-1, 0));
+            dirs.Add(new Point(1, 1));
+            dirs.Add(new Point(1, -1));
+            dirs.Add(new Point(-1, 1));
+            dirs.Add(new Point(-1, -1));
+            foreach (Point dir in dirs)
+            {
+                Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
+                if (loc.Y >= 0 && loc.X >= 0 &&
+                    loc.Y < combatRangeGrid.GetLength(0) && loc.X < combatRangeGrid.GetLength(1) &&
+                        combatRangeGrid[loc.Y, loc.X] != null)
+                {
+                    adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));
+                }
+            }
+            return adjacent;
+        }
+        #endregion
+
+        #region Movement
 
         /*
          * Sets the velocity of the unit based on its next move
@@ -512,123 +782,6 @@ namespace Pathogenesis
                 unit.Facing = dir;
             }
         }
-
-        /*
-         * A* to target
-         */
-        private void findTarget(GameUnit unit, Vector2 target, Map map, int limit)
-        {
-            List<Vector2> path = Pathfinder.findPath(map, unit.Position, unit.Target, limit, false);
-            // Set the next move to the last node in the path with no obstacles in the way
-            if (path != null && path.Count > 1)
-            {
-                bool found = false;
-                for (int i = path.Count - 1; i > 0; i--)
-                {
-                    if (!map.rayCastHasObstacle(unit.Position, path[i], unit.Size / 3))
-                    {
-                        unit.NextMove = path[i];
-                        unit.Lost = false;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    unit.NextMove = path[1];
-                }
-            }
-            else
-            {
-                if (unit.Faction == UnitFaction.ALLY && 
-                    (Player == null || unit.distance(Player) > LOST_ALLY_DISTANCE))
-                {
-                    unit.Lost = true;
-                }
-            }
-        }
-
-        /*
-         * Use point location field to find the player (NOT IN USE)
-         */
-        private Vector2 findMoveToPlayer(GameUnit unit, Map map)
-        {
-            return playerLocationField[(int)unit.Position.Y / Map.TILE_SIZE, (int)unit.Position.X / Map.TILE_SIZE];
-        }
-
-        /*
-         * Returns the closest unit of a different faction from the specified one
-         */
-        private GameUnit findClosestEnemyInRange(GameUnit unit, int range)
-        {
-            UnitFaction faction = unit.Faction;
-
-            int x_index = (int)MathHelper.Clamp((unit.Position.X / COMBAT_GRID_CELL_SIZE),
-                0, combatRangeGrid.GetLength(1) - 1);
-            int y_index = (int)MathHelper.Clamp((unit.Position.Y / COMBAT_GRID_CELL_SIZE),
-                0, combatRangeGrid.GetLength(0) - 1);
-
-            // Find the closeset unit according to the combatRangeGrid. Performance optimized.
-            GameUnit closest = null;
-            double closestDistance = Double.MaxValue;
-
-            List<Point> adjacent = getAdjacent(new Point(x_index, y_index));
-            foreach (Point loc in adjacent)
-            {
-                foreach (GameUnit other in combatRangeGrid[loc.Y, loc.X])
-                {
-                    //double distance_sq = unit.distance_sq(other);
-
-                    float xdiff = other.Position.X - unit.Position.X;
-                    float ydiff = other.Position.Y - unit.Position.Y;
-                    double distance_sq = xdiff * xdiff + ydiff * ydiff;
-
-                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS &&
-                        distance_sq < (range + unit.Size/2 + other.Size/2)*(range + unit.Size/2 + other.Size/2) &&
-                        (closest == null || distance_sq < closestDistance))
-                    {
-                        closest = other;
-                        closestDistance = distance_sq;
-                    }
-                }
-            }
-            return closest;
-        }
-
-        // Returns all the adjacent positions from the specified one
-        private List<Point> getAdjacent(Point pos)
-        {
-            List<Point> adjacent = new List<Point>();
-            List<Point> dirs = new List<Point>();
-            dirs.Add(new Point(0, 0));
-            dirs.Add(new Point(0, 1));
-            dirs.Add(new Point(1, 0));
-            dirs.Add(new Point(0, -1));
-            dirs.Add(new Point(-1, 0));
-            dirs.Add(new Point(1, 1));
-            dirs.Add(new Point(1, -1));
-            dirs.Add(new Point(-1, 1));
-            dirs.Add(new Point(-1, -1));
-            foreach (Point dir in dirs)
-            {
-                Point loc = new Point(pos.X + dir.X, pos.Y + dir.Y);
-                if (loc.Y >= 0 && loc.X >= 0 &&
-                    loc.Y < combatRangeGrid.GetLength(0) && loc.X < combatRangeGrid.GetLength(1) &&
-                        combatRangeGrid[loc.Y, loc.X] != null)
-                {
-                    adjacent.Add(new Point(pos.X + dir.X, pos.Y + dir.Y));
-                }
-            }
-            return adjacent;
-        }
-
-        private Vector2 clampVector(Vector2 v, float limit)
-        {
-            float x = v.X * v.X;
-            float y = v.Y * v.Y;
-
-            return v * limit / v.Length();
-        }
         #endregion
 
         #region Conversion
@@ -651,10 +804,8 @@ namespace Pathogenesis
                 if (Player.NumAllies >= MAX_ALLIES) { Player.MaxAllies = true; }
             }
 
-            DeadUnits.Add(unit);
-            GameUnit newUnit = factory.createUnit(unit.Type, unit.Faction, unit.Level, unit.Position, unit.Immune);
-            AddUnit(newUnit);
-            return newUnit;
+            GameUnit ally = AddAlly(unit);
+            return ally;
             // Change stats like speed etc as necessary
         }
         #endregion
@@ -764,6 +915,12 @@ namespace Pathogenesis
                 {
                     ConvertedUnits.Add(unit);
                 }
+            }
+
+            if (unit.Type == UnitType.BOSS && unit.AttackCoolDown > 5 && unit.AttackCoolDown < 7)
+            {
+                GameUnit newUnit = factory.createUnit(UnitType.TANK, unit.Faction, unit.Level, unit.Position + new Vector2(1, 1), unit.Immune);
+                SpawnedUnits.Add(newUnit);
             }
 
             // Attack cooldown
