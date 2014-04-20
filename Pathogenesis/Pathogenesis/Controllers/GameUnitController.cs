@@ -34,6 +34,9 @@ namespace Pathogenesis
         public const float INFECTION_RECOVER_SPEED = 0.5f;
         public const float ALLY_ATTRITION = 0.0f;
 
+        public const float RANDOM_WALK_TARGET_PROB = 0.05f; // Probability that a unit will switch targets while random walking
+
+        // Player parameters
         public const int MAX_PLAYER_INFECT_RANGE = 300;    // Max player infection range
         public const float MAX_PLAYER_SPEED = 9;    // Max overall player speed
         public const float MAX_PLAYER_HEALTH = 500;    // Max overall player health
@@ -48,6 +51,11 @@ namespace Pathogenesis
         public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
+        
+        // Spawning parameters
+        public const float IMMUNE_SPAWN_PROB = 0.2f;
+        public const int RANDOM_SPAWN_DIST = 10;
+        
         #endregion
 
         private ContentFactory factory;
@@ -67,8 +75,6 @@ namespace Pathogenesis
 
         // A dictionary of <unit ID, Position> of each unit's previous position. Used for collision.
         public Dictionary<int, Vector2> PreviousPositions { get; set; }
-
-        private Vector2[,] playerLocationField;
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
@@ -153,10 +159,6 @@ namespace Pathogenesis
             ConvertedUnits.Clear();
             SpawnedUnits.Clear();
             DeadUnits.Clear();
-            
-            //Pathfinder.findPath(level.Map, Player.Front, Player.Front, PLAYER_PATHFIND_FIELD_SIZE, true);
-            //playerLocationField = Pathfinder.pointLocMap;
-            //lostUnits.Clear();
 
             // Handle player logic
             bool playerFrontBlocked = false;
@@ -169,24 +171,6 @@ namespace Pathogenesis
                 moveUnit(Player);
                 UpdatePlayer();
             }
-
-            // Handle lost units
-            /*
-            if (lostUnits.Count != 0)
-            {
-                GameUnit captain = lostUnits.First();
-                captain.Target = Player.Position;
-                //findTarget(captain, Player.Position, level.Map, 100);
-                foreach (GameUnit unit in lostUnits)
-                {
-                    if (unit != captain)
-                    {
-                        unit.Lost = true;
-                        unit.Target = captain.Position;
-                        unit.NextMove = unit.Target;
-                    }
-                }
-            }*/
 
             // Record each unit's position
             foreach (GameUnit unit in Units)
@@ -218,7 +202,9 @@ namespace Pathogenesis
                 UpdatePreviousPosition(Convert(unit), level.Map);
             }
 
-            // Spawn units
+            // Spawn units from level
+            SpawnUnits(level);
+            // Spawning from other sources
             foreach (GameUnit unit in SpawnedUnits)
             {
                 AddUnit(unit);
@@ -235,6 +221,77 @@ namespace Pathogenesis
                 else Units.Remove(unit);
                 PreviousPositions.Remove(unit.ID);
             }
+        }
+        #endregion
+
+        #region Spawning
+        /*
+         * Spawn enemy units in the level
+         */
+        private void SpawnUnits(Level level)
+        {
+            foreach (Region r in level.Regions)
+            {
+                foreach (SpawnPoint sp in r.SpawnPoints)
+                {
+                    UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
+                    int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
+
+                    if(type != null && unit_lvl != null) {
+                        // Create new unit
+                        GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
+                            sp.Pos + new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST, (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
+                            rand.NextDouble() < IMMUNE_SPAWN_PROB);
+                        if (unit != null)
+                        {
+                            unit.Region = r;
+                            AddUnit(unit);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Selects a key according to the probability values
+        private UnitType? selectTypeWithProbability(Dictionary<UnitType, float> prob_map)
+        {
+            float total = 0;
+            foreach (float val in prob_map.Values)
+            {
+                total += val;
+            }
+            double index = rand.NextDouble() * total;
+            float cur_val = 0;
+            foreach (UnitType type in prob_map.Keys)
+            {
+                cur_val += prob_map[type];
+                if (cur_val > index)
+                {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        // Selects a key according to the probability values
+        private int? selectIntWithProbability(Dictionary<int, float> prob_map)
+        {
+            float total = 0;
+            foreach (float val in prob_map.Values)
+            {
+                total += val;
+            }
+            double index = rand.NextDouble() * total;
+            float cur_val = 0;
+            foreach (int level in prob_map.Keys)
+            {
+                cur_val += prob_map[level];
+                if (cur_val > index)
+                {
+                    return level;
+                }
+            }
+            return null;
         }
         #endregion
 
@@ -409,7 +466,7 @@ namespace Pathogenesis
                     unit.Target = Player.Position;
                     findTarget(unit, Player.Position, level.Map, MAX_ASTAR_DIST);
                 }
-                else if (rand.NextDouble() < 0.05)      // Random walk
+                else if (rand.NextDouble() < RANDOM_WALK_TARGET_PROB)      // Random walk
                 {
                     unit.Target = unit.Position + new Vector2(rand.Next(600) - 300, rand.Next(600) - 300);
                     unit.NextMove = unit.Target;
@@ -472,6 +529,7 @@ namespace Pathogenesis
             {
                 case UnitType.TANK:     // tank AI
                     GameUnit closest = null;
+                    // Immune lvl 1 enemies cluster around lvl 2 enemies
                     if (unit.Immune && unit.Level == 1)
                     {
                         closest = findClosestOfTypeInRange(unit, unit.Type, 2, ATTACK_LOCK_RANGE);
@@ -481,15 +539,34 @@ namespace Pathogenesis
                         }
                     }
 
-                    if (Player != null && Player.Exists && Player.inRange(unit, ENEMY_CHASE_RANGE))
-                    {
-                        unit.Target = Player.Position;
-                    }
-                    else if (rand.NextDouble() < 0.05)
-                    {
+                    if (Player != null && Player.Exists) {
+                        // Chase player
+                        if(Player.inRange(unit, ENEMY_CHASE_RANGE))
+                        {
+                            unit.Target = Player.Position;
+                        }
+                        // Pathfind pack to region center
+                        else if (unit.Region != null && !unit.Region.RegionSet.Contains(new Vector2(
+                                (int)unit.Position.X / Map.TILE_SIZE,
+                                (int)unit.Position.Y / Map.TILE_SIZE)))
+                        {
+                            unit.Target = unit.Region.Center;
+                        }
                         // Random walk
+                        else if (rand.NextDouble() < RANDOM_WALK_TARGET_PROB)
+                        {
+                            random_walk = true;
+                        }
+                    }
+                    else if (rand.NextDouble() < RANDOM_WALK_TARGET_PROB)
+                    {
                         random_walk = true;
-                        unit.Target = unit.Position + new Vector2(rand.Next(600)-300, rand.Next(600)-300);
+                    }
+
+                    // Random walk
+                    if (random_walk)
+                    {
+                        unit.Target = unit.Position + new Vector2(rand.Next(600) - 300, rand.Next(600) - 300);
                     }
                     
                     // Chase the closest enemy in range

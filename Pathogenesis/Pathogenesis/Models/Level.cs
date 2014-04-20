@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
@@ -19,6 +18,7 @@ namespace Pathogenesis.Models
         public int Height { get; set; }
 
         public Vector2 PlayerStart { get; set; }        // Player starting position tile coordinates
+        public List<Region> Regions { get; set; }       // List of the regions in the level
         public List<GameUnit> Bosses { get; set; }      // List of Boss units in this level
 
         public int NumBosses { get; set; }              // The number of bosses in this level

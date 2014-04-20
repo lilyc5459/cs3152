@@ -11,7 +11,7 @@ namespace Pathogenesis
     public enum ItemType
     {
         PLASMID,    // Gives conversion juice
-        HEALTH,     // Gives health
+        HEALTH,     // Gives health 
         ATTACK,     // Increases ally attack for a short period
         ALLIES,     // Gives 3 free allies
         RANGE,      // Increases infection range

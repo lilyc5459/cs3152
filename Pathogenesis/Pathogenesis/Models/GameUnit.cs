@@ -113,6 +113,8 @@ namespace Pathogenesis
         public int AttackSpeed { get; set; }
 
         public int Level { get; set; }
+
+        public Region Region { get; set; }      // The region that this unit is bound to
         #endregion
 
         #region Initialization
