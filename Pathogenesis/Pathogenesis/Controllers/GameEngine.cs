@@ -56,7 +56,8 @@ namespace Pathogenesis
         private GameUnitController unit_controller;
         private ItemController item_controller;
         private LevelController level_controller;
-        private Menu win_menu, lose_menu;
+        private MenuController menu_controller;
+        //private Menu win_menu, lose_menu;
 
         private HUD HUD_display;
         private GameState game_state;
@@ -81,9 +82,6 @@ namespace Pathogenesis
             if (firstLoop) factory.LoadAllContent();
             canvas.Initialize(this);
 
-            // Game starts at the main menu
-            game_state = GameState.MAIN_MENU;
-
             // Initialize controllers
             input_controller = new InputController();
             sound_controller = new SoundController(factory);
@@ -92,18 +90,18 @@ namespace Pathogenesis
             level_controller = new LevelController();
             unit_controller = new GameUnitController(factory);
             item_controller = new ItemController();
+            menu_controller = new MenuController(factory);
+
+            // Game starts at the main menu
+            game_state = GameState.MAIN_MENU;
+            menu_controller.LoadMenu(MenuType.MAIN);
 
             // TEST
-            win_menu = factory.createMenu(MenuType.WIN);
-            lose_menu = factory.createMenu(MenuType.LOSE);
+            //win_menu = factory.createMenu(MenuType.WIN);
+            //lose_menu = factory.createMenu(MenuType.LOSE);
 
             HUD_display = factory.createHUD(unit_controller.Player);
-            level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
 
-            bool test = level_controller.CurLevel.Map.rayCastHasObstacle(
-                new Vector2(0*Map.TILE_SIZE, 0*Map.TILE_SIZE), new Vector2(20*Map.TILE_SIZE, 11*Map.TILE_SIZE),
-                Map.TILE_SIZE);
-            System.Diagnostics.Debug.WriteLine(test);
             base.Initialize();
             firstLoop = false;
         }
@@ -128,7 +126,6 @@ namespace Pathogenesis
         {
             //canvas.Dispose();
             factory.UnloadAll();
-            
         }
     #endregion
 
@@ -149,10 +146,6 @@ namespace Pathogenesis
 
             switch (game_state)
             {
-                case GameState.MAIN_MENU:
-                    // for now
-                    game_state = GameState.IN_GAME;
-                    break;
                 case GameState.IN_GAME:
                     // Remove later
                     Random rand = new Random();
@@ -164,11 +157,14 @@ namespace Pathogenesis
                             int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
                             unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
-                                rand.NextDouble() < 0.5 ? true : false));
+                                rand.NextDouble() < 0.3 ? true : false));
 
-                            item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
-                                rand.NextDouble() < 0.5 ? ItemType.INFECT_REGEN : rand.NextDouble() < 0.5? ItemType.PLASMID : ItemType.ALLIES));
-                        }
+                            if (rand.NextDouble() < 0.2)
+                            {
+                                item_controller.AddItem(factory.createPickup(pos,
+                                    rand.NextDouble() < 0.5 ? ItemType.PLASMID : rand.NextDouble() < 0.1 ? ItemType.ALLIES : ItemType.HEALTH));
+                            }
+                        }   
                     }
 
                     //
@@ -205,6 +201,12 @@ namespace Pathogenesis
                         victory = true;
                     }
 
+                    if (input_controller.Pause)
+                    {
+                        game_state = GameState.PAUSED;
+                        menu_controller.LoadMenu(MenuType.PAUSE);
+                    }
+
                     // Process and update all units
                     unit_controller.Update(level_controller.CurLevel, input_controller);
 
@@ -218,10 +220,12 @@ namespace Pathogenesis
                     if (victory)
                     {
                         game_state = GameState.VICTORY;
+                        menu_controller.LoadMenu(MenuType.WIN);
                     }
                     if (unit_controller.Player == null)
                     {
                         game_state = GameState.LOSE;
+                        menu_controller.LoadMenu(MenuType.LOSE);
                     }
 
                     if (unit_controller.Player != null)
@@ -229,23 +233,81 @@ namespace Pathogenesis
                         camera.Position = unit_controller.Player.Position;
                     }
                     break;
-                case GameState.PAUSED:
-                    break;
-                case GameState.VICTORY:
+                case GameState.MAIN_MENU:
+                    // for now
+                    menu_controller.Update(input_controller);
+                    Menu menu = menu_controller.CurMenu;
                     if (input_controller.Enter)
                     {
-                        level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
-                        game_state = GameState.IN_GAME;
+                        switch (menu.Options[menu.CurSelection])
+                        {
+                            case "Play":
+                                game_state = GameState.IN_GAME;
+                                level_controller.LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
+                                break;
+                            case "Options":
+                                break;
+                            case "Quit":
+                                this.Exit();
+                                break;
+                        }
+                    }
+                    break;
+                case GameState.PAUSED:
+                    menu_controller.Update(input_controller);
+                    menu = menu_controller.CurMenu;
+                    if (input_controller.Enter)
+                    {
+                        switch (menu.Options[menu.CurSelection])
+                        {
+                            case "Resume":
+                                game_state = GameState.IN_GAME;
+                                break;
+                            case "Map":
+                                break;
+                            case "Options":
+                                break;
+                            case "Quit to Menu":
+                                game_state = GameState.MAIN_MENU;
+                                menu_controller.LoadMenu(MenuType.MAIN);
+                                sound_controller.pause("music1");
+                                break;
+                        }
+                    }
+                    break;
+                case GameState.VICTORY:
+                    menu_controller.Update(input_controller);
+                    menu = menu_controller.CurMenu;
+                    if (input_controller.Enter)
+                    {
+                        switch (menu.Options[menu.CurSelection])
+                        {
+                            case "Continue":
+                                game_state = GameState.IN_GAME;
+                                level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
+                                break;
+                        }
                     }
                     break;
                 case GameState.LOSE:
+                    menu_controller.Update(input_controller);
+                    menu = menu_controller.CurMenu;
                     if (input_controller.Enter)
                     {
-                        level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
-                        game_state = GameState.IN_GAME;
+                        switch (menu.Options[menu.CurSelection])
+                        {
+                            case "Restart":
+                                game_state = GameState.IN_GAME;
+                                level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
+                                break;
+                            case "Quit to Menu":
+                                game_state = GameState.MAIN_MENU;
+                                menu_controller.LoadMenu(MenuType.MAIN);
+                                sound_controller.pause("music1");
+                                break;
+                        }
                     }
                     break;
-
             }
 
             base.Update(gameTime);
@@ -265,17 +327,22 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     DrawGame(canvas);
                     break;
+                case GameState.MAIN_MENU:
+                    menu_controller.DrawMenu(canvas, camera.Position);
+                    break;
+                case GameState.PAUSED:
+                    DrawGame(canvas);
+                    menu_controller.DrawMenu(canvas, camera.Position);
+                    break;
                 case GameState.VICTORY:
                     DrawGame(canvas);
-                    win_menu.Draw(canvas, camera.Position);
+                    menu_controller.DrawMenu(canvas, camera.Position);
+                    //win_menu.Draw(canvas, camera.Position);
                     break;
                 case GameState.LOSE:
                     DrawGame(canvas);
-                    lose_menu.Draw(canvas, camera.Position);
-                    break;
-                case GameState.MAIN_MENU:
-                    break;
-                case GameState.PAUSED:
+                    menu_controller.DrawMenu(canvas, camera.Position);
+                    //lose_menu.Draw(canvas, camera.Position);
                     break;
             }
 

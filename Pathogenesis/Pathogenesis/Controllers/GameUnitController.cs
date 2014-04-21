@@ -373,7 +373,8 @@ namespace Pathogenesis
             GameUnit closestInRange = null;
             foreach (GameUnit unit in Units)
             {
-                if (!unit.Immune && unit.Faction == UnitFaction.ENEMY && Player.inRange(unit, Player.InfectionRange))
+                if (unit.Exists && !unit.Immune && unit.Faction == UnitFaction.ENEMY &&
+                    Player.inRange(unit, Player.InfectionRange))
                 {
                     if (closestInRange == null || Player.distance(unit) < Player.distance(closestInRange))
                     {
@@ -534,7 +535,8 @@ namespace Pathogenesis
                         unit.Attacking = closest;
                     }
 
-                    if (!Player.inRange(unit, ALLY_FOLLOW_RANGE) || closest == Player.Infecting)
+                    if (!Player.inRange(unit, ALLY_FOLLOW_RANGE) ||
+                        closest != null && closest == Player.Infecting)
                     {
                         unit.Attacking = null;
                         unit.Target = Player.Position;
@@ -993,7 +995,7 @@ namespace Pathogenesis
 
         private void Attack(GameUnit aggressor, GameUnit victim)
         {
-            aggressor.AttackCoolDown = ATTACK_COOLDOWN;
+            aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
             victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
         }
         #endregion
@@ -1033,15 +1035,16 @@ namespace Pathogenesis
                 }
             }
 
-            if (unit.Type == UnitType.BOSS && unit.AttackCoolDown > 5 && unit.AttackCoolDown < 7)
+            if (unit.Type == UnitType.BOSS && unit.AttackCoolDown == 5)
             {
-                GameUnit newUnit = factory.createUnit(UnitType.TANK, unit.Faction, unit.Level, unit.Position + new Vector2(1, 1), unit.Immune);
+                GameUnit newUnit = factory.createUnit(UnitType.TANK, unit.Faction, unit.Level,
+                    unit.Position + new Vector2((float)rand.NextDouble() * 200 - 100, (float)rand.NextDouble() * 200 - 100), unit.Immune);
                 SpawnedUnits.Add(newUnit);
             }
 
             // Attack cooldown
             unit.AttackCoolDown = (int)MathHelper.Clamp(
-                --unit.AttackCoolDown, 0, ATTACK_COOLDOWN);
+                --unit.AttackCoolDown, 0, unit.max_attack_cooldown);
 
             // Apply ally attrition if they are outside of range
             if (unit.Faction == UnitFaction.ALLY && Player != null && !unit.inRange(Player, ALLY_FOLLOW_RANGE))

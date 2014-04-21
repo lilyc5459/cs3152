@@ -38,6 +38,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System.Collections.Generic;
 #endregion
 
 /// <summary>
@@ -108,7 +109,7 @@ namespace Pathogenesis
         protected DrawState state;
 
         // For onscreen messages
-        protected SpriteFont font;
+        protected Dictionary<String, SpriteFont> fonts;
 
         // Private variable for property IsFullscreen.
         protected bool fullscreen;
@@ -359,6 +360,7 @@ namespace Pathogenesis
             }
         }
 
+        /*
         /// <summary>
         /// The font for displaying messages.
         /// </summary>
@@ -366,8 +368,8 @@ namespace Pathogenesis
         {
             get { return font; }
             set { font = value; }
-        }
-        #endregion
+        }*/
+        #endregion    
 
         #region Initialization
         /// <summary>
@@ -433,8 +435,8 @@ namespace Pathogenesis
         /// </param>
         public void LoadContent(ContentFactory factory)
         {
-            // Load sprite font
-            font = factory.getFont();
+            // Load sprite fonts
+            fonts = factory.getFonts();
         }
 
         /// <summary>
@@ -675,10 +677,17 @@ namespace Pathogenesis
         /// <param name="text">Text to draw</param>
         /// <param name="tint">Text color</param>
         /// <param name="position">Location to draw text</param>
-        public void DrawText(String text, Color tint, Vector2 position)
+        /// <param name="fontname">Name of the font to draw</param>
+        /// <param name="position">Whether to center the text horizontally</param>
+        public void DrawText(String text, Color tint, Vector2 position, String fontname, bool center)
         {
             // Enforce invariants.
             Debug.Assert(state == DrawState.SpritePass, "Drawing state is invalid (expected SpritePass)");
+            SpriteFont font = fonts[fontname];
+            if (center)
+            {
+                position = new Vector2(position.X - font.MeasureString(text).X/2, position.Y);
+            }
             spriteBatch.DrawString(font, text, position * Scale, tint);
         }
 
@@ -814,4 +823,3 @@ namespace Pathogenesis
     }
 
 }
-

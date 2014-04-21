@@ -27,13 +27,13 @@ namespace Pathogenesis
             private Dictionary<String, Texture2D> textures;
             // Dictionary of all audio clips mapped as <filename, clip>
             private Dictionary<String, SoundEffect> sounds;
+            // Fonts mapped as <fontname, Spritefont>
+            private Dictionary<String, SpriteFont> fonts;
             // Menu options
             private Dictionary<String, String[]> menu_options;
 
             // List of levels in the order they appear in the game
             private List<Level> levels;
-
-            protected SpriteFont font;
         #endregion
 
         #region Initialization
@@ -48,6 +48,7 @@ namespace Pathogenesis
                 textures = new Dictionary<string, Texture2D>();
                 sounds = new Dictionary<string, SoundEffect>();
                 menu_options = new Dictionary<string, string[]>();
+                fonts = new Dictionary<string, SpriteFont>();
                 levels = new List<Level>();
             }
 
@@ -77,14 +78,24 @@ namespace Pathogenesis
                         sounds.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
                     }
 
-                    // Setup menus
-                    sr = new StreamReader("Config/menu_config.txt");
+                    // Load fonts
+                    sr = new StreamReader("Config/font_paths.txt");
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.StartsWith("//")) continue;
                         String[] strings = line.Split(new char[] { ',' });
                         if (strings.Length < 2) continue;
-                        menu_options.Add(strings[0], strings[1].Trim().Split());
+                        fonts.Add(strings[0].Trim(), content.Load<SpriteFont>(strings[1].Trim()));
+                    }
+
+                    // Setup menus
+                    sr = new StreamReader("Config/menu_config.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] { ';' });
+                        if (strings.Length < 2) continue;
+                        menu_options.Add(strings[0].Trim(), strings[1].Trim().Split(new char[] { ',' }));
                     }
                 }
                 catch (Exception e)
@@ -92,9 +103,6 @@ namespace Pathogenesis
                     Console.WriteLine("The file could not be read:");
                     Console.WriteLine(e.Message);
                 }
-
-                // Load fonts
-                font = content.Load<SpriteFont>("Fonts/font");
             }
 
             public void UnloadAll()
@@ -277,15 +285,33 @@ namespace Pathogenesis
                 return new Menu(type, menu_options[type.ToString()], textures["solid"]);
             }
 
+            /*
+             * Create menus of all menu types
+             */
+            public Dictionary<MenuType, Menu> createMenus()
+            {
+                Dictionary<MenuType, Menu> menus = new Dictionary<MenuType, Menu>();
+                foreach (MenuType type in Enum.GetValues(typeof(MenuType)))
+                {
+                    menus.Add(type, new Menu(type, menu_options[type.ToString()], textures["solid"]));
+                }
+                return menus;
+            }
+
             public Dictionary<String, SoundEffect> getSounds()
             {
                 return sounds;
             }
 
             // Returns the game font
-            public SpriteFont getFont()
+            public SpriteFont getFont(String name)
             {
-                return font;
+                return fonts[name];
+            }
+
+            public Dictionary<String, SpriteFont> getFonts()
+            {
+                return fonts;
             }
 
         #endregion

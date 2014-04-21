@@ -82,21 +82,35 @@ namespace Pathogenesis.Models
                 }
                 if (player != null)
                 {
+                    // Health
+                    canvas.DrawText("Health", new Color(220, 200, 80),
+                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 15),
+                        "font2", false);
                     canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
-                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 10),
+                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 150),
                             (int)(player.Position.Y - canvas.Height / 2 + 10),
                             (int)(MathHelper.Lerp(0, 500, player.Health/player.max_health)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                    /*
                     canvas.DrawText(player.Health + "/" + player.max_health, Color.White,
-                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 10));
-
+                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 10),
+                        "font1", false);
+                     * */
+                    
+                    // Infection points
+                    canvas.DrawText("Infect", new Color(220, 200, 80),
+                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 55),
+                        "font2", false);
                     canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
-                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 10),
+                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 150),
                             (int)(player.Position.Y - canvas.Height / 2 + 50),
                             (int)(MathHelper.Lerp(0, 500, player.InfectionPoints / player.MaxInfectionPoints)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                    /*
                     canvas.DrawText(player.InfectionPoints + "/" + player.MaxInfectionPoints, Color.White,
-                        new Vector2(player.Position.X - canvas.Width/2 + 10, player.Position.Y - canvas.Height / 2 + 50));
+                        new Vector2(player.Position.X - canvas.Width/2 + 10, player.Position.Y - canvas.Height / 2 + 50),
+                        "font1", false);
+                     */
 
                     int[][] exploredTiles = player.ExploredTiles;
                     int[][] mapTiles = level.Map.tiles;
