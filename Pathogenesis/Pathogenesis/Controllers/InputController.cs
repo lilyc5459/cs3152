@@ -81,7 +81,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Left
             {
-                get { return keyStates[LEFT] == KeyState.HELD; }
+                get { return keyStates[LEFT] == KeyState.HELD || keyStates[Keys.Left] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -89,7 +89,7 @@ namespace Pathogenesis
             /// </summary>
             public bool Right
             {
-                get { return keyStates[RIGHT] == KeyState.HELD; }
+                get { return keyStates[RIGHT] == KeyState.HELD || keyStates[Keys.Right] == KeyState.HELD; }
             }
 
             /// <summary>
@@ -97,7 +97,14 @@ namespace Pathogenesis
             /// </summary>
             public bool Up
             {
-                get { return keyStates[UP] == KeyState.HELD; }
+                get { return keyStates[UP] == KeyState.HELD || keyStates[Keys.Up] == KeyState.HELD; }
+            }
+
+            /// Whether the up button was pressed once.
+            /// </summary>
+            public bool UpOnce
+            {
+                get { return keyStates[UP] == KeyState.DOWN || keyStates[Keys.Up] == KeyState.DOWN; }
             }
 
             /// <summary>
@@ -105,7 +112,15 @@ namespace Pathogenesis
             /// </summary>
             public bool Down
             {
-                get { return keyStates[DOWN] == KeyState.HELD; }
+                get { return keyStates[DOWN] == KeyState.HELD || keyStates[Keys.Down] == KeyState.HELD; }
+            }
+
+            /// <summary>
+            /// Whether the down button was pressed.
+            /// </summary>
+            public bool DownOnce
+            {
+                get { return keyStates[DOWN] == KeyState.DOWN || keyStates[Keys.Down] == KeyState.DOWN; }
             }
 
             /// <summary>

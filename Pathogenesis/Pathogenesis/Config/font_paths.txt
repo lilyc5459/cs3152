@@ -1,0 +1,4 @@
+﻿//Fonts, increasing in size
+font1, Fonts/font1
+font2, Fonts/font2
+font3, Fonts/font3

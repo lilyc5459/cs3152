@@ -71,6 +71,7 @@ namespace Pathogenesis
 
         public int max_health = 100;
         public int max_infection_vitality = 250;
+        public int max_attack_cooldown = 50;
 
         #region Properties
         // Textures
@@ -179,7 +180,7 @@ namespace Pathogenesis
             max_infection_vitality = (int)Math.Pow(3, Level - 1) * BASE_INFECTION_VITALITY;
             if (Type == UnitType.BOSS)
             {
-                max_infection_vitality = (int)Math.Pow(2, Level + 1) * BASE_INFECTION_VITALITY;
+                max_infection_vitality = (int)Math.Pow(3, Level + 1) * BASE_INFECTION_VITALITY;
             }
             InfectionVitality = max_infection_vitality;
 
@@ -215,9 +216,11 @@ namespace Pathogenesis
 
             if (Type == UnitType.BOSS)
             {
+                Speed = 3;
                 Mass = 100f;
-                AttackRange = 400;
-                //Static = true;
+                Attack = 10;
+                max_attack_cooldown = 100;
+                AttackRange = 150;
             }
         }
         #endregion
@@ -324,7 +327,7 @@ namespace Pathogenesis
                         texture.Width, texture.Height),
                     new Rectangle(0, 0, texture.Width, texture.Height));
             }
-            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20));
+            //canvas.DrawText("T", Color.Yellow, NextMove - new Vector2(20, 20), "font1", false);
         }
     }
 }
