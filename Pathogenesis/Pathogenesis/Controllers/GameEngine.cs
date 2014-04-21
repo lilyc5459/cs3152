@@ -170,6 +170,7 @@ namespace Pathogenesis
                                 rand.NextDouble() < 0.5 ? ItemType.INFECT_REGEN : rand.NextDouble() < 0.5? ItemType.PLASMID : ItemType.ALLIES));
                         }
                     }
+
                     //
                     /* TODO: Remove DEBUG CODE HERE (remove later)
                      * 
@@ -288,7 +289,7 @@ namespace Pathogenesis
             HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
             item_controller.Draw(canvas);
             unit_controller.Draw(canvas);
-            HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player);
+            HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player, level_controller.CurLevel);
         }
         #endregion
     }

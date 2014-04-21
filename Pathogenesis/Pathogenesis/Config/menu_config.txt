@@ -1,0 +1,5 @@
+﻿//Menus - must correspond to menu type enum
+MAIN, play options quit, 
+PAUSE, resume map options quit
+WIN, continue
+LOSE, restart quit

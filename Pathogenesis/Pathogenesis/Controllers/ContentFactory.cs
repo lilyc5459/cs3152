@@ -27,6 +27,8 @@ namespace Pathogenesis
             private Dictionary<String, Texture2D> textures;
             // Dictionary of all audio clips mapped as <filename, clip>
             private Dictionary<String, SoundEffect> sounds;
+            // Menu options
+            private Dictionary<String, String[]> menu_options;
 
             // List of levels in the order they appear in the game
             private List<Level> levels;
@@ -45,6 +47,7 @@ namespace Pathogenesis
 
                 textures = new Dictionary<string, Texture2D>();
                 sounds = new Dictionary<string, SoundEffect>();
+                menu_options = new Dictionary<string, string[]>();
                 levels = new List<Level>();
             }
 
@@ -72,6 +75,16 @@ namespace Pathogenesis
                         String[] strings = line.Split(new char[] { ',' });
                         if (strings.Length < 2) continue;
                         sounds.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
+                    }
+
+                    // Setup menus
+                    sr = new StreamReader("Config/menu_config.txt");
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith("//")) continue;
+                        String[] strings = line.Split(new char[] { ',' });
+                        if (strings.Length < 2) continue;
+                        menu_options.Add(strings[0], strings[1].Trim().Split());
                     }
                 }
                 catch (Exception e)
@@ -228,8 +241,6 @@ namespace Pathogenesis
             {
                 //return levels[num];
 
-                // TODO Should all be loaded from file
-                
                 List<GameUnit> goals = new List<GameUnit>();
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
                 goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
@@ -263,7 +274,7 @@ namespace Pathogenesis
 
             public Menu createMenu(MenuType type)
             {
-                return new Menu(type, textures["solid"]);
+                return new Menu(type, menu_options[type.ToString()], textures["solid"]);
             }
 
             public Dictionary<String, SoundEffect> getSounds()

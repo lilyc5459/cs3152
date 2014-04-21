@@ -51,6 +51,8 @@ namespace Pathogenesis
         public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
+
+        public const int EXPLORE_SIGHT_RANGE = 20;   // The range of the player's explore vision, updating the minimap
         
         // Spawning parameters
         public const float IMMUNE_SPAWN_PROB = 0.2f;
@@ -99,7 +101,6 @@ namespace Pathogenesis
             DeadUnits.Clear();
             ConvertedUnits.Clear();
             SpawnedUnits.Clear();
-            lostUnits.Clear();
         }
 
         /*
@@ -146,6 +147,14 @@ namespace Pathogenesis
             Player.Position = level.PlayerStart * Map.TILE_SIZE;
             Player.Health = Player.max_health;
             Player.InfectionPoints = Player.MaxInfectionPoints;
+
+            // Clear player explored tiles
+            int[][] tiles = new int[level.Height / Map.TILE_SIZE][];
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                tiles[i] = new int[level.Width / Map.TILE_SIZE];
+            }
+            Player.ExploredTiles = tiles;
         }
         #endregion
 
@@ -390,6 +399,16 @@ namespace Pathogenesis
                 Player.InfectionPoints += Player.InfectionRecovery;
             }
 
+            List<Vector2> explored = GetExploredTiles(Player.Position / Map.TILE_SIZE);
+            foreach (Vector2 tile in explored)
+            {
+                if (tile.Y >= 0 && tile.X >= 0 && 
+                    tile.Y < Player.ExploredTiles.Length && tile.X < Player.ExploredTiles[0].Length)
+                {
+                    Player.ExploredTiles[(int)tile.Y][(int)tile.X] = 1;
+                }
+            }
+
             // Apply items
             foreach(Item item in Player.Items)
             {
@@ -441,6 +460,26 @@ namespace Pathogenesis
                 0, Player.MaxInfectionPoints);
             Player.Health = MathHelper.Clamp(Player.Health, 0, Player.max_health);
             Player.Items = new List<Item>();
+        }
+
+        /*
+         * Returns a list of all tile positions within exploration range of the given position
+         */
+        private List<Vector2> GetExploredTiles(Vector2 pos)
+        {
+            List<Vector2> tiles = new List<Vector2>();
+            int start_x = (int)pos.X - EXPLORE_SIGHT_RANGE;
+            int end_x = (int)pos.X + EXPLORE_SIGHT_RANGE;
+
+            for (int i = 0; i < EXPLORE_SIGHT_RANGE; i++)
+            {
+                for (int j = - (EXPLORE_SIGHT_RANGE - i); j < EXPLORE_SIGHT_RANGE - i; j++)
+                {
+                    tiles.Add(new Vector2(pos.X + i, pos.Y + j));
+                    tiles.Add(new Vector2(pos.X - i, pos.Y + j));
+                }
+            }
+            return tiles;
         }
         #endregion
 

@@ -9,6 +9,8 @@ namespace Pathogenesis.Models
 {
     public class HUD
     {
+        public const int MINIMAP_TILE_SIZE = 4;
+
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
 
@@ -62,7 +64,7 @@ namespace Pathogenesis.Models
             }
         }
 
-        public void DrawLayerTwo(GameCanvas canvas, List<GameUnit> units, Player player)
+        public void DrawLayerTwo(GameCanvas canvas, List<GameUnit> units, Player player, Level level)
         {
             if (Active)
             {
@@ -89,12 +91,41 @@ namespace Pathogenesis.Models
                         new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 10));
 
                     canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
-                        new Rectangle((int)(player.Position.X + 10),
-                            (int)(player.Position.Y - canvas.Height / 2 + 10),
+                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 10),
+                            (int)(player.Position.Y - canvas.Height / 2 + 50),
                             (int)(MathHelper.Lerp(0, 500, player.InfectionPoints / player.MaxInfectionPoints)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
                     canvas.DrawText(player.InfectionPoints + "/" + player.MaxInfectionPoints, Color.White,
-                        new Vector2(player.Position.X + 10, player.Position.Y - canvas.Height / 2 + 10));
+                        new Vector2(player.Position.X - canvas.Width/2 + 10, player.Position.Y - canvas.Height / 2 + 50));
+
+                    int[][] exploredTiles = player.ExploredTiles;
+                    int[][] mapTiles = level.Map.tiles;
+                    for (int i = 0; i < exploredTiles.Length; i++)
+                    {
+                        for (int j = 0; j < exploredTiles[0].Length; j++)
+                        {
+                            int px = (int)player.Position.X;
+                            int py = (int)player.Position.Y;
+                            if(Math.Abs(i - px/Map.TILE_SIZE) < 40 && Math.Abs(j - py/Map.TILE_SIZE) < 20) {
+                                Color color = Color.Black;
+                                int x_trans = i - px / Map.TILE_SIZE;
+                                int y_trans = j - py / Map.TILE_SIZE;
+                                if (x_trans == 0 && y_trans == 0)
+                                {
+                                    color = Color.Red;
+                                }
+                                else if (exploredTiles[j][i] == 1)
+                                {
+                                    color = mapTiles[j][i] == 1 ? Color.Brown : Color.Yellow;
+                                }
+
+                                canvas.DrawSprite(HealthBarTexture, color,
+                                    new Rectangle(px + 300 + x_trans * MINIMAP_TILE_SIZE, py - 350 + y_trans * MINIMAP_TILE_SIZE,
+                                        MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE),
+                                    new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                            }
+                        }
+                    }
                 }
             }
         }

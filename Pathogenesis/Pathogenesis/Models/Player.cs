@@ -49,6 +49,9 @@ namespace Pathogenesis
             get { return pickups; }
             set { pickups = value; }
         }
+
+        // Keeps track of the player's explored tiles
+        public int[][] ExploredTiles { get; set; }
         #endregion
 
         public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d, int numFrames, Vector2 block_dim)
@@ -62,10 +65,13 @@ namespace Pathogenesis
             InfectionRange = BASE_INFECTION_RANGE;
             InfectionRecovery = BASE_INFECTION_RECOVERY;
             Alive = true;
+
+            ExploredTiles = new int[0][];
         }
 
         // Adds items to player's pickup list
-        public bool PickupItem(Item item) {
+        public bool PickupItem(Item item)
+        {
             switch (item.Type)
             {
                 case ItemType.PLASMID:

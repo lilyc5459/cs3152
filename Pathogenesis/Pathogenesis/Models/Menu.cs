@@ -22,9 +22,14 @@ namespace Pathogenesis.Models
         public MenuType Type { get; set; }
         public Texture2D Background { get; set; }
 
-        public Menu(MenuType type, Texture2D background)
+        public String[] Options {get; set; }
+        public int CurSelection { get; set; }
+
+        public Menu(MenuType type, String[] options, Texture2D background)
         {
             Type = type;
+            Options = options;
+            CurSelection = 0;
             Background = background;
         }
 
