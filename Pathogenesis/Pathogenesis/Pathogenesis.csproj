@@ -152,6 +152,9 @@
     <Compile Include="Controllers\GameEngine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\menu_config.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\spawn_data.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
