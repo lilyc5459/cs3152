@@ -10,9 +10,21 @@ div#page{
 div#sidebar{
 	padding: 5px;
 	float: left;
-	width: 240px;
+	width: 140px;
 	height: auto;
 	border: solid black;
+}
+
+div#shapes{
+	float: left;
+	width: 70px;
+	height: auto;
+}
+
+div#tools{
+	float: left;
+	width: 70px;
+	height: auto;
 }
 
 div#wall_sel{
@@ -56,16 +68,49 @@ div.goalBoss{
 	background-color: yellow;
 }
 
-div.eSpwaner{
+div.eSpawner{
 	background-color: green;
+}
+
+div.modifier{
+	background-color: SpringGreen;
+}
+
+div.spawnArea{
+	background-image:url("../img/area_square.png");
+	background-size: contain;
 }
 
 div.tile:hover {
     opacity: 0.6;
 }
 
+div#title{
+	float left;
+	width: 400px;
+}
+
+div#spawnEdit{
+	display: block;
+	width: auto;
+	height: auto;
+	border: solid black;
+}
+
 .test{
 	background-color: black;
+}
+
+#spawnTable1{
+	float: left;
+}
+
+#spawnTable2{
+	float: left;
+}
+
+#spawnTools{
+	float: left;
 }
 
 div.entity{

@@ -10,29 +10,93 @@ realHeight = 0;
 selectedTile = 'empty';
 selectedType = 0;
 noStart = false;
+eSpawnerArr = [];
+eSpawnerID = 0;
+
+
+
+defSpawnProbObj = {
+  normal: 50,
+  big: 25,
+  flying: 25
+}
+
+defSpawnLvlObj = {
+  lvl1: 75,
+  lvl2: 20,
+  lvl3: 5
+}
+
+defSpawnObj = {
+  spawnProbs: defSpawnProbObj,
+  levelProbs: defSpawnLvlObj
+}
 
 defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
 Level = JSON.parse(defaultLevelJson);
 }
 
-function drawing(){
 
+$("#espawn_close").on("click", function() {
+  //Close the dialog
+  $("#spawnEdit").hide();
+});
+
+
+function modifyTile($cur){
+  //Modify Action ofr eSpawner
+  if ($cur.attr("class") == "tile eSpawner"){
+    id = $cur.attr("eSpawnerID")
+    //Load relevant data
+    //Set the sliders to their appropriate values
+    for (var probType in eSpawnerArr[id].spawnProbs) {
+      $('#prob_'+probType).val(eSpawnerArr[id].spawnProbs[probType]);
+    }
+    for (var probLvl in eSpawnerArr[id].levelProbs) {
+      $('#prob_'+probLvl).val(eSpawnerArr[id].levelProbs[probLvl]);
+    }
+    $("#spawnEdit").show();
+    alert('hey');
+  }
+  //Spawn Save and Close Functions
+  $("#espawn_save").on("click", function() {
+    //Save Probabilites
+    for (var probType in eSpawnerArr[id].spawnProbs) {
+      eSpawnerArr[id].spawnProbs[probType] = $('#prob_'+probType).val();
+    }
+    for (var probLvl in eSpawnerArr[id].levelProbs) {
+      eSpawnerArr[id].levelProbs[probLvl] = $('#prob_'+probLvl).val();
+    }
+  });
+}
+
+function drawing(){
   //Functions to draw on tiles
   function draw($cur){
-    //If drawing player spawn
-    /*
-    if (selectedTile == 'pStart'){
-
+    if($cur.attr("class") == "tile eSpawner"){
+      console.log("removed");
+      eSpawnerArr[$cur.attr("eSpawnerID")] = null;
     }
-    */
-    $cur.removeClass();
-    $cur.addClass('tile');
-    $cur.addClass(selectedTile);
-    $cur.attr('type', selectedType);
-    x = $cur.attr('x');
-    y = $cur.attr('y');
-    console.log('['+x+','+y+']');
-    ArrayOfInt[y][x] = selectedType;
+    if(selectedTile == "modifier"){
+      modifyTile($cur);
+    }else{
+      $cur.removeClass();
+      $cur.addClass('tile');
+      $cur.addClass(selectedTile);
+      $cur.attr('type', selectedType);
+      x = $cur.attr('x');
+      y = $cur.attr('y');
+      console.log('['+x+','+y+']');
+      ArrayOfInt[y][x] = selectedType; 
+    }
+    //Add unique ID to enemy spawns
+    if(selectedTile == "eSpawner"){
+      $cur.attr('eSpawnerID', eSpawnerID);
+      eSpawnerArr[eSpawnerID] = defSpawnObj;
+      eSpawnerArr[eSpawnerID].x = $cur.attr('x');
+      eSpawnerArr[eSpawnerID].y = $cur.attr('y');
+      eSpawnerID++;
+    }
   }
 
   //Drawing Stuff
@@ -63,13 +127,12 @@ function setup(){
   /*
   Selecting Entity
   */
-  $("#sidebar div").on("click", function() {
-    $("#sidebar div").css("border", "grey solid");
+  $(".entity").on("click", function() {
+    $(".entity").css("border", "grey solid");
     $(this).css("border", "red dotted");
     selectedTile = $(this).attr('id');
     selectedType = $(this).attr('type');
   })
-
 
     $( "#new" )
       .button()
@@ -217,6 +280,5 @@ function SaveXML(xml, filename){
 $(function(view) {
   init();
   setup();
-
 });
 

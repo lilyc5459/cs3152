@@ -9,8 +9,8 @@
 </head>
 <body>
 
-	<div>
-		<h1>Pathogenisis Level Editor -- v1.0</h1>
+	<div id="title">
+		<h1>Pathogenisis Level Editor V2</h1>
 		<div id="butCont">
 			<button id="new">New Level</button>
 			<button id="load">Load Level</button>
@@ -20,29 +20,93 @@
 			<div id="output"></div>
 		</div>
 		<br>
+	<div id="spawnEdit">
+		<table id="spawnTable1">
+			<th colspan="2">Spawn Probabilities</th>
+			<th></th>
+			<tr>
+				<td>Small</td> 
+				<td> 
+					<input type="number" id="prob_normal" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Big</td> 
+				<td> 
+					<input type="number" id="prob_big" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Flying</td> 
+				<td> 
+					<input type="number" id="prob_flying" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+		</table>
+		<table id="spawnTable2">
+			<th colspan="2">Level Probabilities</th>
+			<th></th>
+			<tr>
+				<td>Level 1</td> 
+				<td> 
+					<input type="number" id="prob_lvl1" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Level 2</td> 
+				<td> 
+					<input type="number" id="prob_lvl1" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Level 3</td> 
+				<td> 
+					<input type="number" id="prob_lvl2" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+		</table>
+		<div id="spawnTools">
+				<u>Spawn Tools</u><br>
+				Ereaser: <br>
+				<div class="entity empty" type="0" id="empty"></div>
+				<br>
+				Area: <br>
+				<div class="entity spawnArea" type="0" id="spawnArea"></div>
+		</div>
+		<button id="espawn_save">save</button>
+		<button id="espawn_close">close</button>
+	</div>
+		
 	</div>
 
 	<div id="page">
 		<div id="sidebar">
-			<u>Sidebar</u><br>
+			<div id="shapes">
+				<u>Shapes</u><br>
+				Ereaser: <br>
+				<div class="entity empty" type="0" id="empty"></div>
+				<br>
 
-			Ereaser: <br>
-			<div class="entity empty" type="0" id="empty"></div>
-			<br>
+				Wall: <br>
+				<div class="entity wall" type="1" id="wall"></div>
+				<br>
 
-			Wall: <br>
-			<div class="entity wall" type="1" id="wall"></div>
-			<br>
+				Player Start: <br>
+				<div class="entity pStart" type="11" id="pStart">Player Start</div><br>
 
-			Player Start: <br>
-			<div class="entity pStart" id="pStart">Player Start</div><br>
+				Enemy Spawner: <br>
+				<div class="entity eSpawner" type="0" id="eSpawner">Enemy Spawner</div><br>
 
-			Enemy Spawner: <br>
-			<div class="entity eSpwaner" id="eSpwaner">Enemy Spawner</div><br>
-
-			Goal (Boss):
-			<div class="entity goalBoss" id="goalBoss">Goal (Boss) </div><br>
-
+				Goal (Boss):
+				<div class="entity goalBoss" id="goalBoss">Goal (Boss) </div><br>
+			</div>
+			<div id="tools">
+				<u>Tools</u><br>
+				Modifier:
+				<br>
+				<div class="entity modifier" type="-1" id="modifier"></div>
+				<br>
+			</div>
 		</div>
 		<div id="new-form" title="Create a new level">
 		  <form>
