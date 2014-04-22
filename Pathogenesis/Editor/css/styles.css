@@ -77,8 +77,11 @@ div.modifier{
 }
 
 div.spawnArea{
-	background-image:url("../img/area_square.png");
-	background-size: contain;
+	background-color: Magenta;
+}
+
+div.regCntr{
+	background-color: red;
 }
 
 div.tile:hover {

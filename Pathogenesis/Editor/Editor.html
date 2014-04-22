@@ -27,7 +27,7 @@
 			<tr>
 				<td>Small</td> 
 				<td> 
-					<input type="number" id="prob_normal" name="quantity" min="1" max="100">
+					<input type="number" id="prob_normal" name="quantity" value="20" min="1" max="100">
 				</td>
 			</tr>
 			<tr>
@@ -55,23 +55,33 @@
 			<tr>
 				<td>Level 2</td> 
 				<td> 
-					<input type="number" id="prob_lvl1" name="quantity" min="1" max="100">
+					<input type="number" id="prob_lvl2" name="quantity" min="1" max="100">
 				</td>
 			</tr>
 			<tr>
 				<td>Level 3</td> 
 				<td> 
-					<input type="number" id="prob_lvl2" name="quantity" min="1" max="100">
-				</td>
-			</tr>
+					<input type="number" id="prob_lvl3" name="quantity" min="1" max="100">
+				</td
+>			</tr>
 		</table>
+		<div id="regSelector">
+			Region:
+			<select name="regsel" id="regsel">
+				<option value="">Null</option>
+			</select>
+			<button id="create_region">create region</button>
+		</div>
 		<div id="spawnTools">
-				<u>Spawn Tools</u><br>
+				<u>Region Tools</u><br>
 				Ereaser: <br>
 				<div class="entity empty" type="0" id="empty"></div>
 				<br>
 				Area: <br>
 				<div class="entity spawnArea" type="0" id="spawnArea"></div>
+				<br>
+				Center: <br>
+				<div class="entity regCntr" type="0" id="regCntr"></div>
 		</div>
 		<button id="espawn_save">save</button>
 		<button id="espawn_close">close</button>

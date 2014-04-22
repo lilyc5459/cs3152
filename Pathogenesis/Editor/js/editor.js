@@ -12,8 +12,7 @@ selectedType = 0;
 noStart = false;
 eSpawnerArr = [];
 eSpawnerID = 0;
-
-
+advMode = false;
 
 defSpawnProbObj = {
   normal: 50,
@@ -27,55 +26,151 @@ defSpawnLvlObj = {
   lvl3: 5
 }
 
+defSpawnPntObj = {
+  Pos: {
+    Vector2: {
+      X: 0,
+      Y: 0
+    }
+  }
+}
+
 defSpawnObj = {
   spawnProbs: defSpawnProbObj,
-  levelProbs: defSpawnLvlObj
+  levelProbs: defSpawnLvlObj,
+  SpawnPoint: defSpawnPntObj
 }
 
-defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
+defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
+defaultRegionJson= '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
+
 Level = JSON.parse(defaultLevelJson);
+defRegion = JSON.parse(defaultRegionJson);
+}
+Regions = [];
+regionSel = [];
+
+function addRegion(){
+  option = {
+    id: regionSel.length,
+    name: regionSel.length
+  }
+  regionSel.push(option);
+  Regions.push(defRegion);
+  Regions[regionSel.length-1].Region.SpawnPoints = [];
+  $('#regsel').empty();
+  $.each(regionSel, function(i, option) {
+      $('#regsel').append($('<option/>').attr("value", option.id).text(option.name));
+  });
+  $( "#regsel" ).change(function() {
+      for(var i=0; i<regionSel.length; i++){
+        $('[reg'+i).removeClass("spawnArea");
+      }
+      $('[reg'+$('#regsel').val()+']').addClass("spawnArea");
+  });
 }
 
-
+//BUTTON = SPAWN CLOSE
 $("#espawn_close").on("click", function() {
   //Close the dialog
   $("#spawnEdit").hide();
+  $(".tile").removeClass("spawnArea");
+  $(".tile").removeClass("regCntr");
+  advMode = false;
+});
+
+//BUTTON = REGION CREATE
+$("#create_region").on("click", function() {
+  addRegion();
 });
 
 
 function modifyTile($cur){
+  advMode = true;
   //Modify Action ofr eSpawner
   if ($cur.attr("class") == "tile eSpawner"){
     id = $cur.attr("eSpawnerID")
+    console.log("selected");
     //Load relevant data
     //Set the sliders to their appropriate values
-    for (var probType in eSpawnerArr[id].spawnProbs) {
-      $('#prob_'+probType).val(eSpawnerArr[id].spawnProbs[probType]);
-    }
-    for (var probLvl in eSpawnerArr[id].levelProbs) {
-      $('#prob_'+probLvl).val(eSpawnerArr[id].levelProbs[probLvl]);
+    if (eSpawnerArr[id] != null){
+      for (var probType in eSpawnerArr[id].spawnProbs) {
+        $('#prob_'+probType).val(eSpawnerArr[id].spawnProbs[probType]);
+      }
+      for (var probLvl in eSpawnerArr[id].levelProbs) {
+        $('#prob_'+probLvl).val(eSpawnerArr[id].levelProbs[probLvl]);
+      }
     }
     $("#spawnEdit").show();
-    alert('hey');
+    //Load the region areas
+
+    //Code to color new regions - add to backend
   }
-  //Spawn Save and Close Functions
+  //Saving Regions + Spawns
   $("#espawn_save").on("click", function() {
     //Save Probabilites
     for (var probType in eSpawnerArr[id].spawnProbs) {
-      eSpawnerArr[id].spawnProbs[probType] = $('#prob_'+probType).val();
+      console.log(id);
+      eSpawnerArr[id].spawnProbs[probType] = +$('#prob_'+probType).val();
     }
     for (var probLvl in eSpawnerArr[id].levelProbs) {
-      eSpawnerArr[id].levelProbs[probLvl] = $('#prob_'+probLvl).val();
+      eSpawnerArr[id].levelProbs[probLvl] = +$('#prob_'+probLvl).val();
     }
+    //Saving Spawn Point in Region
+      SpawnPoint = {
+        SpawnPoint: eSpawnerArr[id].SpawnPoint
+      }
+      //Remove the spawnpoint from other regions if it is in other regions
+      for (var i=0; i<regionSel.length; i++){
+        for (var Spawnpoint in Regions[i].Region.SpawnPoints) {
+          nX = SpawnPoint.Pos.X;
+          nY = SpawnPoint.Pos.Y;
+          oX = eSpawnerArr[id].SpawnPoint.Pos.X;
+          oY = eSpawnerArr[id].SpawnPoint.Pos.Y;
+          if (nX == oX && nY == oY){
+            delete Spawnpoint;
+          }
+      }
+      //Save it
+      Regions[$('#regsel').val()].Region.SpawnPoints.push(SpawnPoint);
+
+    Regions[$('#regsel').val()].Region
+    //Save Region Areas
+    for(var i=0; i<regionSel.length; i++){
+       Vector2arr = new Array();
+      $('[reg'+i+']').each(function(){
+       Vector2arr.push({
+        X: $(this).attr("x"),
+        Y: $(this).attr("y")
+       })
+       Vector2 = {
+        Vector2: Vector2arr
+       }
+       Regions[i].Region.RegionSet = Vector2;
+      })
+    }
+    //Save Region Center
+    var data = {};
+    $('[centerForReg="'+$('#regsel').val()+'"]').each(function(){
+      //TODO: fix center
+      data = {
+        X: $(this).attr("x"),
+        Y: $(this).attr("y")
+      }
+    });
+    Regions[$('#regsel').val()].Region.Center = data;
   });
 }
 
 function drawing(){
   //Functions to draw on tiles
   function draw($cur){
+    if(!advMode){
+
     if($cur.attr("class") == "tile eSpawner"){
-      console.log("removed");
-      eSpawnerArr[$cur.attr("eSpawnerID")] = null;
+      if(selectedTile != "modifier"){
+        eSpawnerArr[$cur.attr("eSpawnerID")] = null;
+      }
     }
     if(selectedTile == "modifier"){
       modifyTile($cur);
@@ -92,10 +187,26 @@ function drawing(){
     //Add unique ID to enemy spawns
     if(selectedTile == "eSpawner"){
       $cur.attr('eSpawnerID', eSpawnerID);
-      eSpawnerArr[eSpawnerID] = defSpawnObj;
-      eSpawnerArr[eSpawnerID].x = $cur.attr('x');
-      eSpawnerArr[eSpawnerID].y = $cur.attr('y');
+      var newObject = jQuery.extend(true, {}, defSpawnObj);
+      eSpawnerArr[eSpawnerID] = newObject;
+      eSpawnerArr[eSpawnerID].SpawnPoint.Pos.Vector2.X = $cur.attr('x');
+      eSpawnerArr[eSpawnerID].SpawnPoint.Pos.Vector2.Y = $cur.attr('y');
       eSpawnerID++;
+    }
+    //Methods for region stuff
+    }else{
+      if(selectedTile == "spawnArea"){
+        $cur.addClass(selectedTile);
+        $cur.attr("reg"+$('#regsel').val(), true);
+      }else if(selectedTile == "regCntr"){
+        //Make so only max 1 of these TODO-3
+        $cur.addClass(selectedTile);
+        $cur.attr("centerForReg",$('#regsel').val());
+      }else if(selectedTile == "empty"){
+        $cur.removeClass("spawnArea");
+        $cur.removeClass("regCntr");
+        $cur.removeAttr("reg"+$('#regsel').val());
+      }
     }
   }
 
@@ -233,6 +344,8 @@ Creating XML file
 function CreateXML(){
 var x2js = new X2JS();
 
+
+
 var WallTexture = {
   name: ""
 }
@@ -258,6 +371,7 @@ var BackgroundTexture = {
   name: ""
 }
 
+Level.Level.Regions = Regions;
 Level.Level.Width = realWidth;
 Level.Level.Height = realHeight;
 Level.Level.Map = Map;
@@ -280,5 +394,6 @@ function SaveXML(xml, filename){
 $(function(view) {
   init();
   setup();
+  $("#spawnEdit").hide();
 });
 
