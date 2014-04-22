@@ -121,16 +121,13 @@ namespace Pathogenesis
         #region Initialization
         public GameUnit() { }
 
-        public GameUnit(Texture2D texture, int numFrames, Vector2 block_dim, UnitType type, UnitFaction faction,
+        public GameUnit(Texture2D texture, UnitType type, UnitFaction faction,
             int level, bool immune)
         {
             Texture_L = texture;
             Texture_R = texture;
             Texture_D = texture;
             Texture_U = texture;
-
-            NumFrames = numFrames;
-            FrameSize = block_dim;
 
             Type = type;
             Faction = faction;
@@ -144,15 +141,12 @@ namespace Pathogenesis
         }
 
         public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
-            int num_frames, Vector2 block_dim, UnitType type, UnitFaction faction, int level, bool immune)
+            UnitType type, UnitFaction faction, int level, bool immune)
         {
             Texture_L = texture_l;
             Texture_R = texture_r;
             Texture_U = texture_u;
             Texture_D = texture_d;
-
-            NumFrames = num_frames;
-            FrameSize = block_dim;
 
             Type = type;
             Faction = faction;
@@ -180,7 +174,7 @@ namespace Pathogenesis
             max_infection_vitality = (int)Math.Pow(3, Level - 1) * BASE_INFECTION_VITALITY;
             if (Type == UnitType.BOSS)
             {
-                max_infection_vitality = (int)Math.Pow(3, Level + 1) * BASE_INFECTION_VITALITY;
+                max_infection_vitality = (Level + 2) * BASE_INFECTION_VITALITY;
             }
             InfectionVitality = max_infection_vitality;
 
@@ -216,11 +210,12 @@ namespace Pathogenesis
 
             if (Type == UnitType.BOSS)
             {
+                Size = 100;
                 Speed = 3;
                 Mass = 100f;
                 Attack = 10;
                 max_attack_cooldown = 100;
-                AttackRange = 150;
+                AttackRange = 200;
             }
         }
         #endregion
@@ -257,43 +252,47 @@ namespace Pathogenesis
             // test
             Texture2D texture = Texture_L;
             int facingFrame = 0;
-            switch (Facing)
-            {
-                case Direction.RIGHT:
-                    texture = Texture_R;
-                    facingFrame = 3;
-                    break;
-                case Direction.LEFT:
-                    texture = Texture_L;
-                    facingFrame = 2;
-                    break;
-                case Direction.UP:
-                    texture = Texture_U;
-                    facingFrame = 1;
-                    break;
-                case Direction.DOWN:
-                    texture = Texture_D;
-                    facingFrame = 0;
-                    break;
-            }
 
-            if (Type == UnitType.PLAYER)
+            if (FrameSpeed > 0)
             {
-                texture = Texture_L;
                 switch (Facing)
                 {
                     case Direction.RIGHT:
+                        texture = Texture_R;
                         facingFrame = 3;
                         break;
                     case Direction.LEFT:
+                        texture = Texture_L;
                         facingFrame = 2;
                         break;
                     case Direction.UP:
+                        texture = Texture_U;
                         facingFrame = 1;
                         break;
                     case Direction.DOWN:
+                        texture = Texture_D;
                         facingFrame = 0;
                         break;
+                }
+
+                if (Type == UnitType.PLAYER)
+                {
+                    texture = Texture_L;
+                    switch (Facing)
+                    {
+                        case Direction.RIGHT:
+                            facingFrame = 3;
+                            break;
+                        case Direction.LEFT:
+                            facingFrame = 2;
+                            break;
+                        case Direction.UP:
+                            facingFrame = 1;
+                            break;
+                        case Direction.DOWN:
+                            facingFrame = 0;
+                            break;
+                    }
                 }
             }
 
@@ -312,12 +311,12 @@ namespace Pathogenesis
             }
 
             //TEMP
-            if (FrameSize.X > 0 && FrameSize.Y > 0)
+            if (FrameSpeed > 0)
             {
                 canvas.DrawSprite(texture, color,
                     new Rectangle((int)(Position.X - FrameSize.X / 2), (int)(Position.Y - FrameSize.Y / 2),
                         (int)FrameSize.X, (int)FrameSize.Y),
-                    new Rectangle(Frame * (int)FrameSize.X, facingFrame * (int)FrameSize.Y, (int)FrameSize.X, (int)FrameSize.Y));
+                    new Rectangle(Frame * (int)FrameSize.X + 1, facingFrame * (int)FrameSize.Y + 1, (int)FrameSize.X-2, (int)FrameSize.Y-2));
             }
             else
             {

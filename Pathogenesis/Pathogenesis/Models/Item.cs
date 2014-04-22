@@ -43,7 +43,7 @@ namespace Pathogenesis
             switch (Type)
             {
                 case ItemType.PLASMID:
-                    color = Color.Blue;
+                    color = Color.White;
                     break;
                 case ItemType.HEALTH:
                     color = Color.White;

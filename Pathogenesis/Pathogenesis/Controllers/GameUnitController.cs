@@ -631,10 +631,16 @@ namespace Pathogenesis
                     {
                         case 1:
                             // Attack the player if in range
-                            if (Player != null && Player.inRange(unit, unit.AttackRange))
+                            if (Player != null)
                             {
-                                unit.Attacking = Player;
-                                unit.Target = Player.Position;
+                                if (Player.inRange(unit, unit.AttackRange))
+                                {
+                                    unit.Attacking = Player;
+                                }
+                                if (Player.inRange(unit, ENEMY_CHASE_RANGE))
+                                {
+                                    unit.Target = Player.Position;
+                                }
                             }
                             break;
                         case 2:
@@ -1038,7 +1044,7 @@ namespace Pathogenesis
             if (unit.Type == UnitType.BOSS && unit.AttackCoolDown == 5)
             {
                 GameUnit newUnit = factory.createUnit(UnitType.TANK, unit.Faction, unit.Level,
-                    unit.Position + new Vector2((float)rand.NextDouble() * 200 - 100, (float)rand.NextDouble() * 200 - 100), unit.Immune);
+                    unit.Position + new Vector2((float)rand.NextDouble() * 200 - 100, (float)rand.NextDouble() * 200 - 100), true);
                 SpawnedUnits.Add(newUnit);
             }
 

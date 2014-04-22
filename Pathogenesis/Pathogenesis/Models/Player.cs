@@ -54,8 +54,23 @@ namespace Pathogenesis
         public int[][] ExploredTiles { get; set; }
         #endregion
 
+        public Player(Texture2D texture_sheet)
+            : base(texture_sheet, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
+        {
+            pickups = new List<Item>();
+            InfectionPoints = MaxInfectionPoints;
+            Health = 150;
+            max_health = 150; //TEMP
+            MaxInfectionPoints = 1000;
+            InfectionRange = BASE_INFECTION_RANGE;
+            InfectionRecovery = BASE_INFECTION_RECOVERY;
+            Alive = true;
+
+            ExploredTiles = new int[0][];
+        }
+
         public Player(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d, int numFrames, Vector2 block_dim)
-            : base(texture_l, texture_r, texture_u, texture_d, numFrames, block_dim, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
+            : base(texture_l, texture_r, texture_u, texture_d, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
             pickups = new List<Item>();
             InfectionPoints = MaxInfectionPoints;

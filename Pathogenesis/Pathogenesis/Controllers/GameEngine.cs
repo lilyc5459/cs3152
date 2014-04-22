@@ -36,6 +36,10 @@ namespace Pathogenesis
         // First time game loaded?
         private bool firstLoop = true;
 
+        // Fade timer
+        private int fadeCounter = 0;
+        private int fadeTime = 1000;
+
         private SpriteBatch spriteBatch;
 
         // Used to draw the game onto the screen (VIEW CLASS)
@@ -57,7 +61,6 @@ namespace Pathogenesis
         private ItemController item_controller;
         private LevelController level_controller;
         private MenuController menu_controller;
-        //private Menu win_menu, lose_menu;
 
         private HUD HUD_display;
         private GameState game_state;
@@ -154,7 +157,7 @@ namespace Pathogenesis
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
                         if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))
                         {
-                            int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
+                            int level = rand.NextDouble() < 0.0 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
                             unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
                                 rand.NextDouble() < 0.3 ? true : false));
@@ -311,6 +314,12 @@ namespace Pathogenesis
             }
 
             base.Update(gameTime);
+        }
+
+        private void fadeTo(GameState state)
+        {
+            fadeCounter = fadeTime;
+            game_state = state;
         }
 
         /// <summary>
