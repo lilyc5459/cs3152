@@ -96,8 +96,8 @@ namespace Pathogenesis
             particle_engine = new ParticleEngine(factory.getParticleTextures());
 
             level_controller = new LevelController();
-            unit_controller = new GameUnitController(factory);
-            item_controller = new ItemController();
+            item_controller = new ItemController(factory);
+            unit_controller = new GameUnitController(factory, item_controller);
             menu_controller = new MenuController(factory);
 
             // Game starts at the main menu
@@ -151,11 +151,12 @@ namespace Pathogenesis
             input_controller.Update();    // Receive and process input
             sound_controller.Update();
 
-
             switch (game_state)
             {
                 case GameState.IN_GAME:
                     Random rand = new Random();
+
+                    item_controller.Update();
 
                     // Move later
                     particle_engine.EmitterPosition = camera.Position;
@@ -182,7 +183,7 @@ namespace Pathogenesis
 
                             if (rand.NextDouble() < 0.2)
                             {
-                                item_controller.AddItem(factory.createPickup(pos,
+                                item_controller.AddItem(factory.createItem(pos,
                                     rand.NextDouble() < 0.5 ? ItemType.PLASMID : rand.NextDouble() < 0.1 ? ItemType.ALLIES : ItemType.HEALTH));
                             }
                         }   
@@ -204,7 +205,7 @@ namespace Pathogenesis
                     }
                     if (input_controller.Spawn_Plasmid)
                     {
-                        item_controller.AddItem(factory.createPickup(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
+                        item_controller.AddItem(factory.createItem(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             ItemType.PLASMID));
                     }
                     //Auto win
@@ -414,8 +415,9 @@ namespace Pathogenesis
         {
             level_controller.Draw(canvas);
             HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
-            item_controller.Draw(canvas);
+            item_controller.Draw(canvas, false);
             unit_controller.Draw(canvas);
+            item_controller.Draw(canvas, true);
             HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player, camera.Position, level_controller.CurLevel);
         }
         #endregion

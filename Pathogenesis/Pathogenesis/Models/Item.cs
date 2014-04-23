@@ -35,9 +35,11 @@ namespace Pathogenesis
         {
             Texture = texture;
             Type = type;
+
+            Decel = 0.4f;
         }
 
-        public void Draw(GameCanvas canvas)
+        public void Draw(GameCanvas canvas, bool top)
         {
             Color color = Color.White;
             switch (Type)
@@ -61,8 +63,12 @@ namespace Pathogenesis
                     color = Color.Yellow;
                     break;
             }
+            if (top)
+            {
+                color.A = 30;
+            }
             canvas.DrawSprite(Texture, color,
-                new Rectangle((int)Position.X - ITEM_SIZE/2, (int)Position.Y - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE),
+                new Rectangle((int)Position.X - ITEM_SIZE / 2, (int)Position.Y - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE),
                 new Rectangle(0, 0, Texture.Width, Texture.Height));
         }
     }

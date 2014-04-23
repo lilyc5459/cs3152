@@ -43,6 +43,15 @@ namespace Pathogenesis
         public const int MAX_PLAYER_INFECTION_POINTS = 2000;    // Max overall player infection points
         public const float MAX_PLAYER_INFECTION_REGEN = 1;    // Max overall player infection regen speed
 
+        public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
+        
+        // Spawning parameters
+        public const float IMMUNE_SPAWN_PROB = 0.2f;
+        public const int RANDOM_SPAWN_DIST = 10;
+
+        // Item parameters
+        public const int ORGAN_ITEM_DROP_NUM = 5;
+
         public const int PLASMID_POINTS = 120;      // Conversion points gained from picking up a plasmid
         public const int HEALTH_POINTS = 100;       // Health points gained from picking up a health item
         public const int ITEM_FREE_ALLY_NUM = 3;    // The number of allies received from an item pickup
@@ -51,16 +60,11 @@ namespace Pathogenesis
         public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
-
-        public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
-        
-        // Spawning parameters
-        public const float IMMUNE_SPAWN_PROB = 0.2f;
-        public const int RANDOM_SPAWN_DIST = 10;
-        
         #endregion
 
-        private ContentFactory factory;
+        #region Fields
+        private ContentFactory factory;                     // Instance of the content factory
+        private ItemController item_controller;             // Instance of the item controller
 
         public List<GameUnit> Units { get; set; }           // A list of all the units currently in the game
         public List<GameUnit> DeadUnits { get; set; }       // Dead units to be destroyed this frame
@@ -80,11 +84,13 @@ namespace Pathogenesis
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
+        #endregion
 
         #region Initialization
-        public GameUnitController(ContentFactory factory)
+        public GameUnitController(ContentFactory factory, ItemController item_controller)
         {
             this.factory = factory;
+            this.item_controller = item_controller;
             Units = new List<GameUnit>();
             DeadUnits = new List<GameUnit>();
             ConvertedUnits = new List<GameUnit>();
@@ -139,6 +145,10 @@ namespace Pathogenesis
             foreach (GameUnit boss in level.Bosses)
             {
                 Units.Add(boss);
+            }
+            foreach (GameUnit organ in level.Organs)
+            {
+                Units.Add(organ);
             }
             if (Player == null)
             {
@@ -739,7 +749,7 @@ namespace Pathogenesis
                     float ydiff = other.Position.Y - unit.Position.Y;
                     double distance_sq = xdiff * xdiff + ydiff * ydiff;
 
-                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS &&
+                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS && other.Type != UnitType.ORGAN &&
                         distance_sq < (range + unit.Size / 2 + other.Size / 2) * (range + unit.Size / 2 + other.Size / 2) &&
                         (closest == null || distance_sq < closestDistance))
                     {
@@ -862,8 +872,6 @@ namespace Pathogenesis
             if (vel.Length() > unit.Speed)
             {
                 vel *= unit.Speed / vel.Length();
-                //vel.Normalize();
-                //vel *= unit.Speed;
             }
             unit.Vel = vel;
         }
@@ -1026,13 +1034,21 @@ namespace Pathogenesis
                 unit.InfectionVitality = MathHelper.Clamp(
                     unit.InfectionVitality, 0, unit.max_infection_vitality);
             }
-            // If infection vitality is 0, convert the unit, or defeat the boss
+            // If infection vitality is 0, handle the effect depending on the unit type
             if (unit.InfectionVitality == 0)
             {
                 if (unit.Type == UnitType.BOSS)
                 {
                     level.BossesDefeated++;
                     unit.Exists = false;
+                }
+                else if (unit.Type == UnitType.ORGAN)
+                {
+                    unit.Exists = false;
+                    for (int i = 0; i < ORGAN_ITEM_DROP_NUM; i++)
+                    {
+                        item_controller.AddRandomItem(unit.Position);
+                    }
                 }
                 else
                 {

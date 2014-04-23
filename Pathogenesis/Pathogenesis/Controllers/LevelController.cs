@@ -82,6 +82,9 @@ namespace Pathogenesis
             }
         }
 
+        /*
+         * Resets the specified level to its beginning state
+         */
         private void Reset(Level level)
         {
             level.BossesDefeated = 0;
@@ -89,6 +92,13 @@ namespace Pathogenesis
             {
                 boss.Exists = true;
                 boss.InfectionVitality = boss.max_infection_vitality;
+                //boss.Position = 
+            }
+            foreach (GameUnit organ in level.Organs)
+            {
+                organ.Exists = true;
+                organ.InfectionVitality = organ.max_infection_vitality;
+                //organ.Position
             }
         }
         #endregion

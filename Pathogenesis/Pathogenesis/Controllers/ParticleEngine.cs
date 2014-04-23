@@ -23,6 +23,22 @@ namespace Pathogenesis.Controllers
             this.textures = textures;
         }
 
+        /*
+         * Add particles to the engine
+         */
+        public void GenerateParticle(Vector2 emit_position, GameUnit target)
+        {
+            int total = 1;
+
+            for (int i = 0; i < total; i++)
+            {
+                particles.Add(GenerateNewParticle(emit_position, target));
+            }
+        }
+
+        /*
+         * Create a new particle
+         */
         private Particle GenerateNewParticle(Vector2 emit_position, GameUnit target)
         {
             Texture2D texture = textures[rand.Next(textures.Count)];
@@ -63,16 +79,9 @@ namespace Pathogenesis.Controllers
             return p;
         }
 
-        public void GenerateParticle(Vector2 emit_position, GameUnit target)
-        {
-            int total = 1;
-
-            for (int i = 0; i < total; i++)
-            {
-                particles.Add(GenerateNewParticle(emit_position, target));
-            }
-        }
-
+        /*
+         * Update all particles
+         */
         public void UpdateParticles()
         {
             for (int i = 0; i < particles.Count; i++)

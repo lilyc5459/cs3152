@@ -20,6 +20,7 @@ namespace Pathogenesis.Models
         public Vector2 PlayerStart { get; set; }        // Player starting position tile coordinates
         public List<Region> Regions { get; set; }       // List of the regions in the level
         public List<GameUnit> Bosses { get; set; }      // List of Boss units in this level
+        public List<GameUnit> Organs { get; set; }      // List of the infection point organs that drop items
 
         public int NumBosses { get; set; }              // The number of bosses in this level
         public int BossesDefeated { get; set; }         // The number of bosses that the player has defeated

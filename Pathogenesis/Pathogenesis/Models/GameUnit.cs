@@ -24,7 +24,7 @@ namespace Pathogenesis
         FLYING,     // Can fly
         PLAYER,     // Controlled by player, able to use player powers
         BOSS,
-        FINDER      // Pathfinding unit, not visible
+        ORGAN      // Infection point that will drop items
     };
 
     /// <summary>
@@ -85,11 +85,8 @@ namespace Pathogenesis
 
         // Unit movement data
         public Direction Facing { get; set; }
-        public Vector2 Vel { get; set; }
         public Vector2 Target { get; set; }
         public Vector2 NextMove { get; set; }
-        public float Accel { get; set; }
-        public float Decel { get; set; }
 
         public int Size { get; set; }
         public float Mass { get; set; }
@@ -174,6 +171,10 @@ namespace Pathogenesis
             max_infection_vitality = (int)Math.Pow(3, Level - 1) * BASE_INFECTION_VITALITY;
             if (Type == UnitType.BOSS)
             {
+                max_infection_vitality = ((Level + 1) * 3) * BASE_INFECTION_VITALITY;
+            }
+            if (Type == UnitType.ORGAN)
+            {
                 max_infection_vitality = (Level + 2) * BASE_INFECTION_VITALITY;
             }
             InfectionVitality = max_infection_vitality;
@@ -216,6 +217,11 @@ namespace Pathogenesis
                 Attack = 10;
                 max_attack_cooldown = 100;
                 AttackRange = 200;
+            }
+            if (Type == UnitType.ORGAN)
+            {
+                Size = 50;
+                Mass = 10f;
             }
         }
         #endregion
