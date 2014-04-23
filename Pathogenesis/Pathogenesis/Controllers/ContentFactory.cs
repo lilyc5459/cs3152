@@ -55,7 +55,9 @@ namespace Pathogenesis
                 fonts = new Dictionary<string, SpriteFont>();
                 levels = new List<Level>();
             }
+        #endregion
 
+        #region Content Loading
             // Loads all content from content directory
             public void LoadAllContent()
             {
@@ -126,6 +128,34 @@ namespace Pathogenesis
                     Console.WriteLine("The file could not be read:");
                     Console.WriteLine(e.Message);
                 }
+
+                // Load levels
+                // TODO make config file for levels
+                List<GameUnit> goals = new List<GameUnit>();
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
+                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
+                /*
+                Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
+                level.PlayerStart = new Vector2(2, 2);
+                 */
+                Level level = null;
+                using (FileStream stream = new FileStream("level.xml", FileMode.Open))
+                {
+                    using (XmlReader reader = XmlReader.Create(stream))
+                    {
+                        XmlSerializer x = new XmlSerializer(typeof(Level));
+                        level = (Level)x.Deserialize(reader);
+                    }
+                }
+
+                level.BackgroundTexture = textures["background"];
+                level.Map.WallTexture = textures["wall"];
+                level.Bosses = goals;
+                level.NumBosses = goals.Count;
+                level.BossesDefeated = 0;
+                level.PlayerStart = new Vector2(3, 3);
+
+                levels.Add(level);
             }
 
             public void UnloadAll()
@@ -295,37 +325,14 @@ namespace Pathogenesis
 
             public Level loadLevel(int num)
             {
-                //return levels[num];
-
-                List<GameUnit> goals = new List<GameUnit>();
-                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
-                goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
-                /*
-                Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
-                level.PlayerStart = new Vector2(2, 2);
-                 */
-                //return level;
-
-                //load from memory
-                Level loadedLevel = null;
-
-                using (FileStream stream = new FileStream("level.xml", FileMode.Open))
+                if (levels.Count > num)
                 {
-                    using (XmlReader reader = XmlReader.Create(stream))
-                    {
-                        XmlSerializer x = new XmlSerializer(typeof(Level));
-                        loadedLevel = (Level)x.Deserialize(reader);
-                    }
+                    return levels[num];
                 }
-
-                loadedLevel.BackgroundTexture = textures["background"];
-                loadedLevel.Map.WallTexture = textures["wall"];
-                loadedLevel.Bosses = goals;
-                loadedLevel.NumBosses = goals.Count;
-                loadedLevel.BossesDefeated = 0;
-                loadedLevel.PlayerStart = new Vector2(3, 3);
-
-                return loadedLevel;
+                else
+                {
+                    return levels[levels.Count-1];
+                }
             }
 
             public Menu createMenu(MenuType type)
@@ -362,6 +369,14 @@ namespace Pathogenesis
                 return fonts;
             }
 
+            public Texture2D getTexture(String name)
+            {
+                if (textures.ContainsKey(name))
+                {
+                    return textures[name];
+                }
+                return null;
+            }
         #endregion
     }
 }

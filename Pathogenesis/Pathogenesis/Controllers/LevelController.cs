@@ -51,7 +51,7 @@ namespace Pathogenesis
         }
 
         /*
-         * Reloads the current level
+         * Restarts the game
          */
         public void Restart(ContentFactory factory, GameUnitController unit_controller,
             ItemController item_controller, SoundController sound_controller)
@@ -67,6 +67,7 @@ namespace Pathogenesis
             ItemController item_controller, SoundController sound_controller, int level_num)
         {
             CurLevel = factory.loadLevel(level_num);
+            Reset(CurLevel);
             item_controller.Reset();
             unit_controller.Reset();
             unit_controller.SetLevel(CurLevel);
@@ -78,6 +79,16 @@ namespace Pathogenesis
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void Reset(Level level)
+        {
+            level.BossesDefeated = 0;
+            foreach (GameUnit boss in level.Bosses)
+            {
+                boss.Exists = true;
+                boss.InfectionVitality = boss.max_infection_vitality;
             }
         }
         #endregion

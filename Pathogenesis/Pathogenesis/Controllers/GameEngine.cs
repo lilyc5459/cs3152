@@ -36,10 +36,6 @@ namespace Pathogenesis
         // First time game loaded?
         private bool firstLoop = true;
 
-        // Fade timer
-        private int fadeCounter = 0;
-        private int fadeTime = 1000;
-
         private SpriteBatch spriteBatch;
 
         // Used to draw the game onto the screen (VIEW CLASS)
@@ -50,6 +46,9 @@ namespace Pathogenesis
 
         // Game camera, position determines portion of map drawn on screen
         private Camera camera;
+
+        // Fades game to state
+        private Fader fader;
 
         // Game operation controllers
         private InputController input_controller;
@@ -64,6 +63,8 @@ namespace Pathogenesis
 
         private HUD HUD_display;
         private GameState game_state;
+
+        private Texture2D solid;
         #endregion
 
         #region Initialization
@@ -72,6 +73,7 @@ namespace Pathogenesis
             canvas = new GameCanvas(this);
             factory = new ContentFactory(new ContentManager(Services));
             camera = new Camera(canvas.Width, canvas.Height);
+            fader = new Fader();
         }
 
         /// <summary>
@@ -84,6 +86,7 @@ namespace Pathogenesis
         {
             if (firstLoop) factory.LoadAllContent();
             canvas.Initialize(this);
+            solid = factory.getTexture("solid");
 
             // Initialize controllers
             input_controller = new InputController();
@@ -100,8 +103,6 @@ namespace Pathogenesis
             menu_controller.LoadMenu(MenuType.MAIN);
 
             // TEST
-            //win_menu = factory.createMenu(MenuType.WIN);
-            //lose_menu = factory.createMenu(MenuType.LOSE);
 
             HUD_display = factory.createHUD(unit_controller.Player);
 
@@ -143,7 +144,8 @@ namespace Pathogenesis
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-            
+
+            fader.Update();
             input_controller.Update();    // Receive and process input
             sound_controller.Update();
 
@@ -245,7 +247,7 @@ namespace Pathogenesis
                         switch (menu.Options[menu.CurSelection])
                         {
                             case "Play":
-                                game_state = GameState.IN_GAME;
+                                fadeTo(GameState.IN_GAME);
                                 level_controller.LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
                                 break;
                             case "Options":
@@ -286,7 +288,7 @@ namespace Pathogenesis
                         switch (menu.Options[menu.CurSelection])
                         {
                             case "Continue":
-                                game_state = GameState.IN_GAME;
+                                fadeTo(GameState.IN_GAME);
                                 level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
                                 break;
                         }
@@ -300,11 +302,11 @@ namespace Pathogenesis
                         switch (menu.Options[menu.CurSelection])
                         {
                             case "Restart":
-                                game_state = GameState.IN_GAME;
+                                fadeTo(GameState.IN_GAME);
                                 level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
                                 break;
                             case "Quit to Menu":
-                                game_state = GameState.MAIN_MENU;
+                                fadeTo(GameState.MAIN_MENU);
                                 menu_controller.LoadMenu(MenuType.MAIN);
                                 sound_controller.pause("music1");
                                 break;
@@ -318,7 +320,11 @@ namespace Pathogenesis
 
         private void fadeTo(GameState state)
         {
-            fadeCounter = fadeTime;
+            fader.startFade(ChangeGameState, state);
+        }
+
+        private void ChangeGameState(GameState state)
+        {
             game_state = state;
         }
 
@@ -354,6 +360,11 @@ namespace Pathogenesis
                     //lose_menu.Draw(canvas, camera.Position);
                     break;
             }
+
+            // Draw fade effect
+            canvas.DrawSprite(solid, Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 250), (float)fader.fadeCounter / Fader.fadeTime),
+                new Rectangle((int)(camera.Position.X - canvas.Width / 2), (int)(camera.Position.Y - canvas.Height / 2), canvas.Width, canvas.Height),
+                new Rectangle(0, 0, solid.Width, solid.Height));
 
             canvas.EndSpritePass();
             base.Draw(gameTime);
