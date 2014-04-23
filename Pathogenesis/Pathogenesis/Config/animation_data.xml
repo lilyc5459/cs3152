@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Animations>
+  <Character>
+    <Name>player</Name>
+    <FrameWidth>60</FrameWidth>
+    <FrameHeight>47</FrameHeight>
+    <NumFrames>3</NumFrames>
+    <FrameSpeed>9</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>tank1</Name>
+    <FrameWidth>49</FrameWidth>
+    <FrameHeight>46</FrameHeight>
+    <NumFrames>2</NumFrames>
+    <FrameSpeed>15</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>tank2</Name>
+    <FrameWidth>1</FrameWidth>
+    <FrameHeight>1</FrameHeight>
+    <NumFrames>1</NumFrames>
+    <FrameSpeed>1</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>ranged1</Name>
+    <FrameWidth>1</FrameWidth>
+    <FrameHeight>1</FrameHeight>
+    <NumFrames>1</NumFrames>
+    <FrameSpeed>1</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>flying1</Name>
+    <FrameWidth>69</FrameWidth>
+    <FrameHeight>67</FrameHeight>
+    <NumFrames>2</NumFrames>
+    <FrameSpeed>20</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>boss1</Name>
+    <FrameWidth>100</FrameWidth>
+    <FrameHeight>100</FrameHeight>
+    <NumFrames>1</NumFrames>
+    <FrameSpeed>0</FrameSpeed>
+  </Character>
+</Animations>

@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CollisionController.cs" />
+    <Compile Include="Controllers\Fader.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\SoundController.cs" />
     <Compile Include="Models\HUD.cs" />
@@ -151,6 +152,12 @@
     <Compile Include="Controllers\GameEngine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\animation_data.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\animation_data.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\font_paths.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
