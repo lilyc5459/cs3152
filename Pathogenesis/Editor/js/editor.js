@@ -79,9 +79,23 @@ $("#espawn_close").on("click", function() {
   advMode = false;
 });
 
+//Open Region Edit
+$("#open_region_editor").on("click", function() {
+  $("#RegionStuff").show();
+  $("#NonRegionStuff").hide();
+});
+
+
+//Close Region Edit
+$("#close_region_editor").on("click", function() {
+  $("#RegionStuff").hide();
+  $("#NonRegionStuff").show();
+});
+
 //BUTTON = REGION CREATE
 $("#create_region").on("click", function() {
   addRegion();
+  $("#regTools").show()
 });
 
 
@@ -117,22 +131,23 @@ function modifyTile($cur){
       eSpawnerArr[id].levelProbs[probLvl] = +$('#prob_'+probLvl).val();
     }
     //Saving Spawn Point in Region
-      SpawnPoint = {
-        SpawnPoint: eSpawnerArr[id].SpawnPoint
+    SpawnPoint = {
+      SpawnPoint: eSpawnerArr[id].SpawnPoint
+    }
+    //Remove the spawnpoint from other regions if it is in other regions
+    for (var i=0; i<regionSel.length; i++){
+      for (var Spawnpoint in Regions[i].Region.SpawnPoints) {
+        nX = SpawnPoint.Pos.X;
+        nY = SpawnPoint.Pos.Y;
+        oX = eSpawnerArr[id].SpawnPoint.Pos.X;
+        oY = eSpawnerArr[id].SpawnPoint.Pos.Y;
+        if (nX == oX && nY == oY){
+          delete Spawnpoint;
+        }
       }
-      //Remove the spawnpoint from other regions if it is in other regions
-      for (var i=0; i<regionSel.length; i++){
-        for (var Spawnpoint in Regions[i].Region.SpawnPoints) {
-          nX = SpawnPoint.Pos.X;
-          nY = SpawnPoint.Pos.Y;
-          oX = eSpawnerArr[id].SpawnPoint.Pos.X;
-          oY = eSpawnerArr[id].SpawnPoint.Pos.Y;
-          if (nX == oX && nY == oY){
-            delete Spawnpoint;
-          }
-      }
-      //Save it
-      Regions[$('#regsel').val()].Region.SpawnPoints.push(SpawnPoint);
+    }
+    //Save it
+    Regions[$('#regsel').val()].Region.SpawnPoints.push(SpawnPoint);
 
     Regions[$('#regsel').val()].Region
     //Save Region Areas
@@ -395,5 +410,7 @@ $(function(view) {
   init();
   setup();
   $("#spawnEdit").hide();
+  $("#RegionStuff").hide();
+  $("#regTools").hide();
 });
 
