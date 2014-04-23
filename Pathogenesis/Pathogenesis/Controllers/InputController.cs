@@ -26,13 +26,13 @@ namespace Pathogenesis
             private Keys UP = Keys.W;
             private Keys DOWN = Keys.S;
             private Keys RALLY = Keys.E;
-            private Keys PAUSE = Keys.Escape;
+            private Keys PAUSE = Keys.P;
             private Keys TOGGLE_HUD = Keys.Tab;
             private Keys ENTER = Keys.Enter;
             private Keys RESTART = Keys.R;
             private Keys SPAWN_ENEMY = Keys.I;
             private Keys SPAWN_ALLY = Keys.O;
-            private Keys SPAWN_PLASMID = Keys.P;
+            private Keys SPAWN_PLASMID = Keys.K;
         #endregion
 
         #region Properties (READ-ONLY)
@@ -66,6 +66,15 @@ namespace Pathogenesis
             public bool Pause
             {
                 get { return keyStates[PAUSE] == KeyState.DOWN; }
+            }
+
+            /// <summary>
+            /// Whether the back button was pressed.
+            /// </summary>
+            public bool Back
+            {
+                get { return keyStates[Keys.Escape] == KeyState.DOWN ||
+                    keyStates[Keys.Back] == KeyState.DOWN; }
             }
 
             /// <summary>
@@ -172,7 +181,8 @@ namespace Pathogenesis
             public InputController()
             {
                 keyStates = new Dictionary<Keys, KeyState>();
-                keyStates.Add(CONVERT, KeyState.UP);
+                keyStates.Add(Keys.Escape, KeyState.UP);
+                keyStates.Add(Keys.Back, KeyState.UP);
                 keyStates.Add(Keys.Up, KeyState.UP);
                 keyStates.Add(Keys.Down, KeyState.UP);
                 keyStates.Add(Keys.Left, KeyState.UP);
@@ -181,6 +191,8 @@ namespace Pathogenesis
                 keyStates.Add(DOWN, KeyState.UP);
                 keyStates.Add(LEFT, KeyState.UP);
                 keyStates.Add(RIGHT, KeyState.UP);
+
+                keyStates.Add(CONVERT, KeyState.UP);
                 keyStates.Add(RALLY, KeyState.UP);
                 keyStates.Add(PAUSE, KeyState.UP);
                 keyStates.Add(TOGGLE_HUD, KeyState.UP);
@@ -194,20 +206,31 @@ namespace Pathogenesis
             /// <summary>
             /// Read Keyboard Input
             /// </summary>
-            public void Update()
+            public void Update(bool disabled)
             {
-                KeyboardState keyboard = Keyboard.GetState();
                 List<Keys> keys = new List<Keys>(keyStates.Keys);
-                foreach (Keys k in keys)
+
+                if (disabled)
                 {
-                    if (keyboard.IsKeyDown(k))
-                    {
-                        if (keyStates[k] == KeyState.UP) keyStates[k] = KeyState.DOWN;
-                        else keyStates[k] = KeyState.HELD;
-                    }
-                    else
+                    foreach(Keys k in keys)
                     {
                         keyStates[k] = KeyState.UP;
+                    }
+                }
+                else
+                {
+                    KeyboardState keyboard = Keyboard.GetState();
+                    foreach (Keys k in keys)
+                    {
+                        if (keyboard.IsKeyDown(k))
+                        {
+                            if (keyStates[k] == KeyState.UP) keyStates[k] = KeyState.DOWN;
+                            else keyStates[k] = KeyState.HELD;
+                        }
+                        else
+                        {
+                            keyStates[k] = KeyState.UP;
+                        }
                     }
                 }
             }

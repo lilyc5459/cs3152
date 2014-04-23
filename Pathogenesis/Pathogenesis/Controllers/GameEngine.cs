@@ -105,7 +105,6 @@ namespace Pathogenesis
             menu_controller.LoadMenu(MenuType.MAIN);
 
             // TEST
-
             HUD_display = factory.createHUD(unit_controller.Player);
 
             base.Initialize();
@@ -148,7 +147,11 @@ namespace Pathogenesis
                 this.Exit();
 
             fader.Update();
-            input_controller.Update();    // Receive and process input
+            if (fader.fadeCounter == 0)
+            {
+
+            }
+            input_controller.Update(fader.Fading);    // Receive and process input
             sound_controller.Update();
 
             switch (game_state)
@@ -253,72 +256,16 @@ namespace Pathogenesis
                     }
                     break;
                 case GameState.MAIN_MENU:
-                    // for now
-                    menu_controller.Update(input_controller);
-                    Menu menu = menu_controller.CurMenu;
-                    if (input_controller.Enter)
-                    {
-                        switch (menu.Options[menu.CurSelection])
-                        {
-                            case "Play":
-                                fadeTo(GameState.IN_GAME);
-                                break;
-                            case "Options":
-                                break;
-                            case "Quit":
-                                this.Exit();
-                                break;
-                        }
-                    }
+                    menu_controller.HandleMenuInput(this, input_controller);
                     break;
                 case GameState.PAUSED:
-                    menu_controller.Update(input_controller);
-                    menu = menu_controller.CurMenu;
-                    if (input_controller.Enter)
-                    {
-                        switch (menu.Options[menu.CurSelection])
-                        {
-                            case "Resume":
-                                game_state = GameState.IN_GAME;
-                                break;
-                            case "Map":
-                                break;
-                            case "Options":
-                                break;
-                            case "Quit to Menu":
-                                fadeTo(GameState.MAIN_MENU);
-                                break;
-                        }
-                    }
+                    menu_controller.HandleMenuInput(this, input_controller);
                     break;
                 case GameState.VICTORY:
-                    menu_controller.Update(input_controller);
-                    menu = menu_controller.CurMenu;
-                    if (input_controller.Enter)
-                    {
-                        switch (menu.Options[menu.CurSelection])
-                        {
-                            case "Continue":
-                                fadeTo(GameState.IN_GAME);
-                                break;
-                        }
-                    }
+                    menu_controller.HandleMenuInput(this, input_controller);
                     break;
                 case GameState.LOSE:
-                    menu_controller.Update(input_controller);
-                    menu = menu_controller.CurMenu;
-                    if (input_controller.Enter)
-                    {
-                        switch (menu.Options[menu.CurSelection])
-                        {
-                            case "Restart":
-                                fadeTo(GameState.IN_GAME);
-                                break;
-                            case "Quit to Menu":
-                                fadeTo(GameState.MAIN_MENU);
-                                break;
-                        }
-                    }
+                    menu_controller.HandleMenuInput(this, input_controller);
                     break;
             }
 
@@ -328,12 +275,15 @@ namespace Pathogenesis
         /*
          * Fade to the specified game state
          */
-        private void fadeTo(GameState state)
+        public void fadeTo(GameState state)
         {
             fader.startFade(ChangeGameState, state);
         }
 
-        private void ChangeGameState(GameState state)
+        /*
+         * Apply a gamestate change
+         */
+        public void ChangeGameState(GameState state)
         {
             switch (state)
             {

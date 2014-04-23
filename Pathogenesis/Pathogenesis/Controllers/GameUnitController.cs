@@ -37,7 +37,7 @@ namespace Pathogenesis
         public const float RANDOM_WALK_TARGET_PROB = 0.05f; // Probability that a unit will switch targets while random walking
 
         // Player parameters
-        public const int MAX_PLAYER_INFECT_RANGE = 300;    // Max player infection range
+        public const int MAX_PLAYER_INFECT_RANGE = 320;    // Max player infection range
         public const float MAX_PLAYER_SPEED = 9;    // Max overall player speed
         public const float MAX_PLAYER_HEALTH = 500;    // Max overall player health
         public const int MAX_PLAYER_INFECTION_POINTS = 2000;    // Max overall player infection points

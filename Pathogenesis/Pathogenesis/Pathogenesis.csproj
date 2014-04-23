@@ -131,6 +131,7 @@
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\Map.cs" />
     <Compile Include="Models\Menu.cs" />
+    <Compile Include="Models\MenuOption.cs" />
     <Compile Include="Models\Particle.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Sound.cs" />
@@ -154,9 +155,6 @@
     <Compile Include="Controllers\GameEngine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\animation_data.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Config\animation_data.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -164,6 +162,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\menu_config.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\menu_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\spawn_data.txt">
@@ -175,7 +176,9 @@
     <Content Include="Config\texture_paths.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\unit_data.txt" />
+    <Content Include="Config\unit_data.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
   </ItemGroup>

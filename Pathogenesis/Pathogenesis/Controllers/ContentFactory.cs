@@ -35,7 +35,7 @@ namespace Pathogenesis
             // Fonts mapped as <fontname, Spritefont>
             private Dictionary<String, SpriteFont> fonts;
             // Menu options
-            private Dictionary<String, String[]> menu_options;
+            private Dictionary<MenuType, Menu> menus;
 
             // List of levels in the order they appear in the game
             private List<Level> levels;
@@ -54,7 +54,7 @@ namespace Pathogenesis
             particle_textures = new List<Texture2D>();
             animations = new Dictionary<string, Dictionary<string, int>>();
             sounds = new Dictionary<string, SoundEffect>();
-            menu_options = new Dictionary<string, string[]>();
+            menus = new Dictionary<MenuType, Menu>();
             fonts = new Dictionary<string, SpriteFont>();
             levels = new List<Level>();
         }
@@ -64,25 +64,16 @@ namespace Pathogenesis
         // Loads all content from content directory
         public void LoadAllContent()
         {
-            // Load animation data
-            XDocument animation_data = XDocument.Load("Config/animation_data.xml");
-            foreach(XElement animation in animation_data.Descendants("Animations").Elements()) {
-                string name = animation.Element("Name").Value;
-                int frame_w = int.Parse(animation.Element("FrameWidth").Value);
-                int frame_h = int.Parse(animation.Element("FrameHeight").Value);
-                int num_frames = int.Parse(animation.Element("NumFrames").Value);
-                int frame_speed = int.Parse(animation.Element("FrameSpeed").Value);
-                if(!animations.ContainsKey(name))
-                {
-                    animations.Add(name, new Dictionary<string, int>());
-                }
-                animations[name].Add("FrameWidth", frame_w);
-                animations[name].Add("FrameHeight", frame_h);
+            LoadContent();
+            LoadConfigData();
+            LoadLevels();
+        }
 
-                animations[name].Add("NumFrames", num_frames);
-                animations[name].Add("FrameSpeed", frame_speed);
-            }
-
+        /*
+         * Load all content assets
+         */
+        private void LoadContent()
+        {
             try
             {
                 // Load Textures
@@ -91,8 +82,8 @@ namespace Pathogenesis
                 while ((line = sr.ReadLine()) != null)
                 {
                     if (line.StartsWith("//")) continue;
-                    String[] strings = line.Split(new char[] {','});
-                    if(strings.Length < 2) continue;
+                    String[] strings = line.Split(new char[] { ',' });
+                    if (strings.Length < 2) continue;
                     textures.Add(strings[0], content.Load<Texture2D>(strings[1].Trim()));
                 }
                 // Set particle textures
@@ -125,7 +116,7 @@ namespace Pathogenesis
                     if (line.StartsWith("//")) continue;
                     String[] strings = line.Split(new char[] { ';' });
                     if (strings.Length < 2) continue;
-                    menu_options.Add(strings[0].Trim(), strings[1].Trim().Split(new char[] { ',' }));
+                    //menu_options.Add(strings[0].Trim(), strings[1].Trim().Split(new char[] { ',' }));
                 }
             }
             catch (Exception e)
@@ -133,6 +124,86 @@ namespace Pathogenesis
                 Console.WriteLine("The file could not be read:");
                 Console.WriteLine(e.Message);
             }
+        }
+
+        /*
+         * Load configuration data 
+         * Animations, Menus
+         */
+        private void LoadConfigData()
+        {
+            // Load animation data
+            XDocument animation_data = XDocument.Load("Config/animation_data.xml");
+            foreach (XElement animation in animation_data.Descendants("Animations").Elements())
+            {
+                string name = animation.Element("Name").Value;
+                int frame_w = int.Parse(animation.Element("FrameWidth").Value);
+                int frame_h = int.Parse(animation.Element("FrameHeight").Value);
+                int num_frames = int.Parse(animation.Element("NumFrames").Value);
+                int frame_speed = int.Parse(animation.Element("FrameSpeed").Value);
+                if (!animations.ContainsKey(name))
+                {
+                    animations.Add(name, new Dictionary<string, int>());
+                }
+                animations[name].Add("FrameWidth", frame_w);
+                animations[name].Add("FrameHeight", frame_h);
+
+                animations[name].Add("NumFrames", num_frames);
+                animations[name].Add("FrameSpeed", frame_speed);
+            }
+
+            // Load menu data
+            XDocument menu_data = XDocument.Load("Config/menu_config.xml");
+            foreach (XElement menuElement in menu_data.Descendants("Menus").Elements())
+            {
+                try
+                {
+                    // Load type and title
+                    MenuType type = (MenuType)Enum.Parse(typeof(MenuType), menuElement.Element("Type").Value);
+                    string title = menuElement.Element("Title").Element("Text").Value;
+
+                    // Load children
+                    List<MenuType> children = new List<MenuType>();
+                    foreach (XElement child in menuElement.Descendants("Child"))
+                    {
+                        children.Add((MenuType)Enum.Parse(typeof(MenuType), child.Value));
+                    }
+
+                    // Load options
+                    List<MenuOption> options = AddMenuOptions(menuElement);
+
+                    // Create menus
+                    Menu menu = new Menu(type, options, children, textures["solid"]);
+                    menus.Add(type, menu);
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine("Invalid MenuType while loading menu data");
+                }
+            }
+        }
+
+        // Recursively add menu options
+        private List<MenuOption> AddMenuOptions(XElement root)
+        {
+            List<MenuOption> options = new List<MenuOption>();
+            foreach (XElement option in root.Descendants("Option"))
+            {
+                MenuOption opt = new MenuOption(option.Element("Text").Value,
+                    new Vector2(
+                        int.Parse(option.Element("XOffset").Value),
+                        int.Parse(option.Element("YOffset").Value)),
+                        AddMenuOptions(option));
+                options.Add(opt);
+            }
+            return options;
+        }
+
+        /*
+         * Load all levels into memory
+         */
+        private void LoadLevels()
+        {
 
             // Load levels
             // TODO make config file for levels
@@ -343,21 +414,16 @@ namespace Pathogenesis
         /*
             * Create a menu of the specified type
             */
-        public Menu createMenu(MenuType type)
+        public Menu getMenu(MenuType type)
         {
-            return new Menu(type, menu_options[type.ToString()], textures["solid"]);
+            return menus[type];
         }
 
         /*
             * Create menus of all menu types
             */
-        public Dictionary<MenuType, Menu> createMenus()
+        public Dictionary<MenuType, Menu> getMenus()
         {
-            Dictionary<MenuType, Menu> menus = new Dictionary<MenuType, Menu>();
-            foreach (MenuType type in Enum.GetValues(typeof(MenuType)))
-            {
-                menus.Add(type, new Menu(type, menu_options[type.ToString()], textures["solid"]));
-            }
             return menus;
         }
             

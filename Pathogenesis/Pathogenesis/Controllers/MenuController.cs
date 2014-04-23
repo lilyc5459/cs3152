@@ -10,11 +10,21 @@ namespace Pathogenesis.Controllers
     public class MenuController
     {
         private Dictionary<MenuType, Menu> menus;
-        public Menu CurMenu;
+        public List<Menu> OpenMenus;
+
+        // Returns the current menu
+        public Menu CurMenu
+        {
+            get
+            {
+                return OpenMenus.Last();
+            }
+        }
 
         public MenuController(ContentFactory factory)
         {
-            menus = factory.createMenus();
+            menus = factory.getMenus();
+            OpenMenus = new List<Menu>();
         }
 
         /*
@@ -22,7 +32,15 @@ namespace Pathogenesis.Controllers
          */
         public void LoadMenu(MenuType type)
         {
-            CurMenu = menus[type];
+            if (OpenMenus.Count > 0)
+            {
+                Menu current = OpenMenus.Last();
+                if (!current.Children.Contains(type))
+                {
+                    OpenMenus.Clear();
+                }
+            }
+            OpenMenus.Add(menus[type]);
         }
 
         /*
@@ -30,19 +48,119 @@ namespace Pathogenesis.Controllers
          */
         public void Update(InputController input_controller)
         {
+            if (OpenMenus.Count == 0) return;
+
+            Menu menu = OpenMenus.Last();
+
+        }
+
+        /*
+         * Handle all menu selections
+         */
+        public void HandleMenuInput(GameEngine engine, InputController input_controller)
+        {
+            if (OpenMenus.Count == 0) return;
+
+            Menu menu = OpenMenus.Last();
+
+            // Handle option change
             if (input_controller.DownOnce)
             {
-                CurMenu.CurSelection = (int)MathHelper.Clamp(CurMenu.CurSelection + 1, 0, CurMenu.Options.Length - 1);
+                menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection + 1, 0, menu.Options.Count - 1);
             }
             if (input_controller.UpOnce)
             {
-                CurMenu.CurSelection = (int)MathHelper.Clamp(CurMenu.CurSelection - 1, 0, CurMenu.Options.Length - 1);
+                menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection - 1, 0, menu.Options.Count - 1);
+            }
+
+            // Handle back button
+            if (input_controller.Back)
+            {
+                if(menu.Type == MenuType.OPTIONS)
+                {
+                    OpenMenus.RemoveAt(OpenMenus.Count - 1);
+                }
+                else if (menu.Type == MenuType.PAUSE)
+                {
+                    OpenMenus.RemoveAt(OpenMenus.Count - 1);
+                    engine.ChangeGameState(GameState.IN_GAME);
+                }
+
+            }
+
+            // Handle option selection
+            String curSelection = menu.Options[menu.CurSelection].Text;
+            if (input_controller.Enter)
+            {
+                switch (menu.Type)
+                {
+                    case MenuType.MAIN:
+                        switch (curSelection)
+                        {
+                            case "Play":
+                                engine.fadeTo(GameState.IN_GAME);
+                                break;
+                            case "Options":
+                                LoadMenu(MenuType.OPTIONS);
+                                break;
+                            case "Quit":
+                                engine.Exit();
+                                break;
+                        }
+                        break;
+                    case MenuType.PAUSE:
+                        switch (curSelection)
+                        {
+                            case "Resume":
+                                engine.ChangeGameState(GameState.IN_GAME);
+                                break;
+                            case "Map":
+                                break;
+                            case "Options":
+                                LoadMenu(MenuType.OPTIONS);
+                                break;
+                            case "Quit to Menu":
+                                engine.fadeTo(GameState.MAIN_MENU);
+                                break;
+                        }
+                        break;
+                    case MenuType.OPTIONS:
+                        switch (curSelection)
+                        {
+                            case "Back":
+                                OpenMenus.Remove(menu);
+                                break;
+                        }
+                        break;
+                    case MenuType.WIN:
+                        switch (curSelection)
+                        {
+                            case "Continue":
+                                engine.fadeTo(GameState.IN_GAME);
+                                break;
+                        }
+                        break;
+                    case MenuType.LOSE:
+                        switch (curSelection)
+                        {
+                            case "Restart":
+                                engine.fadeTo(GameState.IN_GAME);
+                                break;
+                            case "Quit to Menu":
+                                engine.fadeTo(GameState.MAIN_MENU);
+                                break;
+                        }
+                        break;
+                }
             }
         }
 
         public void DrawMenu(GameCanvas canvas, Vector2 center)
         {
-            CurMenu.Draw(canvas, center);
+            foreach (Menu menu in OpenMenus)
+            {
+                menu.Draw(canvas, center);
+            }
         }
     }
 }

@@ -16,6 +16,11 @@ namespace Pathogenesis.Controllers
         private Action<GameState> callback;
         private GameState arg;
 
+        public bool Fading
+        {
+            get { return fadeCounter > 0; }
+        }
+
         public Fader()
         {
             fadeCounter = 0;

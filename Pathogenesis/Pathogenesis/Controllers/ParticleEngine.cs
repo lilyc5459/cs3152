@@ -70,7 +70,7 @@ namespace Pathogenesis.Controllers
 
             float angle = 0;
             float angularVelocity = 0.1f * (float)(rand.NextDouble() * 2 - 1);
-            Color color = new Color(0, 0, 0, (int)(rand.NextDouble() * 150 + 50));
+            Color color = new Color(0, 0, 0, (int)(rand.NextDouble() * 150 + 100));
             int size = (int)(rand.NextDouble() * 10 + 10);
             int ttl = 100 + rand.Next(20);
 
