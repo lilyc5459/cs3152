@@ -26,6 +26,8 @@ namespace Pathogenesis
 
             // Dictionary of all textures mapped as <filename, texture>
             private Dictionary<String, Texture2D> textures;
+            // Particle textures
+            private List<Texture2D> particle_textures;
             // Animation data mapped as <name, <animation_attribute, value>>
             private Dictionary<String, Dictionary<String, int>> animations;
             // Dictionary of all audio clips mapped as <filename, clip>
@@ -49,6 +51,7 @@ namespace Pathogenesis
                 rand = new Random();
 
                 textures = new Dictionary<string, Texture2D>();
+                particle_textures = new List<Texture2D>();
                 animations = new Dictionary<string, Dictionary<string, int>>();
                 sounds = new Dictionary<string, SoundEffect>();
                 menu_options = new Dictionary<string, string[]>();
@@ -92,6 +95,8 @@ namespace Pathogenesis
                         if(strings.Length < 2) continue;
                         textures.Add(strings[0], content.Load<Texture2D>(strings[1].Trim()));
                     }
+                    // Set particle textures
+                    particle_textures.Add(textures["circle"]);
 
                     // Load Sounds
                     sr = new StreamReader("Config/sound_paths.txt");
@@ -323,6 +328,9 @@ namespace Pathogenesis
                 return item;
             }
 
+            /*
+             * Retreive the specified level
+             */
             public Level loadLevel(int num)
             {
                 if (levels.Count > num)
@@ -335,6 +343,9 @@ namespace Pathogenesis
                 }
             }
 
+            /*
+             * Create a menu of the specified type
+             */
             public Menu createMenu(MenuType type)
             {
                 return new Menu(type, menu_options[type.ToString()], textures["solid"]);
@@ -356,6 +367,11 @@ namespace Pathogenesis
             public Dictionary<String, SoundEffect> getSounds()
             {
                 return sounds;
+            }
+
+            public List<Texture2D> getParticleTextures()
+            {
+                return particle_textures;
             }
 
             // Returns the game font

@@ -28,7 +28,7 @@ namespace Pathogenesis
         public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
         public const int MOVE_STOP_DIST = 5;
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_LOCK_RANGE = 50;    // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_LOCK_RANGE = 30;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
         public const float INFECTION_RECOVER_SPEED = 0.5f;
@@ -52,7 +52,7 @@ namespace Pathogenesis
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
 
-        public const int EXPLORE_SIGHT_RANGE = 20;   // The range of the player's explore vision, updating the minimap
+        public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
         
         // Spawning parameters
         public const float IMMUNE_SPAWN_PROB = 0.2f;
@@ -469,15 +469,14 @@ namespace Pathogenesis
         private List<Vector2> GetExploredTiles(Vector2 pos)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int start_x = (int)pos.X - EXPLORE_SIGHT_RANGE;
-            int end_x = (int)pos.X + EXPLORE_SIGHT_RANGE;
-
-            for (int i = 0; i < EXPLORE_SIGHT_RANGE; i++)
+            for (int i = -EXPLORE_SIGHT_RANGE; i < EXPLORE_SIGHT_RANGE; i++)
             {
-                for (int j = - (EXPLORE_SIGHT_RANGE - i); j < EXPLORE_SIGHT_RANGE - i; j++)
+                for (int j = -EXPLORE_SIGHT_RANGE; j < EXPLORE_SIGHT_RANGE; j++)
                 {
-                    tiles.Add(new Vector2(pos.X + i, pos.Y + j));
-                    tiles.Add(new Vector2(pos.X - i, pos.Y + j));
+                    if (i * i + j * j < EXPLORE_SIGHT_RANGE * EXPLORE_SIGHT_RANGE)
+                    {
+                        tiles.Add(new Vector2(pos.X + i, pos.Y + j));
+                    }
                 }
             }
             return tiles;

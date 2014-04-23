@@ -10,7 +10,9 @@ namespace Pathogenesis.Models
     public class HUD
     {
         public const int MINIMAP_TILE_SIZE = 4;
-
+        public const int MINIMAP_WIDTH = 300;
+        public const int MINIMAP_HEIGHT = 150;
+ 
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
 
@@ -64,7 +66,7 @@ namespace Pathogenesis.Models
             }
         }
 
-        public void DrawLayerTwo(GameCanvas canvas, List<GameUnit> units, Player player, Level level)
+        public void DrawLayerTwo(GameCanvas canvas, List<GameUnit> units, Player player, Vector2 center, Level level)
         {
             if (Active)
             {
@@ -84,11 +86,11 @@ namespace Pathogenesis.Models
                 {
                     // Health
                     canvas.DrawText("Health", new Color(220, 200, 80),
-                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 15),
+                        new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
                         "font2", false);
                     canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
-                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 150),
-                            (int)(player.Position.Y - canvas.Height / 2 + 10),
+                        new Rectangle((int)(center.X - canvas.Width/2 + 150),
+                            (int)(center.Y - canvas.Height / 2 + 10),
                             (int)(MathHelper.Lerp(0, 500, player.Health/player.max_health)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
                     /*
@@ -99,11 +101,11 @@ namespace Pathogenesis.Models
                     
                     // Infection points
                     canvas.DrawText("Infect", new Color(220, 200, 80),
-                        new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 55),
+                        new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 55),
                         "font2", false);
                     canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
-                        new Rectangle((int)(player.Position.X - canvas.Width/2 + 150),
-                            (int)(player.Position.Y - canvas.Height / 2 + 50),
+                        new Rectangle((int)(center.X - canvas.Width/2 + 150),
+                            (int)(center.Y - canvas.Height / 2 + 50),
                             (int)(MathHelper.Lerp(0, 500, player.InfectionPoints / player.MaxInfectionPoints)), 30),
                         new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
                     /*
@@ -112,29 +114,37 @@ namespace Pathogenesis.Models
                         "font1", false);
                      */
 
+                    // Draw minimap
                     int[][] exploredTiles = player.ExploredTiles;
                     int[][] mapTiles = level.Map.tiles;
+                    float px = center.X;
+                    float py = center.Y;
+                    canvas.DrawSprite(HealthBarTexture, new Color(0, 0, 0, 100),
+                        new Rectangle((int)px - MINIMAP_WIDTH/2 + 350, (int)py - MINIMAP_HEIGHT/2 - 300,
+                            MINIMAP_WIDTH, MINIMAP_HEIGHT),
+                        new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+
                     for (int i = 0; i < exploredTiles.Length; i++)
                     {
                         for (int j = 0; j < exploredTiles[0].Length; j++)
                         {
-                            int px = (int)player.Position.X;
-                            int py = (int)player.Position.Y;
-                            if(Math.Abs(i - px/Map.TILE_SIZE) < 40 && Math.Abs(j - py/Map.TILE_SIZE) < 20) {
+                            int x_trans = i - (int)px / Map.TILE_SIZE;
+                            int y_trans = j - (int)py / Map.TILE_SIZE;
+
+                            if(Math.Abs(x_trans) < MINIMAP_WIDTH/MINIMAP_TILE_SIZE/2 &&
+                                Math.Abs(y_trans) < MINIMAP_HEIGHT/MINIMAP_TILE_SIZE/2) {
                                 Color color = Color.Black;
-                                int x_trans = i - px / Map.TILE_SIZE;
-                                int y_trans = j - py / Map.TILE_SIZE;
+                                
                                 if (x_trans == 0 && y_trans == 0)
                                 {
                                     color = Color.Red;
                                 }
                                 else if (exploredTiles[j][i] == 1)
                                 {
-                                    color = mapTiles[j][i] == 1 ? Color.Brown : Color.Yellow;
+                                    color = mapTiles[j][i] == 1 ? Color.Maroon : Color.LightPink;
                                 }
-
                                 canvas.DrawSprite(HealthBarTexture, color,
-                                    new Rectangle(px + 300 + x_trans * MINIMAP_TILE_SIZE, py - 350 + y_trans * MINIMAP_TILE_SIZE,
+                                    new Rectangle((int)(px + x_trans * MINIMAP_TILE_SIZE + 350), (int)(py + y_trans * MINIMAP_TILE_SIZE - 300),
                                         MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE),
                                     new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
                             }

@@ -1,5 +1,6 @@
 ﻿//Environment
 solid, Environment/solid
+circle, Environment/circle
 infect_range, Environment/infect
 health_bar, Environment/healthbar
 plasmid, Environment/plasmid

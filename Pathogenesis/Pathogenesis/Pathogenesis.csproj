@@ -125,11 +125,13 @@
     <Compile Include="Controllers\CollisionController.cs" />
     <Compile Include="Controllers\Fader.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\ParticleEngine.cs" />
     <Compile Include="Controllers\SoundController.cs" />
     <Compile Include="Models\HUD.cs" />
     <Compile Include="Models\Level.cs" />
     <Compile Include="Models\Map.cs" />
     <Compile Include="Models\Menu.cs" />
+    <Compile Include="Models\Particle.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Sound.cs" />
     <Compile Include="Models\SpawnPoint.cs" />
