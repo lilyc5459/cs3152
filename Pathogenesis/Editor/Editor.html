@@ -62,27 +62,9 @@
 				<td>Level 3</td> 
 				<td> 
 					<input type="number" id="prob_lvl3" name="quantity" min="1" max="100">
-				</td
->			</tr>
+				</td>
+			</tr>
 		</table>
-		<div id="regSelector">
-			Region:
-			<select name="regsel" id="regsel">
-				<option value="">Null</option>
-			</select>
-			<button id="create_region">create region</button>
-		</div>
-		<div id="spawnTools">
-				<u>Region Tools</u><br>
-				Ereaser: <br>
-				<div class="entity empty" type="0" id="empty"></div>
-				<br>
-				Area: <br>
-				<div class="entity spawnArea" type="0" id="spawnArea"></div>
-				<br>
-				Center: <br>
-				<div class="entity regCntr" type="0" id="regCntr"></div>
-		</div>
 		<button id="espawn_save">save</button>
 		<button id="espawn_close">close</button>
 	</div>
@@ -91,31 +73,54 @@
 
 	<div id="page">
 		<div id="sidebar">
-			<div id="shapes">
-				<u>Shapes</u><br>
-				Ereaser: <br>
-				<div class="entity empty" type="0" id="empty"></div>
-				<br>
-
-				Wall: <br>
-				<div class="entity wall" type="1" id="wall"></div>
-				<br>
-
-				Player Start: <br>
-				<div class="entity pStart" type="11" id="pStart">Player Start</div><br>
-
-				Enemy Spawner: <br>
-				<div class="entity eSpawner" type="0" id="eSpawner">Enemy Spawner</div><br>
-
-				Goal (Boss):
-				<div class="entity goalBoss" id="goalBoss">Goal (Boss) </div><br>
+			<div id="RegionStuff">
+				<button id="close_region_editor">Close Region Editor</button>
+				<div id="regSelector">
+					Region:
+					<select name="regsel" id="regsel">
+						<option value="">Null</option>
+					</select>
+					<button id="create_region">create region</button>
+				</div>
+				<div id="regTools">
+					<div class="shapes">
+						<u>Blocks</u><br>
+						Area: <br>
+						<div class="entity spawnArea" type="0" id="spawnArea"></div>
+						<br>
+						Enemy Spawner: <br>
+						<div class="entity eSpawner" type="0" id="eSpawner">Enemy Spawner</div><br>
+						Center: <br>
+						<div class="entity regCntr" type="0" id="regCntr"></div>
+					</div>
+					<div class="shapes">
+						<u>Tools</u><br>
+						Modifier: <br>
+						<div class="entity modifier" type="-1" id="modifier"></div>
+						Ereaser: <br>
+						<div class="entity empty" type="0" id="empty"></div>
+						<br>
+					</div>
+				</div>
 			</div>
-			<div id="tools">
-				<u>Tools</u><br>
-				Modifier:
-				<br>
-				<div class="entity modifier" type="-1" id="modifier"></div>
-				<br>
+			<div id="NonRegionStuff">
+				<button id="open_region_editor">Open Region Editor</button>
+				<div class="shapes">
+					<u>Terrain</u><br>
+					Ereaser: <br>
+					<div class="entity empty" type="0" id="empty"></div>
+					<br>
+					Wall: <br>
+					<div class="entity wall" type="1" id="wall"></div>
+					<br>
+				</div>
+				<div class="shapes">
+					<u>Objects</u><br>
+					P_Start: <br>
+					<div class="entity pStart" type="11" id="pStart">Player Start</div><br>
+					Boss:
+					<div class="entity goalBoss" id="goalBoss">Goal (Boss) </div><br>
+				</div>
 			</div>
 		</div>
 		<div id="new-form" title="Create a new level">

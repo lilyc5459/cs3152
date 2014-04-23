@@ -15,9 +15,9 @@ div#sidebar{
 	border: solid black;
 }
 
-div#shapes{
+div.shapes{
 	float: left;
-	width: 70px;
+	width: 65px;
 	height: auto;
 }
 
@@ -94,9 +94,8 @@ div#title{
 }
 
 div#spawnEdit{
-	display: block;
 	width: auto;
-	height: auto;
+	height: 150px;
 	border: solid black;
 }
 
