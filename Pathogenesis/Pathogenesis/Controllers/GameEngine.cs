@@ -147,10 +147,6 @@ namespace Pathogenesis
                 this.Exit();
 
             fader.Update();
-            if (fader.fadeCounter == 0)
-            {
-
-            }
             input_controller.Update(fader.Fading);    // Receive and process input
             sound_controller.Update();
 
@@ -285,6 +281,7 @@ namespace Pathogenesis
          */
         public void ChangeGameState(GameState state)
         {
+            particle_engine.Reset();
             switch (state)
             {
                 case GameState.IN_GAME:
@@ -303,7 +300,7 @@ namespace Pathogenesis
                     break;
                 case GameState.MAIN_MENU:
                     menu_controller.LoadMenu(MenuType.MAIN);
-                    sound_controller.pause("music1");
+                    sound_controller.pauseAll();
                     break;
                 case GameState.PAUSED:
                     break;
@@ -314,7 +311,16 @@ namespace Pathogenesis
             }
             game_state = state;
         }
+        #endregion
 
+        #region Getters
+        public SoundController getSoundController()
+        {
+            return sound_controller;
+        }
+        #endregion
+
+        #region Drawing
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>

@@ -20,6 +20,9 @@ namespace Pathogenesis.Models
 
     public class Menu
     {
+        public static Color fontColor = new Color(220, 200, 80);
+        public static Color fontHighlightColor = new Color(250, 230, 200);
+
         public MenuType Type { get; set; }
         public Texture2D Background { get; set; }
 
@@ -80,10 +83,11 @@ namespace Pathogenesis.Models
             for (int i = 0; i < Options.Count; i++)
             {
                 MenuOption option = Options[i];
-                Color option_color = new Color(220, 200, 80);
+                Color option_color = fontColor;
                 if (i == CurSelection)
                 {
-                    canvas.DrawSprite(Background, new Color(220, 200, 80),
+                    option_color = fontHighlightColor;
+                    canvas.DrawSprite(Background, option_color,
                         new Rectangle((int)(center.X + option.Offset.X - 150), (int)(center.Y + option.Offset.Y), 15, 15),
                         new Rectangle(0, 0, Background.Width, Background.Height));
                 }

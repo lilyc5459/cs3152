@@ -62,8 +62,9 @@ namespace Pathogenesis.Controllers
             if (OpenMenus.Count == 0) return;
 
             Menu menu = OpenMenus.Last();
+            MenuOption option = menu.Options[menu.CurSelection];
 
-            // Handle option change
+            // Handle primary option change
             if (input_controller.DownOnce)
             {
                 menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection + 1, 0, menu.Options.Count - 1);
@@ -71,6 +72,48 @@ namespace Pathogenesis.Controllers
             if (input_controller.UpOnce)
             {
                 menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection - 1, 0, menu.Options.Count - 1);
+            }
+
+            // Handle secondary selection (left right)
+            bool secondarySelected = false;
+            if (input_controller.LeftOnce)
+            {
+                option.CurSelection = (int)MathHelper.Clamp(option.CurSelection - 1, 0, option.Options.Count - 1);
+                secondarySelected = true;
+            }
+            if (input_controller.RightOnce)
+            {
+                option.CurSelection = (int)MathHelper.Clamp(option.CurSelection + 1, 0, option.Options.Count - 1);
+                secondarySelected = true;
+            }
+
+            if (menu.Type == MenuType.OPTIONS && secondarySelected)
+            {
+                SoundController sound_controller = engine.getSoundController();
+                String selection = option.Options[option.CurSelection].Text;
+                switch (option.Text)
+                {
+                    case "Music":
+                        if (selection.Equals("Off"))
+                        {
+                            sound_controller.MuteSounds(SoundType.MUSIC);
+                        }
+                        else if (selection.Equals("On"))
+                        {
+                            sound_controller.UnmuteSounds(SoundType.MUSIC);
+                        }
+                        break;
+                    case "Sound Effects":
+                        if (selection.Equals("Off"))
+                        {
+                            sound_controller.MuteSounds(SoundType.EFFECT);
+                        }
+                        else if (selection.Equals("On"))
+                        {
+                            sound_controller.UnmuteSounds(SoundType.EFFECT);
+                        }
+                        break;
+                }
             }
 
             // Handle back button
@@ -89,7 +132,7 @@ namespace Pathogenesis.Controllers
             }
 
             // Handle option selection
-            String curSelection = menu.Options[menu.CurSelection].Text;
+            String curSelection = option.Text;
             if (input_controller.Enter)
             {
                 switch (menu.Type)
@@ -143,7 +186,7 @@ namespace Pathogenesis.Controllers
                     case MenuType.LOSE:
                         switch (curSelection)
                         {
-                            case "Restart":
+                            case "Start Over":
                                 engine.fadeTo(GameState.IN_GAME);
                                 break;
                             case "Quit to Menu":

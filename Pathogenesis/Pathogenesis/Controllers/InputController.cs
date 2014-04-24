@@ -94,11 +94,27 @@ namespace Pathogenesis
             }
 
             /// <summary>
+            /// Whether the left button was pressed once.
+            /// </summary>
+            public bool LeftOnce
+            {
+                get { return keyStates[LEFT] == KeyState.DOWN || keyStates[Keys.Left] == KeyState.DOWN; }
+            }
+
+            /// <summary>
             /// Whether the right button was pressed.
             /// </summary>
             public bool Right
             {
                 get { return keyStates[RIGHT] == KeyState.HELD || keyStates[Keys.Right] == KeyState.HELD; }
+            }
+
+            /// <summary>
+            /// Whether the right button was pressed once.
+            /// </summary>
+            public bool RightOnce
+            {
+                get { return keyStates[RIGHT] == KeyState.DOWN || keyStates[Keys.Right] == KeyState.DOWN; }
             }
 
             /// <summary>

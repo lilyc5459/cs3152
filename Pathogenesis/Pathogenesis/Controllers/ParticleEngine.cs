@@ -121,6 +121,14 @@ namespace Pathogenesis.Controllers
             }
         }
 
+        /*
+         * Reset the particle engine
+         */
+        public void Reset()
+        {
+            particles.Clear();
+        }
+
         public void Draw(GameCanvas canvas)
         {
             foreach (Particle p in particles)

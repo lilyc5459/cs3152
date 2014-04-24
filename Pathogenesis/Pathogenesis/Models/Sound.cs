@@ -48,6 +48,16 @@ namespace Pathogenesis.Models
             instance.Pause();
         }
 
+        public void Mute()
+        {
+            instance.Volume = 0;
+        }
+
+        public void Unmute()
+        {
+            instance.Volume = 1.0f;
+        }
+
         public SoundState State
         {
             get { return instance.State; }

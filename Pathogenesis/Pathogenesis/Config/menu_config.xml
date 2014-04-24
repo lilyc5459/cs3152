@@ -123,12 +123,12 @@
     <Option>
       <Text>Start Over</Text>
       <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
+      <YOffset>-30</YOffset>
     </Option>
     <Option>
       <Text>Quit to Menu</Text>
       <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
+      <YOffset>30</YOffset>
     </Option>
   </Menu>
 </Menus>

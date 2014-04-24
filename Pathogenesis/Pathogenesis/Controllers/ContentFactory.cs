@@ -31,7 +31,9 @@ namespace Pathogenesis
             // Animation data mapped as <name, <animation_attribute, value>>
             private Dictionary<String, Dictionary<String, int>> animations;
             // Dictionary of all audio clips mapped as <filename, clip>
-            private Dictionary<String, SoundEffect> sounds;
+            private Dictionary<String, SoundEffect> music;
+            // Dictionary of all audio clips mapped as <filename, clip>
+            private Dictionary<String, SoundEffect> sound_effects;
             // Fonts mapped as <fontname, Spritefont>
             private Dictionary<String, SpriteFont> fonts;
             // Menu options
@@ -53,7 +55,8 @@ namespace Pathogenesis
             textures = new Dictionary<string, Texture2D>();
             particle_textures = new List<Texture2D>();
             animations = new Dictionary<string, Dictionary<string, int>>();
-            sounds = new Dictionary<string, SoundEffect>();
+            music = new Dictionary<string, SoundEffect>();
+            sound_effects = new Dictionary<string, SoundEffect>();
             menus = new Dictionary<MenuType, Menu>();
             fonts = new Dictionary<string, SpriteFont>();
             levels = new List<Level>();
@@ -96,7 +99,7 @@ namespace Pathogenesis
                     if (line.StartsWith("//")) continue;
                     String[] strings = line.Split(new char[] { ',' });
                     if (strings.Length < 2) continue;
-                    sounds.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
+                    music.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
                 }
 
                 // Load fonts
@@ -187,7 +190,7 @@ namespace Pathogenesis
         private List<MenuOption> AddMenuOptions(XElement root)
         {
             List<MenuOption> options = new List<MenuOption>();
-            foreach (XElement option in root.Descendants("Option"))
+            foreach (XElement option in root. Elements("Option"))
             {
                 MenuOption opt = new MenuOption(option.Element("Text").Value,
                     new Vector2(
@@ -428,12 +431,21 @@ namespace Pathogenesis
         }
             
         /*
-            * Returns the sound map
+            * Returns the music map
             */
-        public Dictionary<String, SoundEffect> getSounds()
+        public Dictionary<String, SoundEffect> getMusic()
         {
-            return sounds;
+            return music;
         }
+
+        /*
+        * Returns the sound effects map
+        */
+        public Dictionary<String, SoundEffect> getSoundEffects()
+        {
+            return sound_effects;
+        }
+
 
         /*
             * Returns the particle textures
