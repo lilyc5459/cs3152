@@ -52,7 +52,7 @@ namespace Pathogenesis.Models
                     if (!unit.Exists) continue;
 
                     //Attack indicator
-                    if (unit.AttackCoolDown != 0)
+                    if (unit.AttackCoolDown != 0 && unit.Type != UnitType.FLYING)
                     {
                         int range = unit.AttackRange + unit.Size / 2;
                         canvas.DrawSprite(InfectTexture,

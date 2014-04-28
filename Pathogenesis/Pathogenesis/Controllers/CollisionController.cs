@@ -5,6 +5,7 @@ using System.Text;
 using Pathogenesis.Models;
 using System.Collections;
 using Microsoft.Xna.Framework;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -32,7 +33,7 @@ namespace Pathogenesis
          */
 
         public void Update(List<GameUnit> units, Player player, Dictionary<int, Vector2> previousPositions,
-            Level level, ItemController item_controller)
+            Level level, ItemController item_controller, ParticleEngine particle_engine)
         {
             ConstructCollisionGrids(units, item_controller.Items, player, level);
 
@@ -54,6 +55,15 @@ namespace Pathogenesis
                 ProcessUnitCollisions(player);
                 ProcessItems(player, item_controller);
                 CheckWallCollision(player, level.Map, previousPositions);
+            }
+
+            foreach (Particle p in particle_engine.particles)
+            {
+                // If particle collides
+                if (CheckParticleCollision(p))
+                {
+                    particle_engine.DestroyedParticles.Add(p);
+                }
             }
         }
 
@@ -231,30 +241,6 @@ namespace Pathogenesis
             Vector2 pos_change = unit.Position - previousPositions[unit.ID];
             float change_length = pos_change.Length();
 
-            /*
-            if(change_length > 0)
-            {
-                if (pos_change.X != 0 && pos_change.Y != 0)
-                {
-
-                }
-                pos_change.Normalize();
-                // Check if the unit position is allowable. If the unit has moved far, use continuous collision detection
-                //!map.canMoveToWorldPos(unit.Position + pos_change * unit.Size / 2)
-                if (map.boxCollidesWithMap(unit.Position, unit.Size) ||
-                    change_length > 20 && map.rayCastHasObstacle(previousPositions[unit.ID], unit.Position + pos_change * unit.Size/2, 0))
-                {
-                    int i = 0;
-                    Vector2 newPos = previousPositions[unit.ID];
-                    while (i <= unit.Size && !map.boxCollidesWithMap(newPos + pos_change, unit.Size))
-                    {
-                        newPos += pos_change;
-                        i++;
-                    }
-                    unit.Position = newPos;
-                }
-            }*/
-
             // Maybe the previous position thing is wrong cause it gets updated to a new, unwalkable position
             //// Maybe keep track of the last known uncollided previous position, update previous positions only if their new position is walkable
             List<Vector2> dirs = new List<Vector2>();
@@ -304,6 +290,22 @@ namespace Pathogenesis
             if (player.distance(item) < (player.Size + Item.ITEM_SIZE)/2)
             {
                 return player.PickupItem(item);
+            }
+            return false;
+        }
+
+        /*
+         * Handle particle collision
+         * Easy because each particle has a target
+         */
+        private bool CheckParticleCollision(Particle p)
+        {
+            GameUnit target = p.Target;
+            if (p.isProjectile && target != null &&
+                (target.Position - p.Position).Length() < (target.Size + p.Size) / 2)
+            {
+                target.Health -= 10;
+                return true;
             }
             return false;
         }

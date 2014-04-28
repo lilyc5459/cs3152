@@ -162,7 +162,7 @@ namespace Pathogenesis
                     if (unit_controller.Player.Infecting != null)
                     {
                         particle_engine.GenerateParticle(1, Color.Black, unit_controller.Player.Position,
-                            unit_controller.Player.Infecting, true);
+                            unit_controller.Player.Infecting, true, false, 0, 15, 5, 12, 7);
                     }
                     particle_engine.UpdateParticles();
 
@@ -176,7 +176,7 @@ namespace Pathogenesis
                         if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))
                         {
                             int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
-                            unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.5 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
+                            unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.8 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
                                 rand.NextDouble() < 0.3 ? true : false));
 
@@ -231,7 +231,7 @@ namespace Pathogenesis
 
                     // Process and handle collisions
                     collision_controller.Update(unit_controller.Units, unit_controller.Player, unit_controller.PreviousPositions,
-                        level_controller.CurLevel, item_controller);
+                        level_controller.CurLevel, item_controller, particle_engine);
 
                     // Update the HUD
                     HUD_display.Update(input_controller);

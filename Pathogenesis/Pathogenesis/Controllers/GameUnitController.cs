@@ -1018,7 +1018,13 @@ namespace Pathogenesis
             }
             else if (aggressor.Type == UnitType.FLYING)
             {
-                particle_engine.GenerateParticle(1, Color.White, aggressor.Position, victim, false);
+                Color color = Color.White;
+                if (aggressor.Faction == UnitFaction.ALLY)
+                {
+                    color = Color.Green;
+                }
+                particle_engine.GenerateParticle(1, color, aggressor.Position, victim, false, true,
+                        aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 10, 0);
             }
         }
         #endregion
@@ -1051,7 +1057,8 @@ namespace Pathogenesis
                 {
                     level.BossesDefeated++;
                     unit.Exists = false;
-                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, false);
+                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, false, false,
+                        0, 12, 7, 10, 5);
                 }
                 else if (unit.Type == UnitType.ORGAN)
                 {

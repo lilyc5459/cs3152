@@ -184,14 +184,6 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\A3d\Tests.csproj">
-      <Project>{C72DAEC8-DEBF-460A-A069-432651E47DCF}</Project>
-      <Name>Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\EpPathFinding.cs\EpPathFinding.csproj">
-      <Project>{82FE700A-0BA3-49D0-ACE0-C1F87FBE5021}</Project>
-      <Name>EpPathFinding</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PathogenesisContent\PathogenesisContent.contentproj">
       <Name>PathogenesisContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
