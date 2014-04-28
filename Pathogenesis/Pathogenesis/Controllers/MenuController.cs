@@ -21,10 +21,13 @@ namespace Pathogenesis.Controllers
             }
         }
 
-        public MenuController(ContentFactory factory)
+        private SoundController sound_controller;
+
+        public MenuController(ContentFactory factory, SoundController sound_controller)
         {
             menus = factory.getMenus();
             OpenMenus = new List<Menu>();
+            this.sound_controller = sound_controller;
         }
 
         /*
@@ -67,10 +70,12 @@ namespace Pathogenesis.Controllers
             // Handle primary option change
             if (input_controller.DownOnce)
             {
+                sound_controller.play(SoundType.EFFECT, "menu_move");
                 menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection + 1, 0, menu.Options.Count - 1);
             }
             if (input_controller.UpOnce)
             {
+                sound_controller.play(SoundType.EFFECT, "menu_move");
                 menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection - 1, 0, menu.Options.Count - 1);
             }
 
@@ -78,18 +83,19 @@ namespace Pathogenesis.Controllers
             bool secondarySelected = false;
             if (input_controller.LeftOnce)
             {
+                sound_controller.play(SoundType.EFFECT, "menu_move");
                 option.CurSelection = (int)MathHelper.Clamp(option.CurSelection - 1, 0, option.Options.Count - 1);
                 secondarySelected = true;
             }
             if (input_controller.RightOnce)
             {
+                sound_controller.play(SoundType.EFFECT, "menu_move");
                 option.CurSelection = (int)MathHelper.Clamp(option.CurSelection + 1, 0, option.Options.Count - 1);
                 secondarySelected = true;
             }
 
             if (menu.Type == MenuType.OPTIONS && secondarySelected)
             {
-                SoundController sound_controller = engine.getSoundController();
                 String selection = option.Options[option.CurSelection].Text;
                 switch (option.Text)
                 {
@@ -135,6 +141,7 @@ namespace Pathogenesis.Controllers
             String curSelection = option.Text;
             if (input_controller.Enter)
             {
+                sound_controller.play(SoundType.EFFECT, "menu_select");
                 switch (menu.Type)
                 {
                     case MenuType.MAIN:

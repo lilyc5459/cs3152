@@ -903,7 +903,7 @@ namespace Pathogenesis
             {
                 unit.Facing = Player.Facing;
             }
-            else
+            else if(!unit.Directionless)
             {
                 Direction dir = Direction.DOWN;
                 if (vel_mod.X < -0.1) dir = Direction.LEFT;

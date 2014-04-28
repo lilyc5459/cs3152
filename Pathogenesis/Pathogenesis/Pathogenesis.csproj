@@ -123,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CollisionController.cs" />
-    <Compile Include="Controllers\Fader.cs" />
+    <Compile Include="Util\Fader.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\ParticleEngine.cs" />
     <Compile Include="Controllers\SoundController.cs" />
@@ -139,6 +139,7 @@
     <Compile Include="Pathfinding\BinaryHeap.cs" />
     <Compile Include="Pathfinding\Pathfinder.cs" />
     <Compile Include="Pathfinding\PathNode.cs" />
+    <Compile Include="Util\Timer.cs" />
     <Compile Include="View\Camera.cs" />
     <Compile Include="Controllers\ContentFactory.cs" />
     <Compile Include="View\GameCanvas.cs" />

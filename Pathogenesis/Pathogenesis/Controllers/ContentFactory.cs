@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -98,8 +99,14 @@ namespace Pathogenesis
                 {
                     if (line.StartsWith("//")) continue;
                     String[] strings = line.Split(new char[] { ',' });
-                    if (strings.Length < 2) continue;
-                    music.Add(strings[0], content.Load<SoundEffect>(strings[1].Trim()));
+                    if (strings.Length < 3) continue;
+                    if(strings[1].Trim().Equals(SoundType.MUSIC.ToString())) {
+                        music.Add(strings[0], content.Load<SoundEffect>(strings[2].Trim()));
+                    }
+                    else if(strings[1].Trim().Equals(SoundType.EFFECT.ToString()))
+                    {
+                        sound_effects.Add(strings[0], content.Load<SoundEffect>(strings[2].Trim()));
+                    }
                 }
 
                 // Load fonts
@@ -329,7 +336,7 @@ namespace Pathogenesis
                     break;
                 case UnitType.ORGAN:
                     unit = new GameUnit(textures["organ1"], type, faction, level, immune);
-                    //animation_data = animations["organ1"];
+                    animation_data = animations["organ1"];
                     break;
                 default:
                     unit = null;

@@ -32,7 +32,7 @@ namespace Pathogenesis.Controllers
             Dictionary<String, SoundEffect> loaded_effects = factory.getSoundEffects();
             foreach (String key in loaded_effects.Keys)
             {
-                music.Add(key.Substring(key.LastIndexOf("/") + 1), new Sound(loaded_effects[key].CreateInstance()));
+                effects.Add(key.Substring(key.LastIndexOf("/") + 1), new Sound(loaded_effects[key].CreateInstance()));
             }
         }
 

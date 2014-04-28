@@ -12,7 +12,7 @@ background, Backgrounds/background_long2
 
 //Characters
 boss1, Characters/boss
-organ1, Characters/infectpoint
+organ1, Characters/organ1
 //player_left, Characters/main/main-left
 //player_right, Characters/main/main-right
 //player_front, Characters/main/main-front

@@ -98,7 +98,7 @@ namespace Pathogenesis
             level_controller = new LevelController();
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, item_controller);
-            menu_controller = new MenuController(factory);
+            menu_controller = new MenuController(factory, sound_controller);
 
             // Game starts at the main menu
             game_state = GameState.MAIN_MENU;
@@ -175,7 +175,7 @@ namespace Pathogenesis
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
                         if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))
                         {
-                            int level = rand.NextDouble() < 0.0 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
+                            int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
                             unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
                                 rand.NextDouble() < 0.3 ? true : false));

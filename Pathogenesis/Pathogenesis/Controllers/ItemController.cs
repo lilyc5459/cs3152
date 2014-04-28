@@ -75,9 +75,17 @@ namespace Pathogenesis
             Item item = factory.createItem(position, type);
 
             // Randomize velocity
-            item.Vel = new Vector2(
-                (float)rand.NextDouble() * 20 - 10,
-                (float)rand.NextDouble() * 20 - 10);
+            Vector2 vel = new Vector2((float)rand.NextDouble() - 0.5f, (float)rand.NextDouble() - 0.5f);
+            if (vel.Length() != 0)
+            {
+                vel.Normalize();
+                vel *= (5 + (float)rand.NextDouble() * 5);
+            }
+            else
+            {
+                vel = new Vector2(0, 7);
+            }
+            item.Vel = vel;
 
             // Set position slightly outwards from source
             Vector2 normal = item.Vel;

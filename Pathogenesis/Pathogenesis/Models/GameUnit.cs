@@ -24,7 +24,8 @@ namespace Pathogenesis
         FLYING,     // Can fly
         PLAYER,     // Controlled by player, able to use player powers
         BOSS,
-        ORGAN      // Infection point that will drop items
+        ORGAN,      // Infection point that will drop items
+        SPAWN_ORGAN // Spawn point for enemies, and also a health leech infection point
     };
 
     /// <summary>
@@ -42,10 +43,10 @@ namespace Pathogenesis
     // Facing Direction
     public enum Direction
     {
+        DOWN,
+        UP,
         LEFT,
         RIGHT,
-        UP,
-        DOWN
     };
 
 #endregion
@@ -75,10 +76,7 @@ namespace Pathogenesis
 
         #region Properties
         // Textures
-        public Texture2D Texture_L { get; set; }
-        public Texture2D Texture_R { get; set; }
-        public Texture2D Texture_U { get; set; }
-        public Texture2D Texture_D { get; set; }
+        public Texture2D Texture { get; set; }
 
         public bool Lost { get; set; }
         public bool Immune { get; set; }
@@ -121,29 +119,7 @@ namespace Pathogenesis
         public GameUnit(Texture2D texture, UnitType type, UnitFaction faction,
             int level, bool immune)
         {
-            Texture_L = texture;
-            Texture_R = texture;
-            Texture_D = texture;
-            Texture_U = texture;
-
-            Type = type;
-            Faction = faction;
-            Level = level;
-            Immune = immune;
-
-            Target = new Vector2(-1, -1);
-            NextMove = new Vector2(-1, -1);
-
-            Initialize();
-        }
-
-        public GameUnit(Texture2D texture_l, Texture2D texture_r, Texture2D texture_u, Texture2D texture_d,
-            UnitType type, UnitFaction faction, int level, bool immune)
-        {
-            Texture_L = texture_l;
-            Texture_R = texture_r;
-            Texture_U = texture_u;
-            Texture_D = texture_d;
+            Texture = texture;
 
             Type = type;
             Faction = faction;
@@ -220,8 +196,10 @@ namespace Pathogenesis
             }
             if (Type == UnitType.ORGAN)
             {
-                Size = 50;
+                Size = 100;
                 Mass = 10f;
+                AnimateResting = true;
+                Directionless = true;
             }
         }
         #endregion
@@ -230,7 +208,7 @@ namespace Pathogenesis
         // Increments animation frame according to the specified speed
         public void UpdateAnimation()
         {
-            if (NumFrames > 0 && Vel.Length() > 0)
+            if (NumFrames > 0 && (Vel.Length() > 0 || Vel.Length() == 0 && AnimateResting))
             {
                 FrameTimeCounter++;
                 if (FrameTimeCounter >= FrameSpeed)
@@ -241,7 +219,6 @@ namespace Pathogenesis
             }
         }
         #endregion
-
         
         public bool HasTarget()
         {
@@ -255,8 +232,7 @@ namespace Pathogenesis
 
         public void Draw(GameCanvas canvas)
         {
-            // test
-            Texture2D texture = Texture_L;
+            Texture2D texture = Texture;
             int facingFrame = 0;
 
             if (FrameSpeed > 0)
@@ -264,41 +240,17 @@ namespace Pathogenesis
                 switch (Facing)
                 {
                     case Direction.RIGHT:
-                        texture = Texture_R;
                         facingFrame = 3;
                         break;
                     case Direction.LEFT:
-                        texture = Texture_L;
                         facingFrame = 2;
                         break;
                     case Direction.UP:
-                        texture = Texture_U;
                         facingFrame = 1;
                         break;
                     case Direction.DOWN:
-                        texture = Texture_D;
                         facingFrame = 0;
                         break;
-                }
-
-                if (Type == UnitType.PLAYER)
-                {
-                    texture = Texture_L;
-                    switch (Facing)
-                    {
-                        case Direction.RIGHT:
-                            facingFrame = 3;
-                            break;
-                        case Direction.LEFT:
-                            facingFrame = 2;
-                            break;
-                        case Direction.UP:
-                            facingFrame = 1;
-                            break;
-                        case Direction.DOWN:
-                            facingFrame = 0;
-                            break;
-                    }
                 }
             }
 
@@ -317,7 +269,7 @@ namespace Pathogenesis
             }
 
             //TEMP
-            if (FrameSpeed > 0)
+            if (NumFrames > 1)
             {
                 canvas.DrawSprite(texture, color,
                     new Rectangle((int)(Position.X - FrameSize.X / 2), (int)(Position.Y - FrameSize.Y / 2),

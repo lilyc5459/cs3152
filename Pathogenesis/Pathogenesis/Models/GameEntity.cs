@@ -30,6 +30,8 @@ namespace Pathogenesis
         public float Decel { get; set; }
 
         // Animation
+        public bool AnimateResting { get; set; }
+        public bool Directionless { get; set; }
         public int Frame { get; set; }
         public int NumFrames { get; set; }
         public Vector2 FrameSize { get; set; }

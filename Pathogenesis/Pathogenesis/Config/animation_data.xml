@@ -18,10 +18,10 @@
 
   <Character>
     <Name>tank2</Name>
-    <FrameWidth>1</FrameWidth>
-    <FrameHeight>1</FrameHeight>
-    <NumFrames>1</NumFrames>
-    <FrameSpeed>1</FrameSpeed>
+    <FrameWidth>70</FrameWidth>
+    <FrameHeight>81</FrameHeight>
+    <NumFrames>3</NumFrames>
+    <FrameSpeed>10</FrameSpeed>
   </Character>
 
   <Character>
@@ -46,5 +46,13 @@
     <FrameHeight>100</FrameHeight>
     <NumFrames>1</NumFrames>
     <FrameSpeed>0</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>organ1</Name>
+    <FrameWidth>139</FrameWidth>
+    <FrameHeight>109</FrameHeight>
+    <NumFrames>2</NumFrames>
+    <FrameSpeed>20</FrameSpeed>
   </Character>
 </Animations>
