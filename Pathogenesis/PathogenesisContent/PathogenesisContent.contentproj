@@ -337,11 +337,6 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="Sounds\menu_music.wav">
-      <Name>menu_music</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
     <Compile Include="Sounds\Power-Up.wav">
       <Name>Power-Up</Name>
       <Importer>WavImporter</Importer>

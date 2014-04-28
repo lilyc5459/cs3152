@@ -96,6 +96,7 @@ namespace Pathogenesis
         // Attacking fields
         public int AttackCoolDown { get; set; }
         public int AttackRange { get; set; }
+        public int AttackLockRange { get; set; }
         public GameUnit Attacking { get; set; }     // currently targetting this unit
 
         // Unit stat fields
@@ -176,6 +177,7 @@ namespace Pathogenesis
             }
             Attack = 5 * (Level-1) * BASE_ATTACK + BASE_ATTACK;
             AttackRange = 15;
+            AttackLockRange = 30;
             //Defense = 5 * (Level - 1);
             Mass = 0.1f;
 
@@ -185,6 +187,11 @@ namespace Pathogenesis
                 Speed *= 2.0f / 3;
             }
 
+            if (Type == UnitType.FLYING)
+            {
+                AttackRange = 200;
+                AttackLockRange = 300;
+            }
             if (Type == UnitType.BOSS)
             {
                 Size = 100;

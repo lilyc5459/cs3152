@@ -26,30 +26,34 @@ namespace Pathogenesis.Controllers
         /*
          * Add particles to the engine
          */
-        public void GenerateParticle(Vector2 emit_position, GameUnit target)
+        public void GenerateParticle(int num, Color color, Vector2 emit_position, GameUnit target,
+            bool homing, bool isProjectile, int speed)
         {
-            int total = 1;
-
-            for (int i = 0; i < total; i++)
+            for (int i = 0; i < num; i++)
             {
-                particles.Add(GenerateNewParticle(emit_position, target));
+                particles.Add(GenerateNewParticle(color, emit_position, target, homing, isProjectile, speed));
             }
         }
 
         /*
          * Create a new particle
          */
-        private Particle GenerateNewParticle(Vector2 emit_position, GameUnit target)
+        private Particle GenerateNewParticle(Color color, Vector2 emit_position, GameUnit target,
+            bool homing, bool isProjectile, int speed)
         {
             Texture2D texture = textures[rand.Next(textures.Count)];
 
             Vector2 position = new Vector2();
             Vector2 velocity = new Vector2();
+
+            int ttl = 0;
             if (target == null)
             {
                 // If particle has no target, emit everywhere
                 position = emit_position;
-                velocity = new Vector2((float)rand.NextDouble() * 20 - 10, (float)rand.NextDouble() * 20 - 10);
+                velocity = new Vector2((float)rand.NextDouble() * 10 - 5, (float)rand.NextDouble() * 10 - 5);
+
+                ttl = 50 + rand.Next(20);
             }
             else
             {
@@ -63,19 +67,28 @@ namespace Pathogenesis.Controllers
                 position = emit_position + normal * 20;
 
                 // Calculate velocity, from emitter to target, with some spread
-                velocity = normal * ((float)rand.NextDouble() * 15 + 5);
-                velocity.X += (float)rand.NextDouble() * 20 - 10;
-                velocity.Y += (float)rand.NextDouble() * 20 - 10;
+                if (isProjectile)
+                {
+                    velocity = normal * speed;
+                }
+                else
+                {
+                    velocity = normal * ((float)rand.NextDouble() * 10 + speed - (float)speed/2);
+                    velocity.X += (float)rand.NextDouble() * 20 - 10;
+                    velocity.Y += (float)rand.NextDouble() * 20 - 10;
+                }
+
+                ttl = 100 + rand.Next(20);
             }
 
             float angle = 0;
             float angularVelocity = 0.1f * (float)(rand.NextDouble() * 2 - 1);
-            Color color = new Color(0, 0, 0, (int)(rand.NextDouble() * 150 + 100));
+            color *= (float)(rand.NextDouble() * 150 + 100)/250f;
             int size = (int)(rand.NextDouble() * 10 + 10);
-            int ttl = 100 + rand.Next(20);
 
             Particle p = new Particle(texture, position, velocity, angle, angularVelocity, color, size, ttl);
             p.Target = target;
+            p.Homing = homing;
             return p;
         }
 
@@ -90,7 +103,7 @@ namespace Pathogenesis.Controllers
                 p.TTL--;
 
                 bool remove = false;
-                if(p.Target != null)
+                if(p.Target != null && p.Homing)
                 {
                     float length = p.Velocity.Length();
 

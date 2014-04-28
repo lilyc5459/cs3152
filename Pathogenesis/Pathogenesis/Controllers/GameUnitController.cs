@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Models;
 using Pathogenesis.Pathfinding;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -64,6 +65,7 @@ namespace Pathogenesis
 
         #region Fields
         private ContentFactory factory;                     // Instance of the content factory
+        private ParticleEngine particle_engine;             // Instance of the particle engine
         private ItemController item_controller;             // Instance of the item controller
 
         public List<GameUnit> Units { get; set; }           // A list of all the units currently in the game
@@ -87,9 +89,10 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
-        public GameUnitController(ContentFactory factory, ItemController item_controller)
+        public GameUnitController(ContentFactory factory, ParticleEngine particle_engine, ItemController item_controller)
         {
             this.factory = factory;
+            this.particle_engine = particle_engine;
             this.item_controller = item_controller;
             Units = new List<GameUnit>();
             DeadUnits = new List<GameUnit>();
@@ -537,7 +540,7 @@ namespace Pathogenesis
                     }
 
                     // Chase the closest enemy in range
-                    GameUnit closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    GameUnit closest = findClosestEnemyInRange(unit, unit.AttackLockRange);
                     if (closest != null)
                     {
                         unit.Target = closest.Position;
@@ -582,7 +585,7 @@ namespace Pathogenesis
                     // Immune lvl 1 enemies cluster around lvl 2 enemies
                     if (unit.Immune && unit.Level == 1)
                     {
-                        closest = findClosestOfTypeInRange(unit, unit.Type, 2, ATTACK_LOCK_RANGE);
+                        closest = findClosestOfTypeInRange(unit, unit.Type, 2, unit.AttackLockRange);
                         if (closest != null)
                         {
                             unit.Target = closest.Position;
@@ -620,7 +623,7 @@ namespace Pathogenesis
                     }
                     
                     // Chase the closest enemy in range
-                    closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    closest = findClosestEnemyInRange(unit, unit.AttackLockRange);
                     if (closest != null)
                     {
                         unit.Target = closest.Position;
@@ -1009,7 +1012,14 @@ namespace Pathogenesis
         private void Attack(GameUnit aggressor, GameUnit victim)
         {
             aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
-            victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+            if (aggressor.Type == UnitType.TANK)
+            {
+                victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+            }
+            else if (aggressor.Type == UnitType.FLYING)
+            {
+                particle_engine.GenerateParticle(1, Color.White, aggressor.Position, victim, false);
+            }
         }
         #endregion
 
@@ -1041,6 +1051,7 @@ namespace Pathogenesis
                 {
                     level.BossesDefeated++;
                     unit.Exists = false;
+                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, false);
                 }
                 else if (unit.Type == UnitType.ORGAN)
                 {

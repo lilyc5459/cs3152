@@ -97,7 +97,7 @@ namespace Pathogenesis
 
             level_controller = new LevelController();
             item_controller = new ItemController(factory);
-            unit_controller = new GameUnitController(factory, item_controller);
+            unit_controller = new GameUnitController(factory, particle_engine, item_controller);
             menu_controller = new MenuController(factory, sound_controller);
 
             // Game starts at the main menu
@@ -161,8 +161,8 @@ namespace Pathogenesis
                     particle_engine.EmitterPosition = camera.Position;
                     if (unit_controller.Player.Infecting != null)
                     {
-                        particle_engine.GenerateParticle(unit_controller.Player.Position,
-                            unit_controller.Player.Infecting);
+                        particle_engine.GenerateParticle(1, Color.Black, unit_controller.Player.Position,
+                            unit_controller.Player.Infecting, true);
                     }
                     particle_engine.UpdateParticles();
 
@@ -176,7 +176,7 @@ namespace Pathogenesis
                         if (level_controller.CurLevel.Map.canMoveToWorldPos(pos))
                         {
                             int level = rand.NextDouble() < 0.2 ? (rand.NextDouble() < 0.2 ? 2 : 2) : 1;
-                            unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.1 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
+                            unit_controller.AddUnit(factory.createUnit(rand.NextDouble() < 0.5 ? UnitType.FLYING : UnitType.TANK, UnitFaction.ENEMY, level,
                                 pos,
                                 rand.NextDouble() < 0.3 ? true : false));
 

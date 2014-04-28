@@ -20,6 +20,8 @@ namespace Pathogenesis.Models
 
         public GameUnit Target { get; set; }        // Target unit of the particle
 
+        public bool Homing { get; set; }
+
         public Particle(Texture2D texture, Vector2 position, Vector2 velocity,
             float angle, float angularVelocity, Color color, int size, int ttl)
         {

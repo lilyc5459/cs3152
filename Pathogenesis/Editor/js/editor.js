@@ -1,52 +1,53 @@
 function init() {
-//Define Constants:
-TILE_LENGTH = 40;
-TILE_BORDER = 1;
-TILE_REAL_LENGTH = 40;
+  //Define Constants:
+  TILE_LENGTH = 40;
+  TILE_BORDER = 1;
+  TILE_REAL_LENGTH = 40;
 
-ArrayOfInt = [];
-realWidth = 0;
-realHeight = 0;
-selectedTile = 'empty';
-selectedType = 0;
-noStart = false;
-eSpawnerArr = [];
-eSpawnerID = 0;
-advMode = false;
+  ArrayOfInt = [];
+  realWidth = 0;
+  realHeight = 0;
+  selectedTile = 'empty';
+  selectedType = 0;
+  noStart = false;
+  eSpawnerArr = [];
+  eSpawnerID = 0;
+  advMode = false;
 
-defSpawnProbObj = {
-  normal: 50,
-  big: 25,
-  flying: 25
-}
+  defSpawnProbObj = {
+    normal: 50,
+    big: 25,
+    flying: 25
+  }
 
-defSpawnLvlObj = {
-  lvl1: 75,
-  lvl2: 20,
-  lvl3: 5
-}
+  defSpawnLvlObj = {
+    lvl1: 75,
+    lvl2: 20,
+    lvl3: 5
+  }
 
-defSpawnPntObj = {
-  Pos: {
-    Vector2: {
-      X: 0,
-      Y: 0
+  defSpawnPntObj = {
+    Pos: {
+      Vector2: {
+        X: 0,
+        Y: 0
+      }
     }
   }
+
+  defSpawnObj = {
+    spawnProbs: defSpawnProbObj,
+    levelProbs: defSpawnLvlObj,
+    SpawnPoint: defSpawnPntObj
+  }
+
+  defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
+  defaultRegionJson= '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
+
+  Level = JSON.parse(defaultLevelJson);
+  defRegion = JSON.parse(defaultRegionJson);
 }
 
-defSpawnObj = {
-  spawnProbs: defSpawnProbObj,
-  levelProbs: defSpawnLvlObj,
-  SpawnPoint: defSpawnPntObj
-}
-
-defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
-defaultRegionJson= '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
-
-Level = JSON.parse(defaultLevelJson);
-defRegion = JSON.parse(defaultRegionJson);
-}
 Regions = [];
 regionSel = [];
 
@@ -62,12 +63,14 @@ function addRegion(){
   $.each(regionSel, function(i, option) {
       $('#regsel').append($('<option/>').attr("value", option.id).text(option.name));
   });
+  
   $( "#regsel" ).change(function() {
       for(var i=0; i<regionSel.length; i++){
-        $('[reg'+i).removeClass("spawnArea");
+        $('[reg'+i+']').removeClass("spawnArea");
       }
       $('[reg'+$('#regsel').val()+']').addClass("spawnArea");
   });
+
 }
 
 //BUTTON = SPAWN CLOSE
@@ -84,7 +87,6 @@ $("#open_region_editor").on("click", function() {
   $("#RegionStuff").show();
   $("#NonRegionStuff").hide();
 });
-
 
 //Close Region Edit
 $("#close_region_editor").on("click", function() {
@@ -248,8 +250,6 @@ function setup(){
     filename = $("#filename"),
     allFields = $( [] ).add( lvlWidth ).add( lvlHeight ).add( filename );
 
-
-
   /*
   Selecting Entity
   */
@@ -260,97 +260,96 @@ function setup(){
     selectedType = $(this).attr('type');
   })
 
-    $( "#new" )
-      .button()
-      .click(function() {
-        $( "#new-form" ).dialog( "open" );
-      });
-
-    $( "#save" )
-      .button()
-      .click(function() {
-        $( "#save-form" ).dialog( "open" );
-      });
-
-    $( "#save-form" ).dialog({
-      autoOpen: false,
-      height: 240,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Save a level": function() {
-          allFields.removeClass( "ui-state-error" );
-          LevelXML = CreateXML();
-          SaveXML(LevelXML, filename.val());
-
-            $( this ).dialog( "close" );
-        },
-        Cancel: function() {
-          $( this ).dialog( "close" );
-        }
-      }
+  $( "#new" )
+    .button()
+    .click(function() {
+      $( "#new-form" ).dialog( "open" );
     });
 
-    $( "#new-form" ).dialog({
-      autoOpen: false,
-      height: 300,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Create a level": function() {
-          var bValid = true;
-          allFields.removeClass( "ui-state-error" );
+  $( "#save" )
+    .button()
+    .click(function() {
+      $( "#save-form" ).dialog( "open" );
+    });
 
-          bValid = bValid && $.isNumeric(lvlWidth.val());
-          bValid = bValid && $.isNumeric(lvlHeight.val());
+  $( "#save-form" ).dialog({
+    autoOpen: false,
+    height: 240,
+    width: 350,
+    modal: true,
+    buttons: {
+      "Save a level": function() {
+        allFields.removeClass( "ui-state-error" );
+        LevelXML = CreateXML();
+        SaveXML(LevelXML, filename.val());
 
-          //Create map 
-          if ( bValid ) {
-            finWidth = lvlWidth.val() * TILE_BORDER + lvlWidth.val() * TILE_LENGTH;
-            finHeight = lvlHeight.val() * TILE_BORDER + lvlHeight.val() * TILE_LENGTH;
-            
-            realWidth = lvlWidth.val() * TILE_REAL_LENGTH;
-            realHeight = lvlHeight.val() * TILE_REAL_LENGTH;
+          $( this ).dialog( "close" );
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
 
-            //Create empty inner arrays
-            intArr =  new Array(lvlWidth.val());
-            for(var k=0; k<lvlWidth.val(); k++){
-              intArr[k] = 0;
-            }
+  $( "#new-form" ).dialog({
+    autoOpen: false,
+    height: 300,
+    width: 350,
+    modal: true,
+    buttons: {
+      "Create a level": function() {
+        var bValid = true;
+        allFields.removeClass( "ui-state-error" );
 
-            ArrayOfInt = new Array(lvlHeight.val());
-            //Create out array to hold inner arrays
-            for(var j=0; j<lvlHeight.val(); j++){
-              int = intArr.slice(0);
-              ArrayOfInt[j] = int;
-            }
+        bValid = bValid && $.isNumeric(lvlWidth.val());
+        bValid = bValid && $.isNumeric(lvlHeight.val());
 
+        //Create map 
+        if ( bValid ) {
+          finWidth = lvlWidth.val() * TILE_BORDER + lvlWidth.val() * TILE_LENGTH;
+          finHeight = lvlHeight.val() * TILE_BORDER + lvlHeight.val() * TILE_LENGTH;
+          
+          realWidth = lvlWidth.val() * TILE_REAL_LENGTH;
+          realHeight = lvlHeight.val() * TILE_REAL_LENGTH;
 
-            $('#container').width(finWidth);
-            $('#container').height(finHeight);
-
-            $('#container').empty();
-            $('#output').empty();
-            numTiles = lvlWidth.val() * lvlHeight.val();
-            for(var y=0; y<lvlHeight.val(); y++){
-              for(var x=0; x<lvlWidth.val(); x++){
-                $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"></div>');
-              }
-            }
-
-            $(".tile").width(TILE_LENGTH);
-            $(".tile").height(TILE_LENGTH);
-
-            drawing();
-
-            $( this ).dialog( "close" );
+          //Create empty inner arrays
+          intArr =  new Array(lvlWidth.val());
+          for(var k=0; k<lvlWidth.val(); k++){
+            intArr[k] = 0;
           }
-        },
-        Cancel: function() {
+
+          ArrayOfInt = new Array(lvlHeight.val());
+          //Create out array to hold inner arrays
+          for(var j=0; j<lvlHeight.val(); j++){
+            int = intArr.slice(0);
+            ArrayOfInt[j] = int;
+          }
+
+          $('#container').width(finWidth);
+          $('#container').height(finHeight);
+
+          $('#container').empty();
+          $('#output').empty();
+          numTiles = lvlWidth.val() * lvlHeight.val();
+          for(var y=0; y<lvlHeight.val(); y++){
+            for(var x=0; x<lvlWidth.val(); x++){
+              $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"></div>');
+            }
+          }
+
+          $(".tile").width(TILE_LENGTH);
+          $(".tile").height(TILE_LENGTH);
+
+          drawing();
+
           $( this ).dialog( "close" );
         }
+      },
+      Cancel: function() {
+        $( this ).dialog( "close" );
       }
-    });
+    }
+  });
 }
 
 /*
