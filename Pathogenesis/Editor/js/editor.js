@@ -1,52 +1,51 @@
 function init() {
-//Define Constants:
-TILE_LENGTH = 40;
-TILE_BORDER = 1;
-TILE_REAL_LENGTH = 40;
+  //Define Constants:
+  TILE_LENGTH = 40;
+  TILE_BORDER = 1;
+  TILE_REAL_LENGTH = 40;
 
-ArrayOfInt = [];
-realWidth = 0;
-realHeight = 0;
-selectedTile = 'empty';
-selectedType = 0;
-noStart = false;
-eSpawnerArr = [];
-eSpawnerID = 0;
-advMode = false;
+  ArrayOfInt = [];
+  realWidth = 0;
+  realHeight = 0;
+  selectedTile = 'empty';
+  selectedType = 0;
+  noStart = false;
+  eSpawnerArr = [];
+  eSpawnerID = 0;
+  advMode = false;
 
-defSpawnProbObj = {
-  normal: 50,
-  big: 25,
-  flying: 25
-}
+  defSpawnProbObj = {
+    normal: 50,
+    big: 25,
+    flying: 25
+  }
 
-defSpawnLvlObj = {
-  lvl1: 75,
-  lvl2: 20,
-  lvl3: 5
-}
+  defSpawnLvlObj = {
+    lvl1: 75,
+    lvl2: 20,
+    lvl3: 5
+  }
 
-defSpawnPntObj = {
-  Pos: {
-    Vector2: {
-      X: 0,
-      Y: 0
+  defSpawnPntObj = {
+    Pos: {
+      Vector2: {
+        X: 0,
+        Y: 0
+      }
     }
   }
+
+  defSpawnObj = {
+    spawnProbs: defSpawnProbObj,
+    levelProbs: defSpawnLvlObj,
+    SpawnPoint: defSpawnPntObj
+  }
+
+  defaultLevelJson = '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
+
+  Level = JSON.parse(defaultLevelJson);
 }
 
-defSpawnObj = {
-  spawnProbs: defSpawnProbObj,
-  levelProbs: defSpawnLvlObj,
-  SpawnPoint: defSpawnPntObj
-}
-
-defaultLevelJson= '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
-defaultRegionJson= '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
-
-Level = JSON.parse(defaultLevelJson);
-defRegion = JSON.parse(defaultRegionJson);
-}
 Regions = [];
 regionSel = [];
 
@@ -92,8 +91,6 @@ function addRegion(){
     name: regionSel.length
   }
   regionSel.push(option);
-  Regions.push(defRegion);
-  Regions[regionSel.length-1].Region.SpawnPoints = [];
   $('#regsel').empty();
   $.each(regionSel, function(i, option) {
       $('#regsel').append($('<option/>').attr("value", option.id).text(option.name));
@@ -189,7 +186,9 @@ function drawing(){
         $cur.children(".centerTxt").hide();
       }
       else if(selectedTile == "modifier"){
-        if ($cur.attr("class").indexOf("eSpawner") !== -1){
+        console.log("modifer selected");
+        console.log($cur.attr('eSpawnerID'+$('#regsel').val()));
+        if ($cur.attr('eSpawnerID'+$('#regsel').val()) == 0) {
           modifyTile($cur);
         }
       }
@@ -391,7 +390,10 @@ var BackgroundTexture = {
 
 //---SaveRegion stuff---
 //Save Region Areas
+defaultRegionJson = '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
 for(var i=0; i<regionSel.length; i++){
+  Regions[i] = JSON.parse(defaultRegionJson);
+  Regions[i].Region.SpawnPoints = [];
   Vector2arr = new Array();
   //loop through each relevant area block
   $('[reg'+i+']').each(function(){
