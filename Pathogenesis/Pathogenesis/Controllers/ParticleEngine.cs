@@ -28,23 +28,23 @@ namespace Pathogenesis.Controllers
         /*
          * Add particles to the engine
          */
-        public void GenerateParticle(int num, Color color, Vector2 emit_position, GameUnit target,
-            bool homing, bool isProjectile, int damange, int size, int size_spread, float speed, float speed_spread)
+        public void GenerateParticle(int num, Color color, Vector2 emit_position, GameUnit target, UnitFaction faction,
+            bool homing, bool isProjectile, int damage, int size, int size_spread, float speed, float speed_spread)
         {
-            GenerateParticle(num, color, emit_position, target, homing, isProjectile, 0,
+            GenerateParticle(num, color, emit_position, target, faction, homing, isProjectile, damage,
                 size, size_spread, speed, speed_spread, 60, 10, Vector2.Zero);
         }
 
         /*
          * Add particles to the engine with collision normal
          */
-        public void GenerateParticle(int num, Color color, Vector2 emit_position, GameUnit target,
+        public void GenerateParticle(int num, Color color, Vector2 emit_position, GameUnit target, UnitFaction faction,
             bool homing, bool isProjectile, int damage, int size, int size_spread, float speed, float speed_spread,
             int ttl, int ttl_spread, Vector2 collision_normal)
         {
             for (int i = 0; i < num; i++)
             {
-                particles.Add(GenerateNewParticle(color, emit_position, target, homing, isProjectile,
+                particles.Add(GenerateNewParticle(color, emit_position, target, faction, homing, isProjectile,
                     damage, size, size_spread, speed, speed_spread, ttl, ttl_spread, collision_normal));
             }
         }
@@ -52,7 +52,7 @@ namespace Pathogenesis.Controllers
         /*
          * Create a new particle
          */
-        private Particle GenerateNewParticle(Color color, Vector2 emit_position, GameUnit target,
+        private Particle GenerateNewParticle(Color color, Vector2 emit_position, GameUnit target, UnitFaction faction,
             bool homing, bool isProjectile, int damage, int size, int size_spread, float speed, float speed_spread,
             int ttl, int ttl_spread, Vector2 collision_normal)
         {
@@ -116,6 +116,7 @@ namespace Pathogenesis.Controllers
             p.Target = target;
             p.Homing = homing;
             p.isProjectile = isProjectile;
+            p.Faction = faction;
             return p;
         }
 
@@ -127,8 +128,6 @@ namespace Pathogenesis.Controllers
             // Remove destroyed particles
             foreach(Particle p in DestroyedParticles)
             {
-                GenerateParticle(5, p.Color, p.Position, null, false, false, 0,
-                    10, 5, 1, 1, 30, 10, p.Target.Position - p.Position);
                 particles.Remove(p);
             }
             DestroyedParticles.Clear();

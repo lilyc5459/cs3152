@@ -22,9 +22,15 @@ namespace Pathogenesis
         // Collisions cell structures
         private List<GameUnit>[,] cellGrid;
         private List<Item>[,] itemGrid;
+        private List<Particle>[,] particleGrid;
 
-        public CollisionController()
+        private ParticleEngine particle_engine;
+        private SoundController sound_controller;
+
+        public CollisionController(SoundController sound_controller, ParticleEngine particle_engine)
         {
+            this.sound_controller = sound_controller;
+            this.particle_engine = particle_engine;
         }
 
         /*
@@ -33,9 +39,9 @@ namespace Pathogenesis
          */
 
         public void Update(List<GameUnit> units, Player player, Dictionary<int, Vector2> previousPositions,
-            Level level, ItemController item_controller, ParticleEngine particle_engine)
+            Level level, ItemController item_controller)
         {
-            ConstructCollisionGrids(units, item_controller.Items, player, level);
+            ConstructCollisionGrids(units, item_controller.Items, particle_engine.particles, player, level);
 
             foreach (GameUnit unit in units)
             {
@@ -57,6 +63,7 @@ namespace Pathogenesis
                 CheckWallCollision(player, level.Map, previousPositions);
             }
 
+            /*
             foreach (Particle p in particle_engine.particles)
             {
                 // If particle collides
@@ -64,14 +71,14 @@ namespace Pathogenesis
                 {
                     particle_engine.DestroyedParticles.Add(p);
                 }
-            }
+            }*/
         }
 
         /*
          * Populates the collision grid by bucketizing each unit on the map into a cell 
          * around which collisions will be processed
          */
-        public void ConstructCollisionGrids(List<GameUnit> units, List<Item> items,
+        public void ConstructCollisionGrids(List<GameUnit> units, List<Item> items, List<Particle> particles,
             Player player, Level level)
         {
             // Construct unit collision grid
@@ -80,6 +87,8 @@ namespace Pathogenesis
 
             foreach (GameUnit unit in units)
             {
+                if (unit.Ghost) continue;
+
                 int x_index = (int)MathHelper.Clamp((unit.Position.X / CELL_SIZE), 0, grid.GetLength(1)-1);
                 int y_index = (int)MathHelper.Clamp((unit.Position.Y / CELL_SIZE), 0, grid.GetLength(0)-1);
 
@@ -116,6 +125,25 @@ namespace Pathogenesis
                 }
                 itemGrid[y_index, x_index].Add(item);
             }
+
+            // Construct particle collision grid
+            particleGrid = new List<Particle>[(int)level.Width / CELL_SIZE, (int)level.Height / CELL_SIZE];
+            for (int i = 0; i < particleGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < particleGrid.GetLength(1); j++)
+                {
+                    particleGrid[j, i] = new List<Particle>();
+                }
+            }
+            foreach (Particle p in particles)
+            {
+                if (!p.isProjectile) continue;
+
+                int x_index = (int)MathHelper.Clamp((p.Position.X / CELL_SIZE), 0, grid.GetLength(1) - 1);
+                int y_index = (int)MathHelper.Clamp((p.Position.Y / CELL_SIZE), 0, grid.GetLength(0) - 1);
+
+                particleGrid[y_index, x_index].Add(p);
+            }
         }
 
         /*
@@ -139,6 +167,14 @@ namespace Pathogenesis
                     if (unit != other && unit.Position != other.Position && !unit.Ghost)
                     {
                         CheckUnitCollision(unit, other);
+                    }
+                }
+
+                foreach (Particle p in particleGrid[loc.Y, loc.X])
+                {
+                    if (unit.Faction != p.Faction)
+                    {
+                        CheckUnitParticleCollision(unit, p);
                     }
                 }
             }
@@ -298,13 +334,33 @@ namespace Pathogenesis
          * Handle particle collision
          * Easy because each particle has a target
          */
+        private void CheckUnitParticleCollision(GameUnit unit, Particle p)
+        {
+            if ((unit.Position - p.Position).Length() < (unit.Size + p.Size) / 2)
+            {
+                unit.Health -= p.Damage;
+                particle_engine.GenerateParticle(5, p.Color, p.Position, null, UnitFaction.ALLY, false, false, 0,
+                    10, 5, 1, 1, 30, 10, unit.Position - p.Position);
+                particle_engine.DestroyedParticles.Add(p);
+
+                if (unit.Type == UnitType.PLAYER)
+                {
+                    sound_controller.play(SoundType.EFFECT, "ouch");
+                }
+            }
+        }
+
+        /*
+         * Handle particle collision
+         * Easy because each particle has a target
+         */
         private bool CheckParticleCollision(Particle p)
         {
             GameUnit target = p.Target;
             if (p.isProjectile && target != null &&
                 (target.Position - p.Position).Length() < (target.Size + p.Size) / 2)
             {
-                target.Health -= 10;
+                target.Health -= p.Damage;
                 return true;
             }
             return false;

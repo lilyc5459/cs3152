@@ -22,6 +22,7 @@ namespace Pathogenesis.Models
         public int TTL { get; set; }                // Time left to live
 
         public GameUnit Target { get; set; }        // Target unit of the particle
+        public UnitFaction Faction { get; set; }    // Faction of the particle
 
         public bool Homing { get; set; }
         public bool isProjectile { get; set; }
@@ -39,6 +40,7 @@ namespace Pathogenesis.Models
             Size = size;
             MaxTTL = ttl;
             TTL = ttl;
+            Damage = damage;
         }
 
         public void Draw(GameCanvas canvas)

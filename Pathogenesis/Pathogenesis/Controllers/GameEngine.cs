@@ -92,12 +92,12 @@ namespace Pathogenesis
             // Initialize controllers
             input_controller = new InputController();
             sound_controller = new SoundController(factory);
-            collision_controller = new CollisionController();
             particle_engine = new ParticleEngine(factory.getParticleTextures());
+            collision_controller = new CollisionController(sound_controller, particle_engine);
 
             level_controller = new LevelController();
             item_controller = new ItemController(factory);
-            unit_controller = new GameUnitController(factory, particle_engine, item_controller);
+            unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
             menu_controller = new MenuController(factory, sound_controller);
 
             // Game starts at the main menu
@@ -162,7 +162,7 @@ namespace Pathogenesis
                     if (unit_controller.Player.Infecting != null)
                     {
                         particle_engine.GenerateParticle(1, Color.Black, unit_controller.Player.Position,
-                            unit_controller.Player.Infecting, true, false, 0, 15, 5, 12, 7);
+                            unit_controller.Player.Infecting, UnitFaction.ALLY, true, false, 0, 15, 5, 12, 7);
                     }
                     particle_engine.UpdateParticles();
 
@@ -231,7 +231,7 @@ namespace Pathogenesis
 
                     // Process and handle collisions
                     collision_controller.Update(unit_controller.Units, unit_controller.Player, unit_controller.PreviousPositions,
-                        level_controller.CurLevel, item_controller, particle_engine);
+                        level_controller.CurLevel, item_controller);
 
                     // Update the HUD
                     HUD_display.Update(input_controller);

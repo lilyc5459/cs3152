@@ -66,6 +66,7 @@ namespace Pathogenesis
         #region Fields
         private ContentFactory factory;                     // Instance of the content factory
         private ParticleEngine particle_engine;             // Instance of the particle engine
+        private SoundController sound_controller;
         private ItemController item_controller;             // Instance of the item controller
 
         public List<GameUnit> Units { get; set; }           // A list of all the units currently in the game
@@ -89,9 +90,11 @@ namespace Pathogenesis
         #endregion
 
         #region Initialization
-        public GameUnitController(ContentFactory factory, ParticleEngine particle_engine, ItemController item_controller)
+        public GameUnitController(ContentFactory factory, SoundController sound_controller,
+            ParticleEngine particle_engine, ItemController item_controller)
         {
             this.factory = factory;
+            this.sound_controller = sound_controller;
             this.particle_engine = particle_engine;
             this.item_controller = item_controller;
             Units = new List<GameUnit>();
@@ -1015,6 +1018,10 @@ namespace Pathogenesis
             if (aggressor.Type == UnitType.TANK)
             {
                 victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+                if (victim.Type == UnitType.PLAYER)
+                {
+                    sound_controller.play(SoundType.EFFECT, "ouch");
+                }
             }
             else if (aggressor.Type == UnitType.FLYING)
             {
@@ -1023,8 +1030,13 @@ namespace Pathogenesis
                 {
                     color = Color.Green;
                 }
-                particle_engine.GenerateParticle(1, color, aggressor.Position, victim, false, true,
-                        aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 10, 0);
+                particle_engine.GenerateParticle(1, color, aggressor.Position, victim, aggressor.Faction,
+                    false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0, 100, 0, Vector2.Zero);
+            }
+            else if(aggressor.Type == UnitType.BOSS)
+            {
+                particle_engine.GenerateParticle(10, Color.Yellow, aggressor.Position, null, aggressor.Faction,
+                    false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0);
             }
         }
         #endregion
@@ -1050,6 +1062,7 @@ namespace Pathogenesis
                 unit.InfectionVitality = MathHelper.Clamp(
                     unit.InfectionVitality, 0, unit.max_infection_vitality);
             }
+
             // If infection vitality is 0, handle the effect depending on the unit type
             if (unit.InfectionVitality == 0)
             {
@@ -1057,8 +1070,8 @@ namespace Pathogenesis
                 {
                     level.BossesDefeated++;
                     unit.Exists = false;
-                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, false, false,
-                        0, 12, 7, 10, 5);
+                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, UnitFaction.ALLY,
+                        false, false, 0, 12, 7, 10, 5);
                 }
                 else if (unit.Type == UnitType.ORGAN)
                 {

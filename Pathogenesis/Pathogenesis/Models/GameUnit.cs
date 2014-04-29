@@ -197,8 +197,8 @@ namespace Pathogenesis
                 Size = 100;
                 Speed = 3;
                 Mass = 100f;
-                Attack = 10;
-                max_attack_cooldown = 100;
+                Attack = 50;
+                max_attack_cooldown = 200;
                 AttackRange = 200;
             }
             if (Type == UnitType.ORGAN)
