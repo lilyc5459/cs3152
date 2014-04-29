@@ -15,6 +15,14 @@ div#sidebar{
 	border: solid black;
 }
 
+p.highShift{
+	margin-top: 10px;
+}
+
+p.lowShift{
+	margin-top: 10px;
+}
+
 div.shapes{
 	float: left;
 	width: 65px;
@@ -52,12 +60,15 @@ div.tile{
 }
 
 div#new{
-	margin-top: 10px;
+	margin-top: 45px;
+    margin-left: 90px;
 	margin-left: center;
+    font-size:  25px;
+    font-family: 'Share Tech Mono', '';
 }
 
 div.empty{
-	background-color: blue;
+	background-color: #2323bc;
 }
 
 div.pStart{
@@ -65,23 +76,23 @@ div.pStart{
 }
 
 div.goalBoss{
-	background-color: yellow;
+	background-color: #e3e326;
 }
 
 div.eSpawner{
-	background-color: green;
+	background-color: #0d9a0d;
 }
 
 div.modifier{
-	background-color: SpringGreen;
+	background-color: #12dd75;
 }
 
 div.spawnArea{
-	background-color: Magenta;
+	background-color: #cc36cc !important;
 }
 
 div.regCntr{
-	background-color: red;
+	background-color: #a00000;
 }
 
 div.tile:hover {
@@ -90,7 +101,8 @@ div.tile:hover {
 
 div#title{
 	float left;
-	width: 400px;
+	width: 600px;
+    font-family: 'Share Tech Mono', '';
 }
 
 div#spawnEdit{
@@ -101,6 +113,16 @@ div#spawnEdit{
 
 .test{
 	background-color: black;
+}
+
+.spawnTxt{
+	display: none;
+	margin-top: 10px;
+}
+
+.centerTxt{
+	display: none;
+	margin-top: 20px;
 }
 
 #spawnTable1{
@@ -127,3 +149,6 @@ div.wall{
 }
 
 div#butCont{}
+body {
+    background-color: #c15f6d;
+}
