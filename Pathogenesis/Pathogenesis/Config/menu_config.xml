@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Menus>
+  <Menu>
+    <Type>MAIN</Type>
+    <Child>OPTIONS</Child>
+    <Title>
+      <Text>PATHOGENESIS</Text>
+      <XOffset>0</XOffset>
+      <YOffset>0</YOffset>
+    </Title>
+    <Option>
+      <Text>Play</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-90</YOffset>
+    </Option>
+    <Option>
+      <Text>Options</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-30</YOffset>
+    </Option>
+    <Option>
+      <Text>Quit</Text>
+      <XOffset>0</XOffset>
+      <YOffset>30</YOffset>
+    </Option>
+  </Menu>
+
+  <Menu>
+    <Type>PAUSE</Type>
+    <Child>OPTIONS</Child>
+    <Title>
+      <Text>Paused</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-150</YOffset>
+    </Title>
+    <Option>
+      <Text>Resume</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-90</YOffset>
+    </Option>
+    <Option>
+      <Text>Map</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-30</YOffset>
+    </Option>
+    <Option>
+      <Text>Options</Text>
+      <XOffset>0</XOffset>
+      <YOffset>30</YOffset>
+    </Option>
+    <Option>
+      <Text>Quit to Menu</Text>
+      <XOffset>0</XOffset>
+      <YOffset>90</YOffset>
+    </Option>
+  </Menu>
+
+  <Menu>
+    <Type>OPTIONS</Type>
+    <Title>
+      <Text>Options</Text>
+      <XOffset>0</XOffset>
+      <YOffset>0</YOffset>
+    </Title>
+    <Option>
+      <Text>Music</Text>
+      <XOffset>-300</XOffset>
+      <YOffset>-90</YOffset>
+      <Option>
+        <Text>On</Text>
+        <XOffset>100</XOffset>
+        <YOffset>-90</YOffset>
+      </Option>
+      <Option>
+        <Text>Off</Text>
+        <XOffset>200</XOffset>
+        <YOffset>-90</YOffset>
+      </Option>
+    </Option>
+    <Option>
+      <Text>Sound Effects</Text>
+      <XOffset>-300</XOffset>
+      <YOffset>-30</YOffset>
+      <Option>
+        <Text>On</Text>
+        <XOffset>100</XOffset>
+        <YOffset>-30</YOffset>
+      </Option>
+      <Option>
+        <Text>Off</Text>
+        <XOffset>200</XOffset>
+        <YOffset>-30</YOffset>
+      </Option>
+    </Option>
+    <Option>
+      <Text>Back</Text>
+      <XOffset>0</XOffset>
+      <YOffset>30</YOffset>
+    </Option>
+  </Menu>
+
+  <Menu>
+    <Type>WIN</Type>
+    <Title>
+      <Text>Victory!</Text>
+      <XOffset>0</XOffset>
+      <YOffset>0</YOffset>
+    </Title>
+    <Option>
+      <Text>Continue</Text>
+      <XOffset>0</XOffset>
+      <YOffset>0</YOffset>
+    </Option>
+  </Menu>
+
+  <Menu>
+    <Type>LOSE</Type>
+    <Title>
+      <Text>You're dead.</Text>
+      <XOffset>0</XOffset>
+      <YOffset>0</YOffset>
+    </Title>
+    <Option>
+      <Text>Start Over</Text>
+      <XOffset>0</XOffset>
+      <YOffset>-30</YOffset>
+    </Option>
+    <Option>
+      <Text>Quit to Menu</Text>
+      <XOffset>0</XOffset>
+      <YOffset>30</YOffset>
+    </Option>
+  </Menu>
+</Menus>

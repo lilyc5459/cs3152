@@ -23,9 +23,15 @@ namespace Pathogenesis
                 return new Vector2((int)Position.X / Map.TILE_SIZE, (int)Position.Y / Map.TILE_SIZE);
             }
         }
-        public Vector2 Screen_pos { get; set; }
+
+        // Movement
+        public Vector2 Vel { get; set; }
+        public float Accel { get; set; }
+        public float Decel { get; set; }
 
         // Animation
+        public bool AnimateResting { get; set; }
+        public bool Directionless { get; set; }
         public int Frame { get; set; }
         public int NumFrames { get; set; }
         public Vector2 FrameSize { get; set; }

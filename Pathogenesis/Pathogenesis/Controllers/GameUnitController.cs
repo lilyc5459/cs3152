@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Models;
 using Pathogenesis.Pathfinding;
+using Pathogenesis.Controllers;
 
 namespace Pathogenesis
 {
@@ -28,7 +29,7 @@ namespace Pathogenesis
         public const int TARGET_STOP_DIST = 50;     // Distance at which a unit is considered "at" its target
         public const int MOVE_STOP_DIST = 5;
         public const int ATTACK_COOLDOWN = 50;      // Attack cooldown
-        public const int ATTACK_LOCK_RANGE = 50;    // Distance at which enemies and allies will lock on to each other
+        public const int ATTACK_LOCK_RANGE = 30;    // Distance at which enemies and allies will lock on to each other
         public const int ALLY_FOLLOW_RANGE = 200;
         public const int INFECTION_SPEED = 3;
         public const float INFECTION_RECOVER_SPEED = 0.5f;
@@ -37,11 +38,20 @@ namespace Pathogenesis
         public const float RANDOM_WALK_TARGET_PROB = 0.05f; // Probability that a unit will switch targets while random walking
 
         // Player parameters
-        public const int MAX_PLAYER_INFECT_RANGE = 300;    // Max player infection range
+        public const int MAX_PLAYER_INFECT_RANGE = 320;    // Max player infection range
         public const float MAX_PLAYER_SPEED = 9;    // Max overall player speed
         public const float MAX_PLAYER_HEALTH = 500;    // Max overall player health
         public const int MAX_PLAYER_INFECTION_POINTS = 2000;    // Max overall player infection points
         public const float MAX_PLAYER_INFECTION_REGEN = 1;    // Max overall player infection regen speed
+
+        public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
+        
+        // Spawning parameters
+        public const float IMMUNE_SPAWN_PROB = 0.2f;
+        public const int RANDOM_SPAWN_DIST = 10;
+
+        // Item parameters
+        public const int ORGAN_ITEM_DROP_NUM = 5;
 
         public const int PLASMID_POINTS = 120;      // Conversion points gained from picking up a plasmid
         public const int HEALTH_POINTS = 100;       // Health points gained from picking up a health item
@@ -51,16 +61,13 @@ namespace Pathogenesis
         public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
-
-        public const int EXPLORE_SIGHT_RANGE = 20;   // The range of the player's explore vision, updating the minimap
-        
-        // Spawning parameters
-        public const float IMMUNE_SPAWN_PROB = 0.2f;
-        public const int RANDOM_SPAWN_DIST = 10;
-        
         #endregion
 
-        private ContentFactory factory;
+        #region Fields
+        private ContentFactory factory;                     // Instance of the content factory
+        private ParticleEngine particle_engine;             // Instance of the particle engine
+        private SoundController sound_controller;
+        private ItemController item_controller;             // Instance of the item controller
 
         public List<GameUnit> Units { get; set; }           // A list of all the units currently in the game
         public List<GameUnit> DeadUnits { get; set; }       // Dead units to be destroyed this frame
@@ -80,11 +87,16 @@ namespace Pathogenesis
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
+        #endregion
 
         #region Initialization
-        public GameUnitController(ContentFactory factory)
+        public GameUnitController(ContentFactory factory, SoundController sound_controller,
+            ParticleEngine particle_engine, ItemController item_controller)
         {
             this.factory = factory;
+            this.sound_controller = sound_controller;
+            this.particle_engine = particle_engine;
+            this.item_controller = item_controller;
             Units = new List<GameUnit>();
             DeadUnits = new List<GameUnit>();
             ConvertedUnits = new List<GameUnit>();
@@ -139,6 +151,10 @@ namespace Pathogenesis
             foreach (GameUnit boss in level.Bosses)
             {
                 Units.Add(boss);
+            }
+            foreach (GameUnit organ in level.Organs)
+            {
+                Units.Add(organ);
             }
             if (Player == null)
             {
@@ -469,15 +485,14 @@ namespace Pathogenesis
         private List<Vector2> GetExploredTiles(Vector2 pos)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int start_x = (int)pos.X - EXPLORE_SIGHT_RANGE;
-            int end_x = (int)pos.X + EXPLORE_SIGHT_RANGE;
-
-            for (int i = 0; i < EXPLORE_SIGHT_RANGE; i++)
+            for (int i = -EXPLORE_SIGHT_RANGE; i < EXPLORE_SIGHT_RANGE; i++)
             {
-                for (int j = - (EXPLORE_SIGHT_RANGE - i); j < EXPLORE_SIGHT_RANGE - i; j++)
+                for (int j = -EXPLORE_SIGHT_RANGE; j < EXPLORE_SIGHT_RANGE; j++)
                 {
-                    tiles.Add(new Vector2(pos.X + i, pos.Y + j));
-                    tiles.Add(new Vector2(pos.X - i, pos.Y + j));
+                    if (i * i + j * j < EXPLORE_SIGHT_RANGE * EXPLORE_SIGHT_RANGE)
+                    {
+                        tiles.Add(new Vector2(pos.X + i, pos.Y + j));
+                    }
                 }
             }
             return tiles;
@@ -528,7 +543,7 @@ namespace Pathogenesis
                     }
 
                     // Chase the closest enemy in range
-                    GameUnit closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    GameUnit closest = findClosestEnemyInRange(unit, unit.AttackLockRange);
                     if (closest != null)
                     {
                         unit.Target = closest.Position;
@@ -573,7 +588,7 @@ namespace Pathogenesis
                     // Immune lvl 1 enemies cluster around lvl 2 enemies
                     if (unit.Immune && unit.Level == 1)
                     {
-                        closest = findClosestOfTypeInRange(unit, unit.Type, 2, ATTACK_LOCK_RANGE);
+                        closest = findClosestOfTypeInRange(unit, unit.Type, 2, unit.AttackLockRange);
                         if (closest != null)
                         {
                             unit.Target = closest.Position;
@@ -611,7 +626,7 @@ namespace Pathogenesis
                     }
                     
                     // Chase the closest enemy in range
-                    closest = findClosestEnemyInRange(unit, ATTACK_LOCK_RANGE);
+                    closest = findClosestEnemyInRange(unit, unit.AttackLockRange);
                     if (closest != null)
                     {
                         unit.Target = closest.Position;
@@ -740,7 +755,7 @@ namespace Pathogenesis
                     float ydiff = other.Position.Y - unit.Position.Y;
                     double distance_sq = xdiff * xdiff + ydiff * ydiff;
 
-                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS &&
+                    if (unit != other && faction != other.Faction && other.Type != UnitType.BOSS && other.Type != UnitType.ORGAN &&
                         distance_sq < (range + unit.Size / 2 + other.Size / 2) * (range + unit.Size / 2 + other.Size / 2) &&
                         (closest == null || distance_sq < closestDistance))
                     {
@@ -863,8 +878,6 @@ namespace Pathogenesis
             if (vel.Length() > unit.Speed)
             {
                 vel *= unit.Speed / vel.Length();
-                //vel.Normalize();
-                //vel *= unit.Speed;
             }
             unit.Vel = vel;
         }
@@ -896,7 +909,7 @@ namespace Pathogenesis
             {
                 unit.Facing = Player.Facing;
             }
-            else
+            else if(!unit.Directionless)
             {
                 Direction dir = Direction.DOWN;
                 if (vel_mod.X < -0.1) dir = Direction.LEFT;
@@ -1002,7 +1015,29 @@ namespace Pathogenesis
         private void Attack(GameUnit aggressor, GameUnit victim)
         {
             aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
-            victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+            if (aggressor.Type == UnitType.TANK)
+            {
+                victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+                if (victim.Type == UnitType.PLAYER)
+                {
+                    sound_controller.play(SoundType.EFFECT, "ouch");
+                }
+            }
+            else if (aggressor.Type == UnitType.FLYING)
+            {
+                Color color = Color.White;
+                if (aggressor.Faction == UnitFaction.ALLY)
+                {
+                    color = Color.Green;
+                }
+                particle_engine.GenerateParticle(1, color, aggressor.Position, victim, aggressor.Faction,
+                    false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0, 100, 0, Vector2.Zero);
+            }
+            else if(aggressor.Type == UnitType.BOSS)
+            {
+                particle_engine.GenerateParticle(10, Color.Yellow, aggressor.Position, null, aggressor.Faction,
+                    false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0);
+            }
         }
         #endregion
 
@@ -1027,13 +1062,24 @@ namespace Pathogenesis
                 unit.InfectionVitality = MathHelper.Clamp(
                     unit.InfectionVitality, 0, unit.max_infection_vitality);
             }
-            // If infection vitality is 0, convert the unit, or defeat the boss
+
+            // If infection vitality is 0, handle the effect depending on the unit type
             if (unit.InfectionVitality == 0)
             {
                 if (unit.Type == UnitType.BOSS)
                 {
                     level.BossesDefeated++;
                     unit.Exists = false;
+                    particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, UnitFaction.ALLY,
+                        false, false, 0, 12, 7, 10, 5);
+                }
+                else if (unit.Type == UnitType.ORGAN)
+                {
+                    unit.Exists = false;
+                    for (int i = 0; i < ORGAN_ITEM_DROP_NUM; i++)
+                    {
+                        item_controller.AddRandomItem(unit.Position);
+                    }
                 }
                 else
                 {

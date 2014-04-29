@@ -12,6 +12,7 @@ namespace Pathogenesis.Models
     {
         MAIN,
         PAUSE,
+        OPTIONS,
         WIN,
         LOSE
     };
@@ -19,23 +20,29 @@ namespace Pathogenesis.Models
 
     public class Menu
     {
+        public static Color fontColor = new Color(220, 200, 80);
+        public static Color fontHighlightColor = new Color(250, 230, 200);
+
         public MenuType Type { get; set; }
         public Texture2D Background { get; set; }
 
-        public String[] Options {get; set; }
+        public List<MenuOption> Options { get; set; }
         public int CurSelection { get; set; }
 
-        public Menu(MenuType type, String[] options, Texture2D background)
+        public List<MenuType> Children { get; set; }
+
+        public Menu(MenuType type, List<MenuOption> options, List<MenuType> children, Texture2D background)
         {
             Type = type;
             Options = options;
-            CurSelection = 0;
+            Children = children;
             Background = background;
+
+            CurSelection = 0;
         }
 
         public void Draw(GameCanvas canvas, Vector2 center)
         {
-            //TEMP
             Color color = Color.Black;
             String title = "";
 
@@ -48,6 +55,10 @@ namespace Pathogenesis.Models
                 case MenuType.PAUSE:
                     title = "Paused";
                     color = new Color(20, 0, 0, 150);
+                    break;
+                case MenuType.OPTIONS:
+                    title = "Options";
+                    color = new Color(90, 0, 0, 250);
                     break;
                 case MenuType.WIN:
                     title = "Victory!";
@@ -69,19 +80,18 @@ namespace Pathogenesis.Models
                  new Vector2((int)center.X, (int)center.Y - canvas.Height/2 + 100), "font3", true);
 
             // Options
-            for (int i = 0; i < Options.Length; i++)
+            for (int i = 0; i < Options.Count; i++)
             {
-                Color option_color = new Color(220, 200, 80);
-                int x = (int) center.X;
-                int y = (int) center.Y - (Options.Length * 60)/2 + i * 60;
+                MenuOption option = Options[i];
+                Color option_color = fontColor;
                 if (i == CurSelection)
                 {
-                    canvas.DrawSprite(Background, new Color(220, 200, 80),
-                        new Rectangle(x + 150, y, 15, 15),
+                    option_color = fontHighlightColor;
+                    canvas.DrawSprite(Background, option_color,
+                        new Rectangle((int)(center.X + option.Offset.X - 150), (int)(center.Y + option.Offset.Y), 15, 15),
                         new Rectangle(0, 0, Background.Width, Background.Height));
                 }
-                canvas.DrawText(Options[i], option_color,
-                    new Vector2(x, y), "font2", true);
+                option.Draw(canvas, center, option_color);
             }
         }
     }
