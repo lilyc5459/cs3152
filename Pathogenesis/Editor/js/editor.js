@@ -14,32 +14,26 @@ function init() {
   eSpawnerID = 0;
   advMode = false;
 
+  //Spawn point information - spawn rates and level rates
   defSpawnProbObj = {
-    normal: 50,
-    big: 25,
-    flying: 25
+    normal: .50,
+    big: .25,
+    flying: .25
   }
 
   defSpawnLvlObj = {
-    lvl1: 75,
-    lvl2: 20,
-    lvl3: 5
+    lvl1: .75,
+    lvl2: .20,
+    lvl3: .05
   }
 
-  defSpawnPntObj = {
-    Pos: {
-      Vector2: {
-        X: 0,
-        Y: 0
-      }
-    }
-  }
-
-  defSpawnObj = {
+  defSpawnerProbs = {
     spawnProbs: defSpawnProbObj,
-    levelProbs: defSpawnLvlObj,
-    SpawnPoint: defSpawnPntObj
+    levelProbs: defSpawnLvlObj
   }
+
+  spawnRtsArr = [];
+
 
   defaultLevelJson = '{"Level":{"Map":"","BackgroundTexture":"","Width":"","Height":"","Regions":"","_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance","_xmlns:xsd":"http://www.w3.org/2001/XMLSchema"}}';
 
@@ -110,15 +104,14 @@ function addRegion(){
 
 function modifyTile($cur){
   id = $cur.attr('espawnerid'+$('#regsel').val());
-  console.log("selected");
   //Load relevant data
   //Set the sliders to their appropriate values
-  if (eSpawnerArr[id] != null){
-    for (var probType in eSpawnerArr[id].spawnProbs) {
-      $('#prob_'+probType).val(eSpawnerArr[id].spawnProbs[probType]);
+  if (spawnRtsArr[id] != null){
+    for (var probType in spawnRtsArr[id].spawnProbs) {
+      $('#prob_'+probType).val(spawnRtsArr[id].spawnProbs[probType]);
     }
-    for (var probLvl in eSpawnerArr[id].levelProbs) {
-      $('#prob_'+probLvl).val(eSpawnerArr[id].levelProbs[probLvl]);
+    for (var probLvl in spawnRtsArr[id].levelProbs) {
+      $('#prob_'+probLvl).val(spawnRtsArr[id].levelProbs[probLvl]);
     }
   }
   $("#spawnEdit").show();
@@ -128,12 +121,11 @@ function modifyTile($cur){
   //Saving Regions + Spawns
   $("#espawn_save").on("click", function() {
     //Save Probabilites
-    for (var probType in eSpawnerArr[id].spawnProbs) {
-      console.log(id);
-      eSpawnerArr[id].spawnProbs[probType] = +$('#prob_'+probType).val();
+    for (var probType in spawnRtsArr[id].spawnProbs) {
+      spawnRtsArr[id].spawnProbs[probType] = +$('#prob_'+probType).val();
     }
-    for (var probLvl in eSpawnerArr[id].levelProbs) {
-      eSpawnerArr[id].levelProbs[probLvl] = +$('#prob_'+probLvl).val();
+    for (var probLvl in spawnRtsArr[id].levelProbs) {
+      spawnRtsArr[id].levelProbs[probLvl] = +$('#prob_'+probLvl).val();
     }
     /*  
     //Remove the spawnpoint from other regions if it is in other regions
@@ -162,7 +154,6 @@ function drawing(){
       $cur.attr('type', selectedType);
       x = $cur.attr('x');
       y = $cur.attr('y');
-      console.log('['+x+','+y+']');
       ArrayOfInt[y][x] = selectedType; 
     //Methods for region stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     }else{
@@ -171,7 +162,7 @@ function drawing(){
         //-remove object TODO: Do I need to really set this to null?
         eSpawnerIDtoRemove = $cur.attr('eSpawnerID'+$('#regsel').val());
         if (eSpawnerIDtoRemove >= 0){
-          eSpawnerArr[eSpawnerIDtoRemove] = null;
+          spawnRtsArr[eSpawnerIDtoRemove] = null;
         }
         //-remove html
         $cur.removeAttr('eSpawnerID'+$('#regsel').val());
@@ -186,20 +177,12 @@ function drawing(){
         $cur.children(".centerTxt").hide();
       }
       else if(selectedTile == "modifier"){
-        console.log("modifer selected");
-        console.log($cur.attr('eSpawnerID'+$('#regsel').val()));
-        if ($cur.attr('eSpawnerID'+$('#regsel').val()) == 0) {
+        if ($cur.attr('eSpawnerID'+$('#regsel').val()) >= 0) {
           modifyTile($cur);
         }
       }
       else if(selectedTile == "spawnArea"){
         $cur.addClass(selectedTile);
-        /* Code to add region numbers
-        $cur.html('');
-        var list = '1,2,3,4';
-        //$('#regsel').val()
-        $cur.append('<p class="highShift">'+list+'</p>');
-        */
         $cur.attr("reg"+$('#regsel').val(), true);
       }
       else if ($cur.attr("class").indexOf("spawnArea") !== -1){
@@ -208,10 +191,12 @@ function drawing(){
           //Add spawner class and show text
           $cur.attr('eSpawnerID'+$('#regsel').val(), eSpawnerID);
           $cur.children(".spawnTxt").show();
+          //Javascript spaner info creation
+          var newDefSpwnRates = jQuery.extend(true, {}, defSpawnerProbs);
+          spawnRtsArr[eSpawnerID] = newDefSpwnRates;
           eSpawnerID++;
         }
         else if(selectedTile == "regCntr"){
-          //Make so only max 1 of these TODO-3
           //$cur.addClass(selectedTile);
           /* Testing
           //Remove class
@@ -386,6 +371,19 @@ var Map = {
 
 var BackgroundTexture = {
   name: ""
+}
+
+var defSpawnPntObj = {
+  Pos: {
+    Vector2: {
+      X: 0,
+      Y: 0
+    }
+  }
+}
+
+var defSpawnObj = {
+  SpawnPoint: defSpawnPntObj
 }
 
 //---SaveRegion stuff---
