@@ -267,8 +267,10 @@ function setup(){
       buttons: {
         "Save a level": function() {
           allFields.removeClass( "ui-state-error" );
-          LevelXML = CreateXML();
+          LevelXML = CreateLevelXML();
+          SpawnRatesXML = CreateSpawnRatesXML();
           SaveXML(LevelXML, filename.val());
+          //SaveXML(SpawnRatesXML, '[SPAWNRATE]'+filename.val());
 
             $( this ).dialog( "close" );
         },
@@ -340,10 +342,42 @@ function setup(){
     });
 }
 
+
+/*
+Creating Spwn XML file
+*/
+function CreateSpawnRatesXML(){
+  //TOOD: 1. Move all the differnet sections into a single section
+  //      2. Make it so that multiple spawn points can be serialized
+  //      3. Make it so that you can save twice
+  var x2js = new X2JS();
+  var objSpawnRatesArr = new Array();
+  for(var i=0; i<regionSel.length; i++){
+    $('[eSpawnerID'+i+']').each(function(){
+       index = $(this).attr('eSpawnerID'+i);
+       objSpawnRatesArr.push(spawnRtsArr[index]);
+    })
+  }
+  if (objSpawnRatesArr != null){
+    OBJspawnRates = {
+      SpawnInfo : {
+        Rates : objSpawnRatesArr
+      }
+    }
+  }else{
+    return 0;
+  }
+  console.log(OBJspawnRates);
+  var JSONSpawnRates = JSON.stringify(OBJspawnRates);
+  var XMLSpawnRates = x2js.json2xml_str($.parseJSON(JSONSpawnRates));
+  console.log(XMLSpawnRates);
+  return XMLSpawnRates;
+}
+
 /*
 Creating XML file
 */
-function CreateXML(){
+function CreateLevelXML(){
 var x2js = new X2JS();
 
 
