@@ -218,15 +218,15 @@ namespace Pathogenesis
             // Load levels
             // TODO make config file for levels
             List<GameUnit> goals = new List<GameUnit>();
-            goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
-            goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
+            //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
+            //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
 
             /*
             Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
             level.PlayerStart = new Vector2(2, 2);
                 */
             Level level = null;
-            using (FileStream stream = new FileStream("level.xml", FileMode.Open))
+            using (FileStream stream = new FileStream("regiontest.xml", FileMode.Open))
             {
                 using (XmlReader reader = XmlReader.Create(stream))
                 {
@@ -234,8 +234,8 @@ namespace Pathogenesis
                     level = (Level)x.Deserialize(reader);
                 }
             }
-            level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(1300, 1300), false));
-            level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
+            //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(1300, 1300), false));
+            //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
 
             level.BackgroundTexture = textures["background"];
             level.Map.WallTexture = textures["wall"];
@@ -243,6 +243,13 @@ namespace Pathogenesis
             level.NumBosses = goals.Count;
             level.BossesDefeated = 0;
             level.PlayerStart = new Vector2(3, 3);
+
+            SpawnPoint s = new SpawnPoint(new Vector2(15, 18), 1000);
+            s.UnitProbabilities.Add(UnitType.TANK, 1);
+            s.LevelProbabilities.Add(1, 1);
+            level.Regions[1].SpawnPoints.Add(s);
+            level.Regions[0].Center = new Vector2(5, 5);
+            level.Regions[1].Center = new Vector2(13, 16);
 
             levels.Add(level);
         }

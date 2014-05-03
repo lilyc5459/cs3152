@@ -170,6 +170,7 @@ namespace Pathogenesis
                     bool victory = level_controller.Update();
 
                     // Remove later
+                    /*
                     if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 80)
                     {
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
@@ -186,7 +187,7 @@ namespace Pathogenesis
                                     rand.NextDouble() < 0.5 ? ItemType.PLASMID : rand.NextDouble() < 0.1 ? ItemType.ALLIES : ItemType.HEALTH));
                             }
                         }   
-                    }
+                    }*/
 
                     //
                     /* TODO: Remove DEBUG CODE HERE (remove later)

@@ -265,13 +265,17 @@ namespace Pathogenesis
             {
                 foreach (SpawnPoint sp in r.SpawnPoints)
                 {
+                    if (!sp.ShouldSpawn()) continue;
+
                     UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
                     int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
 
                     if(type != null && unit_lvl != null) {
                         // Create new unit
                         GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
-                            sp.Pos + new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST, (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
+                            sp.Pos * Map.TILE_SIZE +
+                            new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
+                                        (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
                             rand.NextDouble() < IMMUNE_SPAWN_PROB);
                         if (unit != null)
                         {
@@ -607,12 +611,12 @@ namespace Pathogenesis
                         {
                             unit.Target = Player.Position;
                         }
-                        // Pathfind pack to region center
+                        // Pathfind pack to region center if outside of region
                         else if (unit.Region != null && !unit.Region.RegionSet.Contains(new Vector2(
                                 (int)unit.Position.X / Map.TILE_SIZE,
                                 (int)unit.Position.Y / Map.TILE_SIZE)))
                         {
-                            unit.Target = unit.Region.Center;
+                            unit.Target = unit.Region.Center * Map.TILE_SIZE;
                         }
                         // Random walk
                         else if (rand.NextDouble() < RANDOM_WALK_TARGET_PROB)

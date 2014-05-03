@@ -28,7 +28,7 @@ namespace Pathogenesis
         public bool Update()
         {
             // Update level logic here
-            return CurLevel.BossesDefeated == CurLevel.NumBosses;
+            return CurLevel.NumBosses != 0 && CurLevel.BossesDefeated == CurLevel.NumBosses;
         }
 
         #region Methods
