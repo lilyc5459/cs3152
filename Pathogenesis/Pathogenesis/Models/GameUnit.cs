@@ -80,6 +80,7 @@ namespace Pathogenesis
 
         public bool Lost { get; set; }
         public bool Immune { get; set; }
+        public bool Invulnerable { get; set; }
 
         // Unit movement data
         public Direction Facing { get; set; }
@@ -200,6 +201,7 @@ namespace Pathogenesis
                 Attack = 50;
                 max_attack_cooldown = 200;
                 AttackRange = 200;
+                Invulnerable = true;
             }
             if (Type == UnitType.ORGAN)
             {
@@ -207,6 +209,7 @@ namespace Pathogenesis
                 Mass = 10f;
                 AnimateResting = true;
                 Directionless = true;
+                Invulnerable = true;
             }
         }
         #endregion

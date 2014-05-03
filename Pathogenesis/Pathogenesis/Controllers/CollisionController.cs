@@ -336,9 +336,14 @@ namespace Pathogenesis
          */
         private void CheckUnitParticleCollision(GameUnit unit, Particle p)
         {
+            if (unit.Type == UnitType.ORGAN) return;
+
             if ((unit.Position - p.Position).Length() < (unit.Size + p.Size) / 2)
             {
-                unit.Health -= p.Damage;
+                if (!unit.Invulnerable)
+                {
+                    unit.Health -= p.Damage;
+                }
                 particle_engine.GenerateParticle(5, p.Color, p.Position, null, UnitFaction.ALLY, false, false, 0,
                     10, 5, 1, 1, 30, 10, unit.Position - p.Position);
                 particle_engine.DestroyedParticles.Add(p);

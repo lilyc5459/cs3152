@@ -363,18 +363,19 @@ namespace Pathogenesis
             //TODO don't hardcode probabilities
             double typeProb = rand.NextDouble();
             UnitType type = UnitType.TANK;
-            if (typeProb > 0.4)
+            if (typeProb > 0.2)
             {
                 type = UnitType.TANK;
             }
-            else if (typeProb > 0.1)
+            else
             {
                 type = UnitType.FLYING;
             }
+                /*
             else
             {
                 type = UnitType.RANGED;
-            }
+            }*/
             return createUnit(type, UnitFaction.ALLY, 1,
                 pos + new Vector2((float)(rand.NextDouble() * 10 - 5), (float)(rand.NextDouble() * 10 - 5)), false);
         }

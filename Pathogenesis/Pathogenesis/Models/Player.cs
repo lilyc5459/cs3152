@@ -12,7 +12,7 @@ namespace Pathogenesis
         // Distance from player that allies will target when player moves in a direction
         private const int ALLY_FRONT_DISTANCE = 100;
         private const int BASE_INFECTION_RANGE = 180;
-        private const float BASE_INFECTION_RECOVERY = 0.5f;
+        private const float BASE_INFECTION_RECOVERY = 1f;
 
         #region Fields and Properties
         public bool Alive;

@@ -171,6 +171,12 @@ namespace Pathogenesis
                 tiles[i] = new int[level.Width / Map.TILE_SIZE];
             }
             Player.ExploredTiles = tiles;
+
+            // Initial free allies
+            for (int i = 0; i < ITEM_FREE_ALLY_NUM*2; i++)
+            {
+                AddAlly(null);
+            }
         }
         #endregion
 
@@ -1014,6 +1020,8 @@ namespace Pathogenesis
 
         private void Attack(GameUnit aggressor, GameUnit victim)
         {
+            if (victim.Invulnerable) return;
+
             aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
             if (aggressor.Type == UnitType.TANK)
             {

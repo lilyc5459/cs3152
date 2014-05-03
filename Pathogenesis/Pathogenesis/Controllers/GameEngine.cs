@@ -199,7 +199,7 @@ namespace Pathogenesis
                     }
                     if (input_controller.Spawn_Ally && unit_controller.Player != null)
                     {
-                        unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ALLY, 1,
+                        unit_controller.AddUnit(factory.createUnit(UnitType.FLYING, UnitFaction.ALLY, 1,
                             unit_controller.Player.Position + new Vector2(1, 1), false));
                     }
                     if (input_controller.Spawn_Plasmid)
@@ -352,9 +352,6 @@ namespace Pathogenesis
                     break;
             }
 
-            // Draw particles
-            particle_engine.Draw(canvas);
-
             // Draw fade effect
             canvas.DrawSprite(solid, Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 250), (float)fader.fadeCounter / Fader.fadeTime),
                 new Rectangle((int)(camera.Position.X - canvas.Width / 2), (int)(camera.Position.Y - canvas.Height / 2), canvas.Width, canvas.Height),
@@ -375,6 +372,7 @@ namespace Pathogenesis
             unit_controller.Draw(canvas);
             item_controller.Draw(canvas, true);
             HUD_display.DrawLayerTwo(canvas, unit_controller.Units, unit_controller.Player, camera.Position, level_controller.CurLevel);
+            particle_engine.Draw(canvas);
         }
         #endregion
     }

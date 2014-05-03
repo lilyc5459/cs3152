@@ -219,11 +219,5 @@ namespace Pathogenesis.Models
                 }
             }
         }
-
-        // Player msg expiration event
-        private void MsgExpire(object source, ElapsedEventArgs e)
-        {
-
-        }
     }
 }
