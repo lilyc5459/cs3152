@@ -268,14 +268,18 @@ function setup(){
         "Save a level": function() {
           allFields.removeClass( "ui-state-error" );
           LevelXML = CreateLevelXML();
-          SpawnRatesXML = CreateSpawnRatesXML();
           SaveXML(LevelXML, filename.val());
-          //SaveXML(SpawnRatesXML, '[SPAWNRATE]'+filename.val());
-
-            $( this ).dialog( "close" );
+          $( this ).dialog( "close" );
         },
         Cancel: function() {
           $( this ).dialog( "close" );
+        },
+        "Save Spanwers": function() {
+          allFields.removeClass( "ui-state-error" );
+          LevelXML = CreateLevelXML();
+          SpawnRatesXML = CreateSpawnRatesXML();
+          //SaveXML(LevelXML, filename.val());
+          SaveXML(SpawnRatesXML, '[SPAWNRATE]'+filename.val());
         }
       }
     });
