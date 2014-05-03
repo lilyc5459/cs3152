@@ -18,6 +18,7 @@
 			<button id="save">Save Level</button>
 		</div>
 		<div>
+  id = $cur.attr('eSpawnerID'+$('#regsel').val())
 			<div id="output"></div>
 		</div>
 		<br>
@@ -26,15 +27,9 @@
 			<th colspan="2">Spawn Probabilities</th>
 			<th></th>
 			<tr>
-				<td>Small</td> 
+				<td>Tank</td> 
 				<td> 
-					<input type="number" id="prob_normal" name="quantity" value="20" min="1" max="100">
-				</td>
-			</tr>
-			<tr>
-				<td>Big</td> 
-				<td> 
-					<input type="number" id="prob_big" name="quantity" min="1" max="100">
+					<input type="number" id="prob_tank" name="quantity" value="20" min="1" max="100">
 				</td>
 			</tr>
 			<tr>
@@ -66,8 +61,24 @@
 				</td>
 			</tr>
 		</table>
+		<table id="spawnTable3">
+			<th colspan="2">Misc</th>
+			<th></th>
+			<tr>
+				<td>Spawn Rate</td> 
+				<td> 
+					<input type="number" id="prob_rate" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Max Units</td> 
+				<td> 
+					<input type="number" id="prob_num" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+		</table>
 		<button id="espawn_save">save</button>
-		<button id="espawn_close">close</button>
+		<button id="espawn_close">discard</button>
 	</div>
 		
 	</div>
@@ -119,9 +130,9 @@
 				<div class="shapes">
 					<u>Objects</u><br>
 					P_Start: <br>
-					<div class="entity pStart" type="11" id="pStart">Player Start</div><br>
+					<div class="entity pStart" type="8" id="pStart">Player Start</div><br>
 					Boss:
-					<div class="entity goalBoss" id="goalBoss">Goal (Boss) </div><br>
+					<div class="entity goalBoss" type="9" id="goalBoss">Goal (Boss) </div><br>
 				</div>
 			</div>
 		</div>
