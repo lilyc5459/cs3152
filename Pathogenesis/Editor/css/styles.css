@@ -133,6 +133,10 @@ div#spawnEdit{
 	float: left;
 }
 
+#spawnTable3{
+	float: left;
+}
+
 #spawnTools{
 	float: left;
 }
@@ -152,3 +156,15 @@ div#butCont{}
 body {
     background-color: #c15f6d;
 }
+
+    ::-moz-selection{
+    background-color:Transparent;
+    color:#000;
+    }
+
+    ::selection {
+    background-color:Transparent;
+    color:#000;
+    }
+.myclass::-moz-selection,
+.myclass::selection { ... }

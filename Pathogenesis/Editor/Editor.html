@@ -27,15 +27,9 @@
 			<th colspan="2">Spawn Probabilities</th>
 			<th></th>
 			<tr>
-				<td>Small</td> 
+				<td>Tank</td> 
 				<td> 
-					<input type="number" id="prob_normal" name="quantity" value="20" min="1" max="100">
-				</td>
-			</tr>
-			<tr>
-				<td>Big</td> 
-				<td> 
-					<input type="number" id="prob_big" name="quantity" min="1" max="100">
+					<input type="number" id="prob_tank" name="quantity" value="20" min="1" max="100">
 				</td>
 			</tr>
 			<tr>
@@ -67,8 +61,24 @@
 				</td>
 			</tr>
 		</table>
+		<table id="spawnTable3">
+			<th colspan="2">Misc</th>
+			<th></th>
+			<tr>
+				<td>Spawn Rate</td> 
+				<td> 
+					<input type="number" id="prob_rate" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+			<tr>
+				<td>Max Units</td> 
+				<td> 
+					<input type="number" id="prob_num" name="quantity" min="1" max="100">
+				</td>
+			</tr>
+		</table>
 		<button id="espawn_save">save</button>
-		<button id="espawn_close">close</button>
+		<button id="espawn_close">discard</button>
 	</div>
 		
 	</div>

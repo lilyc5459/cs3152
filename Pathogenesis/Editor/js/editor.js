@@ -16,20 +16,18 @@ function init() {
 
   //Spawn point information - spawn rates and level rates
   defSpawnProbObj = {
-    normal: .50,
-    big: .25,
-    flying: .25
-  }
-
-  defSpawnLvlObj = {
+    tank: .75,
+    flying: .25,
     lvl1: .75,
     lvl2: .20,
-    lvl3: .05
+    lvl3: .05,
+    rate: 10,
+    num: 30
   }
 
   defSpawnerProbs = {
     spawnProbs: defSpawnProbObj,
-    levelProbs: defSpawnLvlObj
+    Id : -1
   }
 
   spawnRtsArr = [];
@@ -110,9 +108,6 @@ function modifyTile($cur){
     for (var probType in spawnRtsArr[id].spawnProbs) {
       $('#prob_'+probType).val(spawnRtsArr[id].spawnProbs[probType]);
     }
-    for (var probLvl in spawnRtsArr[id].levelProbs) {
-      $('#prob_'+probLvl).val(spawnRtsArr[id].levelProbs[probLvl]);
-    }
   }
   $("#spawnEdit").show();
   //Load the region areas
@@ -124,9 +119,7 @@ function modifyTile($cur){
     for (var probType in spawnRtsArr[id].spawnProbs) {
       spawnRtsArr[id].spawnProbs[probType] = +$('#prob_'+probType).val();
     }
-    for (var probLvl in spawnRtsArr[id].levelProbs) {
-      spawnRtsArr[id].levelProbs[probLvl] = +$('#prob_'+probLvl).val();
-    }
+    $("#spawnEdit").hide();
     /*  
     //Remove the spawnpoint from other regions if it is in other regions
     for (var i=0; i<regionSel.length; i++){
@@ -193,6 +186,7 @@ function drawing(){
           $cur.children(".spawnTxt").show();
           //Javascript spaner info creation
           var newDefSpwnRates = jQuery.extend(true, {}, defSpawnerProbs);
+          newDefSpwnRates.Id = eSpawnerID;
           spawnRtsArr[eSpawnerID] = newDefSpwnRates;
           eSpawnerID++;
         }
@@ -364,17 +358,16 @@ function CreateSpawnRatesXML(){
   }
   if (objSpawnRatesArr != null){
     OBJspawnRates = {
-      SpawnInfo : {
-        Rates : objSpawnRatesArr
+      SpawnInfoArray : {
+        SpawnInfo : objSpawnRatesArr,
       }
     }
   }else{
     return 0;
   }
-  console.log(OBJspawnRates);
   var JSONSpawnRates = JSON.stringify(OBJspawnRates);
   var XMLSpawnRates = x2js.json2xml_str($.parseJSON(JSONSpawnRates));
-  console.log(XMLSpawnRates);
+
   return XMLSpawnRates;
 }
 
@@ -412,12 +405,13 @@ var BackgroundTexture = {
 }
 
 var defSpawnPntObj = {
-  Pos: {
-    Vector2: {
-      X: 0,
-      Y: 0
+  Pos : {
+    Vector2 : {
+      X: -1,
+      Y: -1
     }
-  }
+  },
+  Id : -1
 }
 
 var defSpawnObj = {
@@ -447,13 +441,15 @@ for(var i=0; i<regionSel.length; i++){
   //TODO: Fix regions to going into same array
   var SpawnPointArr = new Array();
   $('[eSpawnerID'+i+']').each(function(indexesp){
+    var index  = $(this).attr('eSpawnerID'+i);
     var newDefSpawnObject = jQuery.extend(true, {}, defSpawnObj);
-    eSpawnerArr[$(this).attr('eSpawnerID'+i)] = newDefSpawnObject;
-    eSpawnerArr[$(this).attr('eSpawnerID'+i)].SpawnPoint.Pos.Vector2.X = $(this).attr('x');
-    eSpawnerArr[$(this).attr('eSpawnerID'+i)].SpawnPoint.Pos.Vector2.Y = $(this).attr('y');
+    eSpawnerArr[index] = newDefSpawnObject;
+    eSpawnerArr[index].SpawnPoint.Pos.Vector2.X = $(this).attr('x');
+    eSpawnerArr[index].SpawnPoint.Pos.Vector2.Y = $(this).attr('y');
+    eSpawnerArr[index].SpawnPoint.Id = index;
     //If object not empty, push
-    if(!jQuery.isEmptyObject(eSpawnerArr[$(this).attr('eSpawnerID'+i)].SpawnPoint)){
-      SpawnPointArr.push(eSpawnerArr[$(this).attr('eSpawnerID'+i)].SpawnPoint);
+    if(!jQuery.isEmptyObject(eSpawnerArr[index].SpawnPoint)){
+      SpawnPointArr.push(eSpawnerArr[index].SpawnPoint);
     }
   })
   finSpawnPoint = {
