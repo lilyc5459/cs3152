@@ -159,6 +159,9 @@
     <Content Include="Config\animation_data.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\dialogue_config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\font_paths.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

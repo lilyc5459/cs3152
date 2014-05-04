@@ -14,7 +14,8 @@ namespace Pathogenesis.Models
         PAUSE,
         OPTIONS,
         WIN,
-        LOSE
+        LOSE,
+        DIALOGUE,
     };
     #endregion
 
@@ -28,6 +29,7 @@ namespace Pathogenesis.Models
 
         public List<MenuOption> Options { get; set; }
         public int CurSelection { get; set; }
+        public String Text { get; set; }
 
         public List<MenuType> Children { get; set; }
 
@@ -68,17 +70,39 @@ namespace Pathogenesis.Models
                     title = "You're dead.";
                     color = new Color(20, 0, 0, 150);
                     break;
+                case MenuType.DIALOGUE:
+                    color = new Color(0, 0, 0, 100);
+                    break;
             }
 
             // Background
-            canvas.DrawSprite(Background, color,
-                new Rectangle((int)center.X - canvas.Width / 2, (int)center.Y - canvas.Height / 2, canvas.Width, canvas.Height),
-                new Rectangle(0, 0, Background.Width, Background.Height));
+            if (Type == MenuType.DIALOGUE)
+            {
+                canvas.DrawSprite(Background, color,
+                    new Rectangle((int)center.X - canvas.Width / 2, (int)center.Y + canvas.Height / 4, canvas.Width, canvas.Height/3),
+                    new Rectangle(0, 0, Background.Width, Background.Height));
+            }
+            else
+            {
+                canvas.DrawSprite(Background, color,
+                    new Rectangle((int)center.X - canvas.Width / 2, (int)center.Y - canvas.Height / 2, canvas.Width, canvas.Height),
+                    new Rectangle(0, 0, Background.Width, Background.Height));
+            }
 
             // Title
             canvas.DrawText(title, new Color(220, 200, 80),
                  new Vector2((int)center.X, (int)center.Y - canvas.Height/2 + 100), "font3", true);
 
+            // Draw dialogue if applicable
+            if (Type == MenuType.DIALOGUE && Text != null)
+            {
+                canvas.DrawText(Text, new Color(220, 200, 80),
+                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 100), "font1", true);
+                canvas.DrawText("Press enter to continue", new Color(220, 200, 80),
+                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 50), "font1", true);
+                return;
+            }
+           
             // Options
             for (int i = 0; i < Options.Count; i++)
             {

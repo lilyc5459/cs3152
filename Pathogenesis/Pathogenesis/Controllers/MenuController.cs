@@ -10,6 +10,7 @@ namespace Pathogenesis.Controllers
     public class MenuController
     {
         private Dictionary<MenuType, Menu> menus;
+        private Dictionary<int, Menu> dialogues;
         public List<Menu> OpenMenus;
 
         // Returns the current menu
@@ -21,11 +22,15 @@ namespace Pathogenesis.Controllers
             }
         }
 
+        // Returns the current dialogue id
+        public int CurDialogue { get; set; }
+
         private SoundController sound_controller;
 
         public MenuController(ContentFactory factory, SoundController sound_controller)
         {
             menus = factory.getMenus();
+            dialogues = factory.getDialogues();
             OpenMenus = new List<Menu>();
             this.sound_controller = sound_controller;
         }
@@ -47,6 +52,16 @@ namespace Pathogenesis.Controllers
         }
 
         /*
+         * Loads a dialogue
+         */
+        public void LoadDialogue(int id)
+        {
+            OpenMenus.Clear();
+            OpenMenus.Add(dialogues[id]);
+            CurDialogue++;
+        }
+
+        /*
          * Update menu selection
          */
         public void Update(InputController input_controller)
@@ -54,7 +69,6 @@ namespace Pathogenesis.Controllers
             if (OpenMenus.Count == 0) return;
 
             Menu menu = OpenMenus.Last();
-
         }
 
         /*
@@ -200,6 +214,9 @@ namespace Pathogenesis.Controllers
                                 engine.fadeTo(GameState.MAIN_MENU);
                                 break;
                         }
+                        break;
+                    case MenuType.DIALOGUE:
+                        engine.ChangeGameState(GameState.IN_GAME);
                         break;
                 }
             }

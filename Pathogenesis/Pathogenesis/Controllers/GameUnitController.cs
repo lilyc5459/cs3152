@@ -120,6 +120,10 @@ namespace Pathogenesis
          */
         public void AddUnit(GameUnit unit)
         {
+            if (unit.Region != null)
+            {
+                unit.Region.NumUnits++;
+            }
             Units.Add(unit);
         }
 
@@ -249,7 +253,14 @@ namespace Pathogenesis
                     Player.Exists = false;
                     Player = null;
                 }
-                else Units.Remove(unit);
+                else
+                {
+                    if (unit.Region != null)
+                    {
+                        unit.Region.NumUnits--;
+                    }
+                    Units.Remove(unit);
+                }
                 PreviousPositions.Remove(unit.ID);
             }
         }
@@ -263,6 +274,8 @@ namespace Pathogenesis
         {
             foreach (Region r in level.Regions)
             {
+                if (r.NumUnits >= r.MaxUnits) continue;
+
                 foreach (SpawnPoint sp in r.SpawnPoints)
                 {
                     if (!sp.ShouldSpawn()) continue;
@@ -382,6 +395,10 @@ namespace Pathogenesis
                     Player.InfectionPoints -= (int)INFECTION_SPEED;
                     Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
                         0, Player.MaxInfectionPoints);
+
+                    particle_engine.EmitterPosition = Player.Position;
+                    particle_engine.GenerateParticle(1, new Color(200, 200, 0), Player.Position,
+                        Player.Infecting, UnitFaction.ALLY, true, false, 0, 15, 5, 12, 7);
                 }
                 else
                 {

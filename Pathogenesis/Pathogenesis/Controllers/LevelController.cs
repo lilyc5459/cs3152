@@ -27,7 +27,6 @@ namespace Pathogenesis
          */
         public bool Update()
         {
-            // Update level logic here
             return CurLevel.NumBosses != 0 && CurLevel.BossesDefeated == CurLevel.NumBosses;
         }
 
@@ -37,8 +36,7 @@ namespace Pathogenesis
          */
         public void NextLevel(ContentFactory factory, GameUnitController unit_controller,
             ItemController item_controller, SoundController sound_controller){
-            CurLevelNum++;
-            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
+            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum+1);
         }
 
         /*
@@ -56,8 +54,7 @@ namespace Pathogenesis
         public void Restart(ContentFactory factory, GameUnitController unit_controller,
             ItemController item_controller, SoundController sound_controller)
         {
-            CurLevelNum = 0;
-            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
+            LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
         }
 
         /*
@@ -67,6 +64,7 @@ namespace Pathogenesis
             ItemController item_controller, SoundController sound_controller, int level_num)
         {
             CurLevel = factory.loadLevel(level_num);
+            CurLevelNum = level_num;
             Reset(CurLevel);
             item_controller.Reset();
             unit_controller.Reset();
@@ -99,6 +97,11 @@ namespace Pathogenesis
                 organ.Exists = true;
                 organ.InfectionVitality = organ.max_infection_vitality;
                 //organ.Position
+            }
+
+            foreach (Region r in level.Regions)
+            {
+                r.NumUnits = 0;
             }
         }
         #endregion
