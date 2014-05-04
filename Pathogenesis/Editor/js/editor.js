@@ -36,7 +36,6 @@ function init() {
   Level = JSON.parse(defaultLevelJson);
 }
 
-Regions = [];
 regionSel = [];
 
 //BUTTON = SPAWN CLOSE
@@ -71,14 +70,14 @@ $("#close_region_editor").on("click", function() {
 
 //BUTTON = REGION CREATE
 $("#create_region").on("click", function() {
-  addRegion();
+  addRegion(regionSel.length);
   $("#regTools").show()
 });
 
-function addRegion(){
+function addRegion(regId){
   option = {
-    id: regionSel.length,
-    name: regionSel.length
+    id: regId,
+    name: regId
   }
   regionSel.push(option);
   $('#regsel').empty();
@@ -415,6 +414,7 @@ var defSpawnObj = {
   SpawnPoint: defSpawnPntObj
 }
 
+Regions = [];
 //---SaveRegion stuff---
 //Save Region Areas
 defaultRegionJson = '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
@@ -527,6 +527,20 @@ function buildMap(inputTxt){
     ArrayOfInt[y]=innerArr;
   }
 
+  //Loop through regions and set them
+  var curReg = 0;
+  for (var Region in levelObj.Level.Regions) {
+    if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].Region.RegionSet != "") {
+      addRegion(curReg);
+      for (var i=0; i<levelObj.Level.Regions[Region].Region.RegionSet.Vector2.length; i++){
+        xCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].X;
+        yCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].Y;
+        $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
+      }
+    }
+  curReg++;
+  }
+
   //Load width and height
   realWidth = levelObj.Level.Height;
   realHeight = levelObj.Level.Width;
@@ -544,7 +558,6 @@ function buildMap(inputTxt){
   $('#container').height(finHeight);
 
   drawing();
-
 }
 
 //document.getElementById('file').addEventListener('change', readFile, false);
