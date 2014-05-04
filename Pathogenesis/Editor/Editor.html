@@ -17,7 +17,10 @@
 			<button id="save">Save Level</button>
 		</div>
 		<div>
-			<div id="output"></div>
+			<div id="loadRates">
+				LOAD THIS!!! (The rates)
+				<input type="file" id="rates" name="rates" />
+			</div>
 		</div>
 		<br>
 	<div id="spawnEdit">
@@ -27,13 +30,13 @@
 			<tr>
 				<td>Tank</td> 
 				<td> 
-					<input type="number" id="prob_" name="quantity" value="20" min="1" max="100">
+					<input type="number" id="prob_tank" name="quantity" value="20" min="0" max="1">
 				</td>
 			</tr>
 			<tr>
 				<td>Flying</td> 
 				<td> 
-					<input type="number" id="prob_flying" name="quantity" min="1" max="100">
+					<input type="number" id="prob_flying" name="quantity" min="0" max="1">
 				</td>
 			</tr>
 		</table>
@@ -43,19 +46,19 @@
 			<tr>
 				<td>Level 1</td> 
 				<td> 
-					<input type="number" id="prob_lvl1" name="quantity" min="1" max="100">
+					<input type="number" id="prob_lvl1" name="quantity" min="0" max="1">
 				</td>
 			</tr>
 			<tr>
 				<td>Level 2</td> 
 				<td> 
-					<input type="number" id="prob_lvl2" name="quantity" min="1" max="100">
+					<input type="number" id="prob_lvl2" name="quantity" min="0" max="1">
 				</td>
 			</tr>
 			<tr>
 				<td>Level 3</td> 
 				<td> 
-					<input type="number" id="prob_lvl3" name="quantity" min="1" max="100">
+					<input type="number" id="prob_lvl3" name="quantity" min="0" max="1">
 				</td>
 			</tr>
 		</table>
@@ -65,12 +68,14 @@
 			<tr>
 				<td>Spawn Rate</td> 
 				<td> 
-					<input type="number" id="prob_rate" name="quantity" min="1" max="100">
+					<input type="number" id="prob_rate" name="quantity" min="1" max="500">
 				</td>
 			</tr>
 		</table>
-		<button id="espawn_save">save</button>
-		<button id="espawn_close">discard</button>
+		<br>
+		<br>
+		<button id="espawn_save">save the info</button>
+		<button id="espawn_close">discard the info</button>
 	</div>
 		
 	</div>

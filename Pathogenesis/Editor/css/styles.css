@@ -152,6 +152,10 @@ div.wall{
 	background-size: contain;
 }
 
+div#loadRates{
+	display: none;
+}
+
 div#butCont{}
 body {
     background-color: #c15f6d;

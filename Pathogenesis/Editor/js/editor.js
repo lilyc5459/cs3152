@@ -71,7 +71,6 @@ $("#close_region_editor").on("click", function() {
 //BUTTON = REGION CREATE
 $("#create_region").on("click", function() {
   addRegion(regionSel.length);
-  $("#regTools").show()
 });
 
 function addRegion(regId){
@@ -95,6 +94,7 @@ function addRegion(regId){
       $('[centerForReg'+$('#regsel').val()+'] > .centerTxt').show();
       //show relevant
   });
+  $("#regTools").show()
 }
 
 function modifyTile($cur){
@@ -246,7 +246,7 @@ function setup(){
 
     $( "#save" )
       .button()
-      .click(function() {
+      .click(function(e) {
         $( "#save-form" ).dialog( "open" );
       });
 
@@ -494,11 +494,38 @@ function loadMap (file) {
   reader.readAsText(file)
 }
 
+function loadRates (file) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    buildRates(this.result);
+  }
+  reader.readAsText(file)
+}
+
+function buildRates(inputTxt){
+  var x2js = new X2JS();
+  var rateObj = x2js.xml_str2json( inputTxt );
+  console.log(rateObj);
+
+  var MaxId = 0;
+  for (var i=0; i<rateObj.SpawnInfoArray.SpawnInfo.length; i++){
+    spawnId = rateObj.SpawnInfoArray.SpawnInfo[i].Id;
+    if (spawnId > MaxId){
+      MaxId = spawnId;
+    }
+    var newDefSpwnRates = jQuery.extend(true, {}, defSpawnerProbs);
+    newDefSpwnRates.Id = spawnId;
+    newDefSpwnRates.spawnProbs = rateObj.SpawnInfoArray.SpawnInfo[i].spawnProbs;
+    spawnRtsArr[spawnId] = newDefSpwnRates;
+  }
+  eSpawnerID = MaxId + 1;
+  $("#loadRates").hide();
+}
+
 function buildMap(inputTxt){
   //Convert input into an object
   var x2js = new X2JS();
   var levelObj = x2js.xml_str2json( inputTxt );
-  console.log(levelObj);
 
   //Clear the container
   $('#container').empty();
@@ -527,17 +554,29 @@ function buildMap(inputTxt){
     ArrayOfInt[y]=innerArr;
   }
 
-  //Loop through regions and set them
+  //Loop through regions and add area,spawners,centers
   var curReg = 0;
   for (var Region in levelObj.Level.Regions) {
-    if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].Region.RegionSet != "") {
+    if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].RegionSet != "") {
       addRegion(curReg);
-      for (var i=0; i<levelObj.Level.Regions[Region].Region.RegionSet.Vector2.length; i++){
-        xCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].X;
-        yCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].Y;
+      //Select tiles inside region and assign them the reg attribute
+      for (var i=0; i<levelObj.Level.Regions[Region].RegionSet.Vector2.length; i++){
+        xCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].X;
+        yCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].Y;
         $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
       }
+      centXcord = +levelObj.Level.Regions[Region].Center.X;
+      centYcord = +levelObj.Level.Regions[Region].Center.Y;
+      $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
+      //Loop through spawners
+      for (var j=0; j<levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint.length; j++){
+        spawnId = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Id;
+        SpawnxCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.X;
+        SpawnyCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.Y;
+        $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+      }
     }
+    
   curReg++;
   }
 
@@ -557,19 +596,21 @@ function buildMap(inputTxt){
   $('#container').width(finWidth);
   $('#container').height(finHeight);
 
+  //Get ready to load rates...
+  $('#loadRates').show();
+
   drawing();
 }
 
-//document.getElementById('file').addEventListener('change', readFile, false);
 $('#file').change(function(){
   loadMap($(this.files)[0]);
 })
 
+$('#rates').change(function(){
+  loadRates($(this.files)[0]);
+})
+
 $(function(view) {
-
-
-
-
   init();
   setup();
   $("#spawnEdit").hide();
