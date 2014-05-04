@@ -3,8 +3,8 @@ total: 180x188
 frame: 60x47
 
 ENEMY/ALLY1
-total: 98x184
-frame: 49x46
+total: 480 x 207
+frame: 60x47
 
 ENEMY/ALLY2
 total:
