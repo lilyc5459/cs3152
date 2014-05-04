@@ -73,6 +73,32 @@ $("#create_region").on("click", function() {
   addRegion(regionSel.length);
 });
 
+//BUTTON = Add Row
+$(".addRow").on("click", function() {
+  addRow();
+});
+
+function addRow(){
+  //Load width and height
+  realWidth;
+  realHeight;
+
+  //Do Math for HTML elements
+  var blockWidth = realWidth/TILE_REAL_LENGTH;
+  var blockHeight = (realHeight/TILE_REAL_LENGTH)+1;
+  finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
+  
+  for (var x=0; x<blockWidth; x++){
+    y = blockHeight;
+    $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+  }
+
+  //Set HMTL Elements
+  $(".tile").width(TILE_LENGTH);
+  $(".tile").height(TILE_LENGTH);
+  $('#container').height(finHeight);
+}
+
 function addRegion(regId){
   option = {
     id: regId,
@@ -561,7 +587,6 @@ function buildMap(inputTxt){
   for (var Region in levelObj.Level.Regions) {
     if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].RegionSet != "") {
       addRegion(curReg);
-      console.log(levelObj.Level.Regions[Region]);
       //Select tiles inside region and assign them the reg attribute
       if ('Region' in levelObj.Level.Regions[Region]) {
         for (var i=0; i<levelObj.Level.Regions[Region].Region.RegionSet.Vector2.length; i++){
@@ -606,8 +631,8 @@ function buildMap(inputTxt){
   realHeight = levelObj.Level.Width;
 
   //Do Math for HTML elements
-  var blockWidth = realWidth/TILE_REAL_LENGTH
-  var blockHeight = realHeight/TILE_REAL_LENGTH
+  var blockWidth = realWidth/TILE_REAL_LENGTH;
+  var blockHeight = realHeight/TILE_REAL_LENGTH;
   finWidth = blockWidth * TILE_BORDER + blockWidth * TILE_LENGTH;
   finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
   
