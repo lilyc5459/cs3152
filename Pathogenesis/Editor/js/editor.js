@@ -78,26 +78,55 @@ $(".addRow").on("click", function() {
   addRow();
 });
 
-function addRow(){
-  //Load width and height
-  realWidth;
-  realHeight;
+//BUTTON = Add Col
+$(".addCol").on("click", function() {
+  addCol();
+});
 
+function addRow(){
   //Do Math for HTML elements
   var blockWidth = realWidth/TILE_REAL_LENGTH;
   var blockHeight = (realHeight/TILE_REAL_LENGTH)+1;
   finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
   
   for (var x=0; x<blockWidth; x++){
-    y = blockHeight;
+    y = blockHeight-1;
     $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
   }
+
+  realHeight = blockHeight * TILE_REAL_LENGTH;
 
   //Set HMTL Elements
   $(".tile").width(TILE_LENGTH);
   $(".tile").height(TILE_LENGTH);
   $('#container').height(finHeight);
 }
+
+function addCol(){
+  console.log("adding col");
+
+  //Do Math for HTML elements
+  var blockWidth = (realWidth/TILE_REAL_LENGTH)+1;
+  var blockHeight = realHeight/TILE_REAL_LENGTH;
+  finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
+  finWidth = blockWidth * TILE_BORDER + blockWidth * TILE_LENGTH;
+
+  console.log(blockWidth);
+  for (var y=0; y<blockHeight; y++){
+    console.log(y);
+    x = blockWidth-1;
+    oldX = blockWidth-2;
+    $('.tile[x="'+oldX+'"][y="'+y+'"]').after('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+  }
+
+  realWidth = blockWidth * TILE_REAL_LENGTH;
+
+  //Set HMTL Elements
+  $(".tile").width(TILE_LENGTH);
+  $(".tile").height(TILE_LENGTH);
+  $('#container').width(finWidth);
+}
+
 
 function addRegion(regId){
   option = {
