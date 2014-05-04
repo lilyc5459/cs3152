@@ -9,7 +9,6 @@ function init() {
   realHeight = 0;
   selectedTile = 'empty';
   selectedType = 0;
-  noStart = false;
   eSpawnerArr = [];
   eSpawnerID = 0;
   advMode = false;
@@ -22,7 +21,6 @@ function init() {
     lvl2: .20,
     lvl3: .05,
     rate: 10,
-    num: 30
   }
 
   defSpawnerProbs = {
@@ -317,8 +315,7 @@ function setup(){
             $('#container').height(finHeight);
 
             $('#container').empty();
-            $('#output').empty();
-            numTiles = lvlWidth.val() * lvlHeight.val();
+
             for(var y=0; y<lvlHeight.val(); y++){
               for(var x=0; x<lvlWidth.val(); x++){
                 $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
@@ -488,7 +485,78 @@ function SaveXML(xml, filename){
   saveAs(blob, filename);
 };
 
+
+function loadMap (file) {
+  var reader = new FileReader();
+  reader.onload = function() {
+    buildMap(this.result);
+  }
+  reader.readAsText(file)
+}
+
+function buildMap(inputTxt){
+  //Convert input into an object
+  var x2js = new X2JS();
+  var levelObj = x2js.xml_str2json( inputTxt );
+  console.log(levelObj);
+
+  //Clear the container
+  $('#container').empty();
+
+  //Load Array of integers
+  for (var y = 0; y<levelObj.Level.Map.tiles.ArrayOfInt.length; y++){
+    var innerArr = new Array();
+    for (var x = 0; x<levelObj.Level.Map.tiles.ArrayOfInt[y].int.length; x++){
+      typeVal = +levelObj.Level.Map.tiles.ArrayOfInt[y].int[x];
+      innerArr.push(typeVal);
+      var className;
+      if(typeVal == 0){
+        className = "empty";
+      }
+      else if (typeVal == 1){
+        className = "wall";
+      }
+      else if (typeVal == 8){
+        className = "pStart";
+      }
+      else if (typeVal == 9){
+        className = "goalBoss";
+      }
+      $("#container").append('<div class="tile '+className+'" type="'+typeVal+'" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+    }
+    ArrayOfInt[y]=innerArr;
+  }
+
+  //Load width and height
+  realWidth = levelObj.Level.Height;
+  realHeight = levelObj.Level.Width;
+
+  //Do Math for HTML elements
+  var blockWidth = realWidth/TILE_REAL_LENGTH
+  var blockHeight = realHeight/TILE_REAL_LENGTH
+  finWidth = blockWidth * TILE_BORDER + blockWidth * TILE_LENGTH;
+  finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
+  
+  //Set HMTL Elements
+  $(".tile").width(TILE_LENGTH);
+  $(".tile").height(TILE_LENGTH);
+  $('#container').width(finWidth);
+  $('#container').height(finHeight);
+
+  drawing();
+
+}
+
+//document.getElementById('file').addEventListener('change', readFile, false);
+$('#file').change(function(){
+  loadMap($(this.files)[0]);
+})
+
 $(function(view) {
+
+
+
+
   init();
   setup();
   $("#spawnEdit").hide();
