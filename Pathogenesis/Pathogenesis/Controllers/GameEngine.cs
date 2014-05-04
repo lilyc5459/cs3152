@@ -156,20 +156,26 @@ namespace Pathogenesis
                     Random rand = new Random();
 
                     item_controller.Update();
-
-                    // Move later
-                    particle_engine.EmitterPosition = camera.Position;
-                    if (unit_controller.Player.Infecting != null)
-                    {
-                        particle_engine.GenerateParticle(1, Color.Black, unit_controller.Player.Position,
-                            unit_controller.Player.Infecting, UnitFaction.ALLY, true, false, 0, 15, 5, 12, 7);
-                    }
                     particle_engine.UpdateParticles();
 
                     // Process level environment logic
                     bool victory = level_controller.Update();
 
+                    if (menu_controller.CurDialogue == 0 &&
+                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
+                    {
+                        if (level_controller.CurLevel.Regions[0].RegionSet.Contains(new Vector2(
+                            (int)unit_controller.Player.Position.X / Map.TILE_SIZE,
+                            (int)unit_controller.Player.Position.Y / Map.TILE_SIZE)))
+                        {
+                            //tip #1
+                            game_state = GameState.PAUSED;
+                            menu_controller.LoadDialogue(0);
+                        }
+                    }
+
                     // Remove later
+                    /*
                     if (rand.NextDouble() < 0.02 && unit_controller.Units.Count < 80)
                     {
                         Vector2 pos = new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height));
@@ -186,7 +192,7 @@ namespace Pathogenesis
                                     rand.NextDouble() < 0.5 ? ItemType.PLASMID : rand.NextDouble() < 0.1 ? ItemType.ALLIES : ItemType.HEALTH));
                             }
                         }   
-                    }
+                    }*/
 
                     //
                     /* TODO: Remove DEBUG CODE HERE (remove later)

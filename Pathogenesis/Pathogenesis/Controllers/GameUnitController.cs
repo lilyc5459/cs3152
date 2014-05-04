@@ -120,6 +120,10 @@ namespace Pathogenesis
          */
         public void AddUnit(GameUnit unit)
         {
+            if (unit.Region != null)
+            {
+                unit.Region.NumUnits++;
+            }
             Units.Add(unit);
         }
 
@@ -249,7 +253,14 @@ namespace Pathogenesis
                     Player.Exists = false;
                     Player = null;
                 }
-                else Units.Remove(unit);
+                else
+                {
+                    if (unit.Region != null)
+                    {
+                        unit.Region.NumUnits--;
+                    }
+                    Units.Remove(unit);
+                }
                 PreviousPositions.Remove(unit.ID);
             }
         }
@@ -263,15 +274,21 @@ namespace Pathogenesis
         {
             foreach (Region r in level.Regions)
             {
+                if (r.NumUnits >= r.MaxUnits) continue;
+
                 foreach (SpawnPoint sp in r.SpawnPoints)
                 {
+                    if (!sp.ShouldSpawn()) continue;
+
                     UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
                     int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
 
                     if(type != null && unit_lvl != null) {
                         // Create new unit
                         GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
-                            sp.Pos + new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST, (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
+                            sp.Pos * Map.TILE_SIZE +
+                            new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
+                                        (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
                             rand.NextDouble() < IMMUNE_SPAWN_PROB);
                         if (unit != null)
                         {
@@ -378,6 +395,10 @@ namespace Pathogenesis
                     Player.InfectionPoints -= (int)INFECTION_SPEED;
                     Player.InfectionPoints = (int)MathHelper.Clamp(Player.InfectionPoints,
                         0, Player.MaxInfectionPoints);
+
+                    particle_engine.EmitterPosition = Player.Position;
+                    particle_engine.GenerateParticle(1, new Color(200, 200, 0), Player.Position,
+                        Player.Infecting, UnitFaction.ALLY, true, false, 0, 15, 5, 12, 7);
                 }
                 else
                 {
@@ -607,12 +628,12 @@ namespace Pathogenesis
                         {
                             unit.Target = Player.Position;
                         }
-                        // Pathfind pack to region center
+                        // Pathfind pack to region center if outside of region
                         else if (unit.Region != null && !unit.Region.RegionSet.Contains(new Vector2(
                                 (int)unit.Position.X / Map.TILE_SIZE,
                                 (int)unit.Position.Y / Map.TILE_SIZE)))
                         {
-                            unit.Target = unit.Region.Center;
+                            unit.Target = unit.Region.Center * Map.TILE_SIZE;
                         }
                         // Random walk
                         else if (rand.NextDouble() < RANDOM_WALK_TARGET_PROB)

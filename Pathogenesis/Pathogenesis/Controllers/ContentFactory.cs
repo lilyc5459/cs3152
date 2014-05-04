@@ -37,8 +37,10 @@ namespace Pathogenesis
             private Dictionary<String, SoundEffect> sound_effects;
             // Fonts mapped as <fontname, Spritefont>
             private Dictionary<String, SpriteFont> fonts;
-            // Menu options
+            // Menus
             private Dictionary<MenuType, Menu> menus;
+            // Dialogues
+            private Dictionary<int, Menu> dialogues;
 
             // List of levels in the order they appear in the game
             private List<Level> levels;
@@ -59,6 +61,7 @@ namespace Pathogenesis
             music = new Dictionary<string, SoundEffect>();
             sound_effects = new Dictionary<string, SoundEffect>();
             menus = new Dictionary<MenuType, Menu>();
+            dialogues = new Dictionary<int, Menu>();
             fonts = new Dictionary<string, SpriteFont>();
             levels = new List<Level>();
         }
@@ -191,6 +194,31 @@ namespace Pathogenesis
                     Console.WriteLine("Invalid MenuType while loading menu data");
                 }
             }
+
+            // Load dialogue data
+            XDocument dialogue_data = XDocument.Load("Config/dialogue_config.xml");
+            foreach (XElement menuElement in dialogue_data.Descendants("Dialogues").Elements())
+            {
+                try
+                {
+                    // Load id
+                    int id = int.Parse(menuElement.Element("Id").Value);
+                    string text = menuElement.Element("Text").Value;
+                    
+                    // Create menus
+                    MenuOption option = new MenuOption("", new Vector2(), new List<MenuOption>());
+                    List<MenuOption> options = new List<MenuOption>();
+                    options.Add(option);
+                    Menu dialogue = new Menu(MenuType.DIALOGUE,
+                        options, new List<MenuType>(), textures["solid"]);
+                    dialogue.Text = text;
+                    dialogues.Add(id, dialogue);
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine("Invalid MenuType while loading menu data");
+                }
+            }
         }
 
         // Recursively add menu options
@@ -218,15 +246,15 @@ namespace Pathogenesis
             // Load levels
             // TODO make config file for levels
             List<GameUnit> goals = new List<GameUnit>();
-            goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
-            goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
+            //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
+            //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
 
             /*
             Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
             level.PlayerStart = new Vector2(2, 2);
                 */
             Level level = null;
-            using (FileStream stream = new FileStream("level.xml", FileMode.Open))
+            using (FileStream stream = new FileStream("regiontest.xml", FileMode.Open))
             {
                 using (XmlReader reader = XmlReader.Create(stream))
                 {
@@ -234,8 +262,8 @@ namespace Pathogenesis
                     level = (Level)x.Deserialize(reader);
                 }
             }
-            level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(1300, 1300), false));
-            level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
+            //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(1300, 1300), false));
+            //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
 
             level.BackgroundTexture = textures["background"];
             level.Map.WallTexture = textures["wall"];
@@ -243,6 +271,14 @@ namespace Pathogenesis
             level.NumBosses = goals.Count;
             level.BossesDefeated = 0;
             level.PlayerStart = new Vector2(3, 3);
+
+            SpawnPoint s = new SpawnPoint(new Vector2(15, 18), 1000);
+            s.UnitProbabilities.Add(UnitType.TANK, 1);
+            s.LevelProbabilities.Add(1, 1);
+            level.Regions[0].SpawnPoints.Add(s);
+            level.Regions[0].MaxUnits = 10;
+            level.Regions[1].Center = new Vector2(5, 5);
+            level.Regions[0].Center = new Vector2(13, 16);
 
             levels.Add(level);
         }
@@ -430,14 +466,22 @@ namespace Pathogenesis
             return menus[type];
         }
 
-        /*
-            * Create menus of all menu types
-            */
+        /*  
+        * Returns menus map
+        */
         public Dictionary<MenuType, Menu> getMenus()
         {
             return menus;
         }
-            
+
+        /*
+        * Returns dialogues map
+        */
+        public Dictionary<int, Menu> getDialogues()
+        {
+            return dialogues;
+        }
+    
         /*
             * Returns the music map
             */
