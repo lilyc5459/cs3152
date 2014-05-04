@@ -349,7 +349,9 @@ function CreateSpawnRatesXML(){
   for(var i=0; i<regionSel.length; i++){
     $('[eSpawnerID'+i+']').each(function(){
        index = $(this).attr('eSpawnerID'+i);
-       objSpawnRatesArr.push(spawnRtsArr[index]);
+       if (spawnRtsArr[index] != null){
+        objSpawnRatesArr.push(spawnRtsArr[index]);
+      }
     })
   }
   if (objSpawnRatesArr != null){
@@ -559,21 +561,40 @@ function buildMap(inputTxt){
   for (var Region in levelObj.Level.Regions) {
     if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].RegionSet != "") {
       addRegion(curReg);
+      console.log(levelObj.Level.Regions[Region]);
       //Select tiles inside region and assign them the reg attribute
-      for (var i=0; i<levelObj.Level.Regions[Region].RegionSet.Vector2.length; i++){
-        xCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].X;
-        yCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].Y;
-        $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
-      }
-      centXcord = +levelObj.Level.Regions[Region].Center.X;
-      centYcord = +levelObj.Level.Regions[Region].Center.Y;
-      $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
-      //Loop through spawners
-      for (var j=0; j<levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint.length; j++){
-        spawnId = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Id;
-        SpawnxCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.X;
-        SpawnyCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.Y;
-        $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+      if ('Region' in levelObj.Level.Regions[Region]) {
+        for (var i=0; i<levelObj.Level.Regions[Region].Region.RegionSet.Vector2.length; i++){
+          xCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].X;
+          yCord = +levelObj.Level.Regions[Region].Region.RegionSet.Vector2[i].Y;
+          $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
+        }
+        centXcord = +levelObj.Level.Regions[Region].Region.Center.X;
+        centYcord = +levelObj.Level.Regions[Region].Region.Center.Y;
+        $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
+        //Loop through spawners
+        for (var j=0; j<levelObj.Level.Regions[Region].Region.SpawnPoints.SpawnPoint.length; j++){
+          spawnId = +levelObj.Level.Regions[Region].Region.SpawnPoints.SpawnPoint[j].Id;
+          SpawnxCord = +levelObj.Level.Regions[Region].Region.SpawnPoints.SpawnPoint[j].Pos.Vector2.X;
+          SpawnyCord = +levelObj.Level.Regions[Region].Region.SpawnPoints.SpawnPoint[j].Pos.Vector2.Y;
+          $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+        }
+      }else{
+        for (var i=0; i<levelObj.Level.Regions[Region].RegionSet.Vector2.length; i++){
+          xCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].X;
+          yCord = +levelObj.Level.Regions[Region].RegionSet.Vector2[i].Y;
+          $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
+        }
+        centXcord = +levelObj.Level.Regions[Region].Center.X;
+        centYcord = +levelObj.Level.Regions[Region].Center.Y;
+        $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
+        //Loop through spawners
+        for (var j=0; j<levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint.length; j++){
+          spawnId = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Id;
+          SpawnxCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.X;
+          SpawnyCord = +levelObj.Level.Regions[Region].SpawnPoints.SpawnPoint[j].Pos.Vector2.Y;
+          $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+        }
       }
     }
     
