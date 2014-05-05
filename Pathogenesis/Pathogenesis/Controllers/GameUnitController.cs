@@ -47,7 +47,7 @@ namespace Pathogenesis
         public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
         
         // Spawning parameters
-        public const float IMMUNE_SPAWN_PROB = 0.2f;
+        public const float IMMUNE_SPAWN_PROB = 0.0f;    //TODO change
         public const int RANDOM_SPAWN_DIST = 10;
 
         // Item parameters
@@ -177,12 +177,38 @@ namespace Pathogenesis
             Player.ExploredTiles = tiles;
 
             // Initial free allies
-            /*
             for (int i = 0; i < ITEM_FREE_ALLY_NUM*2; i++)
             {
                 AddAlly(null);
             }
-             * */
+
+            //Change TODO
+            foreach (Region r in level.Regions)
+            {
+                if (r.NumUnits >= r.MaxUnits) continue;
+
+                foreach (SpawnPoint sp in r.SpawnPoints)
+                {
+                    UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
+                    int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
+
+                    if (type != null && unit_lvl != null)
+                    {
+                        // Create new unit
+                        GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
+                            sp.Pos * Map.TILE_SIZE +
+                            new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
+                                        (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
+                                        rand.NextDouble() < IMMUNE_SPAWN_PROB);
+                        if (unit != null)
+                        {
+                            unit.Region = r;
+                            AddUnit(unit);
+                        }
+                    }
+                }
+            }
+
         }
         #endregion
 
@@ -299,7 +325,7 @@ namespace Pathogenesis
                             sp.Pos * Map.TILE_SIZE +
                             new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
                                         (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
-                            rand.NextDouble() < IMMUNE_SPAWN_PROB);
+                                        rand.NextDouble() < IMMUNE_SPAWN_PROB);
                         if (unit != null)
                         {
                             unit.Region = r;
@@ -634,7 +660,7 @@ namespace Pathogenesis
 
                     if (Player != null && Player.Exists) {
                         // Chase player
-                        if(Player.inRange(unit, ENEMY_CHASE_RANGE))
+                        if (Player.inRange(unit, ENEMY_CHASE_RANGE) && !level.Map.rayCastHasObstacle(unit.Position, Player.Position, unit.Size / 2))
                         {
                             unit.Target = Player.Position;
                         }
@@ -719,7 +745,7 @@ namespace Pathogenesis
                 {
                     if (rand.NextDouble() < 0.1)
                     {
-                        findTarget(unit, unit.Target, level.Map, MAX_ASTAR_DIST);
+                        findTarget(unit, unit.Target, level.Map, 1000);
                     }
                     else
                     {

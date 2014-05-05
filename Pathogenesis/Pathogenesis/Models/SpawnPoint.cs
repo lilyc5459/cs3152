@@ -52,10 +52,5 @@ namespace Pathogenesis.Models
             }
             return false;
         }
-
-        public void Activate()
-        {
-            stopwatch.Start();
-        }
     }
 }

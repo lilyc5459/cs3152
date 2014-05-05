@@ -2,6 +2,22 @@
 <Dialogues>
   <Dialogue>
     <Id>0</Id>
-    <Text>Let's infect that dude! (Hold SPACE to convert an enemy)</Text>
+    <Text1>Let's take a look around!</Text1>
+    <Text2>(Use WASD or Arrow Keys to move)</Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>1</Id>
+    <Text1>Time to work my virus magic...</Text1>
+    <Text2>(Hold SPACE to convert an enemy)</Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>2</Id>
+    <Text1>Check out that organ! Wonder what's inside...</Text1>
+    <Text2>(Infect the organ for plasmids)</Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>3</Id>
+    <Text1>Whoah, that's a big one!</Text1>
+    <Text2>(Infect the boss to win)</Text2>
   </Dialogue>
 </Dialogues>

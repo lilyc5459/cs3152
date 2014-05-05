@@ -81,6 +81,9 @@ namespace Pathogenesis.Models
                     canvas.DrawSprite(InfectTexture, new Color(30, 0, 0, 30),
                         new Rectangle((int)player.Position.X - range, (int)player.Position.Y - range, range * 2, range * 2),
                         new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
+                    canvas.DrawSprite(InfectTexture, new Color(70, 70, 0, 50),
+                        new Rectangle((int)player.Position.X - 40, (int)player.Position.Y - 40, 40 * 2, 40 * 2),
+                        new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                 }
             }
         }

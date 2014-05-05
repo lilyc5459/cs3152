@@ -29,7 +29,8 @@ namespace Pathogenesis.Models
 
         public List<MenuOption> Options { get; set; }
         public int CurSelection { get; set; }
-        public String Text { get; set; }
+        public String Text1 { get; set; }
+        public String Text2 { get; set; }
 
         public List<MenuType> Children { get; set; }
 
@@ -94,12 +95,17 @@ namespace Pathogenesis.Models
                  new Vector2((int)center.X, (int)center.Y - canvas.Height/2 + 100), "font3", true);
 
             // Draw dialogue if applicable
-            if (Type == MenuType.DIALOGUE && Text != null)
+            if (Type == MenuType.DIALOGUE && Text1 != null)
             {
-                canvas.DrawText(Text, new Color(220, 200, 80),
-                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 100), "font1", true);
-                canvas.DrawText("Press enter to continue", new Color(220, 200, 80),
-                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 50), "font1", true);
+                canvas.DrawText(Text1, new Color(220, 200, 80),
+                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 150), "font1", true);
+                if (Text2 != null)
+                {
+                    canvas.DrawText(Text2, new Color(220, 200, 80),
+                        new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 100), "font1", true);
+                }
+                canvas.DrawText("Enter >", new Color(220, 200, 80),
+                    new Vector2((int)center.X + 300, (int)center.Y + canvas.Height / 2 - 50), "font1", true);
                 return;
             }
            

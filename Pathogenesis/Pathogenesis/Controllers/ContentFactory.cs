@@ -13,6 +13,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using Pathogenesis.Controllers;
+using Microsoft.Xna.Framework.Storage;
 
 namespace Pathogenesis
 {
@@ -203,15 +204,17 @@ namespace Pathogenesis
                 {
                     // Load id
                     int id = int.Parse(menuElement.Element("Id").Value);
-                    string text = menuElement.Element("Text").Value;
-                    
+                    string text1 = menuElement.Element("Text1").Value;
+                    string text2 = menuElement.Element("Text2").Value;
+
                     // Create menus
                     MenuOption option = new MenuOption("", new Vector2(), new List<MenuOption>());
                     List<MenuOption> options = new List<MenuOption>();
                     options.Add(option);
                     Menu dialogue = new Menu(MenuType.DIALOGUE,
                         options, new List<MenuType>(), textures["solid"]);
-                    dialogue.Text = text;
+                    dialogue.Text1 = text1;
+                    dialogue.Text2 = text2;
                     dialogues.Add(id, dialogue);
                 }
                 catch (ArgumentException)
@@ -278,11 +281,14 @@ namespace Pathogenesis
                         SpawnPoint spawnPoint = null;
                         foreach (Region r in level.Regions)
                         {
+                            //TODO get rid of this
+                            r.MaxUnits = 10;
                             foreach (SpawnPoint s in r.SpawnPoints)
                             {
                                 if (s.Id == id)
                                 {
                                     spawnPoint = s;
+                                    //s.Pos = new Vector2(21, 3);
                                 }
                             }
                         }
@@ -304,6 +310,9 @@ namespace Pathogenesis
                                         break;
                                     case "lvl2":
                                         spawnPoint.LevelProbabilities.Add(2, float.Parse(prob_entry.Value));
+                                        break;
+                                    case "rate":
+                                        spawnPoint.SpawnDelay = int.Parse(prob_entry.Value);
                                         break;
                                 }
                             }
@@ -499,7 +508,7 @@ namespace Pathogenesis
             //TODO don't hardcode probabilities
             double typeProb = rand.NextDouble();
             UnitType type = UnitType.TANK;
-            if (typeProb > 0.2)
+            if (typeProb > 0.0)
             {
                 type = UnitType.TANK;
             }

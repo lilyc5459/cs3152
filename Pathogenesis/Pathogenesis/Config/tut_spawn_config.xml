@@ -1,13 +1,1 @@
-<SpawnInfoArray>
-  <SpawnInfo>
-    <spawnProbs>
-      <tank>1</tank>
-      <flying>0</flying>
-      <lvl1>1</lvl1>
-      <lvl2>0</lvl2>
-      <lvl3>0</lvl3>
-      <rate>300</rate>
-    </spawnProbs>
-    <Id>91</Id>
-  </SpawnInfo>
-</SpawnInfoArray>
+<SpawnInfoArray><SpawnInfo><spawnProbs><tank>1</tank><flying>0</flying><lvl1>1</lvl1><lvl2>0</lvl2><lvl3>0</lvl3><rate>10000</rate></spawnProbs><Id>1</Id></SpawnInfo><SpawnInfo><spawnProbs><tank>1</tank><flying>0</flying><lvl1>1</lvl1><lvl2>0</lvl2><lvl3>0</lvl3><rate>10000</rate></spawnProbs><Id>2</Id></SpawnInfo></SpawnInfoArray>
