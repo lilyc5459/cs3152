@@ -177,7 +177,7 @@ namespace Pathogenesis
             Player.ExploredTiles = tiles;
 
             // Initial free allies
-            for (int i = 0; i < ITEM_FREE_ALLY_NUM*2; i++)
+            for (int i = 0; i < ITEM_FREE_ALLY_NUM; i++)
             {
                 AddAlly(null);
             }

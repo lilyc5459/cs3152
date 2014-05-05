@@ -2,12 +2,12 @@
 <Dialogues>
   <Dialogue>
     <Id>0</Id>
-    <Text1>Let's take a look around!</Text1>
+    <Text1>Time to infect some stuff! Let's take a look around.</Text1>
     <Text2>(Use WASD or Arrow Keys to move)</Text2>
   </Dialogue>
   <Dialogue>
     <Id>1</Id>
-    <Text1>Time to work my virus magic...</Text1>
+    <Text1>Hey, look at that little guy. Let's work some virus magic...</Text1>
     <Text2>(Hold SPACE to convert an enemy)</Text2>
   </Dialogue>
   <Dialogue>

@@ -61,6 +61,7 @@ namespace Pathogenesis.Models
                     if (!unit.Exists) continue;
 
                     //Attack indicator
+                    /*
                     if (unit.AttackCoolDown != 0 && unit.Type != UnitType.FLYING && unit.Type != UnitType.BOSS)
                     {
                         int range = unit.AttackRange + unit.Size / 2;
@@ -69,6 +70,7 @@ namespace Pathogenesis.Models
                             new Rectangle((int)unit.Position.X - range, (int)unit.Position.Y - range, range * 2, range * 2),
                             new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                     }
+                     * */
                     canvas.DrawSprite(InfectTexture,
                             new Color(0, 0, 0, 100),
                             new Rectangle((int)unit.Position.X - (unit.Size+10)/2 + 10, (int)unit.Position.Y + 10, unit.Size + 10, unit.Size/2),
@@ -96,12 +98,14 @@ namespace Pathogenesis.Models
                 if (!unit.Exists) continue;
 
                 //Infected bar indicator
+                /*
                 if (unit.InfectionVitality != unit.max_infection_vitality)
                 {
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                         new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                         new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }
+                 * */
             }
             if (player == null) return;
 

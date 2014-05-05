@@ -161,6 +161,7 @@ namespace Pathogenesis
                     // Process level environment logic
                     bool victory = level_controller.Update();
 
+                    #region Tutorial
                     if (menu_controller.CurDialogue == 0 &&
                         level_controller.CurLevelNum == 0 && unit_controller.Player != null)
                     {
@@ -173,6 +174,61 @@ namespace Pathogenesis
                             menu_controller.LoadDialogue(0);
                         }
                     }
+                    if (menu_controller.CurDialogue == 1 &&
+                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
+                    {
+                        bool show = false;
+                        foreach(GameUnit unit in unit_controller.Units)
+                        {
+                            if(unit.Type == UnitType.TANK && unit.Faction == UnitFaction.ENEMY &&
+                                unit_controller.Player.inRange(unit, 250)) {
+                                show = true;
+                            }
+                        }
+                        if (show)
+                        {
+                            //tip #2
+                            game_state = GameState.PAUSED;
+                            menu_controller.LoadDialogue(1);
+                        }
+                    }
+                    if (menu_controller.CurDialogue == 2 &&
+                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
+                    {
+                        bool show = false;
+                        foreach (GameUnit unit in level_controller.CurLevel.Organs)
+                        {
+                            if (unit_controller.Player.inRange(unit, 250))
+                            {
+                                show = true;
+                            }
+                        }
+                        if (show)
+                        {
+                            //tip #3
+                            game_state = GameState.PAUSED;
+                            menu_controller.LoadDialogue(2);
+                        }
+                    }
+                    if (menu_controller.CurDialogue == 3 &&
+                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
+                    {
+                        bool show = false;
+                        foreach (GameUnit unit in level_controller.CurLevel.Bosses)
+                        {
+                            if (unit_controller.Player.inRange(unit, 250))
+                            {
+                                show = true;
+                            }
+                        }
+                        if (show)
+                        {
+                            //tip #4
+                            game_state = GameState.PAUSED;
+                            menu_controller.LoadDialogue(3);
+                        }
+                    }
+                    #endregion
 
                     // Remove later
                     /*
