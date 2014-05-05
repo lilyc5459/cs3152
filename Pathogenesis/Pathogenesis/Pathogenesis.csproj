@@ -165,10 +165,13 @@
     <Content Include="Config\font_paths.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\level1_spawn_config.xml">
+    <Content Include="Config\level_paths.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\level_paths.txt">
+    <Content Include="Config\lvl1_spawn_config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\lvl2_spawn_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\menu_config.txt">

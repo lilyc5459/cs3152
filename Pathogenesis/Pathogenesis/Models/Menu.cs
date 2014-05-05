@@ -72,7 +72,7 @@ namespace Pathogenesis.Models
                     color = new Color(20, 0, 0, 150);
                     break;
                 case MenuType.DIALOGUE:
-                    color = new Color(0, 0, 0, 100);
+                    color = new Color(50, 0, 0, 180);
                     break;
             }
 

@@ -1,5 +1,5 @@
 ﻿// Levels
 num, 10
 1, tut
-2, level1
-//3, Patho-L2
+2, lvl1
+3, lvl2

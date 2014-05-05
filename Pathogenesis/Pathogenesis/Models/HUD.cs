@@ -38,6 +38,7 @@ namespace Pathogenesis.Models
         {
             InfectTexture = infect;
             HealthBarTexture = health;
+            ConversionTexture = conversion_texture;
             Active = true;
 
             popmsg_stopwatch = new Stopwatch();
@@ -79,13 +80,15 @@ namespace Pathogenesis.Models
                 if (player != null)
                 {
                     //Infection range
+                    // new Color(30, 0, 0, 30)
                     int range = player.InfectionRange;
-                    canvas.DrawSprite(InfectTexture, new Color(30, 0, 0, 30),
+                    canvas.DrawSprite(InfectTexture, new Color(20, 20, 0, 1),
                         new Rectangle((int)player.Position.X - range, (int)player.Position.Y - range, range * 2, range * 2),
                         new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
+                    /*
                     canvas.DrawSprite(InfectTexture, new Color(70, 70, 0, 50),
                         new Rectangle((int)player.Position.X - 40, (int)player.Position.Y - 40, 40 * 2, 40 * 2),
-                        new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
+                        new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));*/
                 }
             }
         }
@@ -97,15 +100,23 @@ namespace Pathogenesis.Models
             {
                 if (!unit.Exists) continue;
 
+                if (unit.Type == UnitType.TANK && unit.InfectionVitality < unit.max_infection_vitality)
+                {
+                    int frame = (int)MathHelper.Lerp(18, 0, unit.InfectionVitality / unit.max_infection_vitality);
+                    canvas.DrawSprite(ConversionTexture, new Color(50, 100, 50) * 0.8f,
+                        new Rectangle((int)unit.Position.X - 60 / 2, (int)unit.Position.Y - 70 / 2, 60, 70),
+                        new Rectangle(frame * 83, 0, 83, 100));
+                }
+
                 //Infected bar indicator
-                /*
-                if (unit.InfectionVitality != unit.max_infection_vitality)
+                
+                if ((unit.Type == UnitType.BOSS || unit.Type == UnitType.ORGAN) && unit.InfectionVitality != unit.max_infection_vitality)
                 {
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                         new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                         new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }
-                 * */
+                
             }
             if (player == null) return;
 

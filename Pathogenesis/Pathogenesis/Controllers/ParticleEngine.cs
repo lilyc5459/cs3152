@@ -89,7 +89,8 @@ namespace Pathogenesis.Controllers
 
                 if (!isProjectile)
                 {
-                    color *= (float)(rand.NextDouble() * 150 + 100) / 250f;
+                    //color *= (float)(rand.NextDouble() * 150 + 100) / 250f;
+                    color *= (float)(rand.NextDouble() * 200 + 50) / 250f;                    
                 }
 
                 // Calculate velocity, from emitter to target, with some spread
