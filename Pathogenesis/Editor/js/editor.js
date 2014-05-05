@@ -444,8 +444,6 @@ Creating XML file
 function CreateLevelXML(){
 var x2js = new X2JS();
 
-
-
 var WallTexture = {
   name: ""
 }
@@ -490,7 +488,8 @@ Regions = [];
 //Save Region Areas
 defaultRegionJson = '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
 for(var i=0; i<regionSel.length; i++){
-  Regions[i] = JSON.parse(defaultRegionJson);
+  defRegionObj = JSON.parse(defaultRegionJson);
+  Regions[i] = defRegionObj;
   Regions[i].Region.SpawnPoints = [];
   Vector2arr = new Array();
   //loop through each relevant area block
@@ -536,14 +535,31 @@ for(var i=0; i<regionSel.length; i++){
   Regions[i].Region.Center = centerPts;
 }
 
+regionArr2 = [];
+for(var i=0; i<Regions.length; i++){
+  regionArr2.push(  
+                    { RegionSet : Regions[i].Region.RegionSet,
+                      Center : Regions[i].Region.Center,
+                      SpawnPoints : Regions[i].Region.SpawnPoints
+                    }
+                  );
+}
+
+finRegions = {
+  Region: regionArr2
+};
+
+
 //Build Level Object
-Level.Level.Regions = Regions;
+Level.Level.Regions = [];
+Level.Level.Regions = finRegions;
 Level.Level.Width = realWidth;
 Level.Level.Height = realHeight;
 Level.Level.Map = Map;
 Level.Level.BackgroundTexture = BackgroundTexture;
 
 var JSONlevel = JSON.stringify(Level);
+console.log(JSONlevel);
 var XMLlevel = x2js.json2xml_str($.parseJSON(JSONlevel));
 
 //$("#output").text(XMLlevel);
