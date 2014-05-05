@@ -132,7 +132,7 @@ namespace Pathogenesis
             {
                 for (int j = 0; j < particleGrid.GetLength(1); j++)
                 {
-                    particleGrid[j, i] = new List<Particle>();
+                    particleGrid[i, j] = new List<Particle>();
                 }
             }
             foreach (Particle p in particles)

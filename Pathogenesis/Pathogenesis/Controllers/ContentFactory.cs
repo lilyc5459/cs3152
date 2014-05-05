@@ -242,10 +242,112 @@ namespace Pathogenesis
          */
         private void LoadLevels()
         {
+            // Load Levels
+            String line;
+            StreamReader sr = new StreamReader("Config/level_paths.txt");
+            while ((line = sr.ReadLine()) != null)
+            {
+                if (line.StartsWith("num"))
+                {
+                    int num = int.Parse(line.Split(new char[] { ',' })[1].Trim());
+                    levels = new List<Level>(num);
+                    continue;
+                }
+
+                if (line.StartsWith("//")) continue;
+                String[] strings = line.Split(new char[] { ',' });
+                if (strings.Length < 2) continue;
+
+                Level level = null;
+                using (FileStream stream = new FileStream(strings[1].Trim() + ".xml", FileMode.Open))
+                {
+                    using (XmlReader reader = XmlReader.Create(stream))
+                    {
+                        XmlSerializer x = new XmlSerializer(typeof(Level));
+                        level = (Level)x.Deserialize(reader);
+                    }
+                }
+                if (level != null)
+                {
+                    // Load dialogue data
+                    XDocument spawn_data = XDocument.Load("Config/" + strings[1].Trim() + "_spawn_config.xml");
+                    foreach (XElement spawn_element in spawn_data.Descendants("SpawnInfoArray").Elements())
+                    {
+                        int id = int.Parse(spawn_element.Element("Id").Value);
+
+                        SpawnPoint spawnPoint = null;
+                        foreach (Region r in level.Regions)
+                        {
+                            foreach (SpawnPoint s in r.SpawnPoints)
+                            {
+                                if (s.Id == id)
+                                {
+                                    spawnPoint = s;
+                                }
+                            }
+                        }
+
+                        if (spawnPoint != null)
+                        {
+                            foreach (XElement prob_entry in spawn_element.Descendants("spawnProbs").Elements())
+                            {
+                                switch (prob_entry.Name.ToString())
+                                {
+                                    case "tank":
+                                        spawnPoint.UnitProbabilities.Add(UnitType.TANK, float.Parse(prob_entry.Value));
+                                        break;
+                                    case "flying":
+                                        spawnPoint.UnitProbabilities.Add(UnitType.FLYING, float.Parse(prob_entry.Value));
+                                        break;
+                                    case "lvl1":
+                                        spawnPoint.LevelProbabilities.Add(1, float.Parse(prob_entry.Value));
+                                        break;
+                                    case "lvl2":
+                                        spawnPoint.LevelProbabilities.Add(2, float.Parse(prob_entry.Value));
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+                    level.BackgroundTexture = textures["background"];
+                    List<Texture2D> wall_textures = new List<Texture2D>();
+                    wall_textures.Add(textures["wall1"]);
+                    wall_textures.Add(textures["wall2"]);
+                    wall_textures.Add(textures["wall3"]);
+                    level.Map.WallTextures = wall_textures;
+
+                    List<GameUnit> goals = new List<GameUnit>();
+                    level.Bosses = goals;
+
+                    // TODO .. this is just no
+                    for (int i = 0; i < level.Map.tiles.Length; i++)
+                    {
+                        for (int j = 0; j < level.Map.tiles[0].Length; j++)
+                        {
+                            if (level.Map.tiles[i][j] == 8)
+                            {
+                                level.PlayerStart = new Vector2(j, i);
+                            }
+                            if (level.Map.tiles[i][j] == 9)
+                            {
+                                level.NumBosses++;
+                                level.Bosses.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(j * Map.TILE_SIZE, i * Map.TILE_SIZE), false));
+                            }
+                            if (level.Map.tiles[i][j] == 7)
+                            {
+                                level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(j * Map.TILE_SIZE, i * Map.TILE_SIZE), false));
+                            }
+                        }
+                    }
+
+                    levels.Add(level);
+                }
+            }
 
             // Load levels
             // TODO make config file for levels
-            List<GameUnit> goals = new List<GameUnit>();
+
             //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(500, 1800), false));
             //goals.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(1850, 1200), false));
 
@@ -253,18 +355,11 @@ namespace Pathogenesis
             Level level = new Level(2000, 2000, textures["background"], textures["wall"], goals);
             level.PlayerStart = new Vector2(2, 2);
                 */
-            Level level = null;
-            using (FileStream stream = new FileStream("regiontest.xml", FileMode.Open))
-            {
-                using (XmlReader reader = XmlReader.Create(stream))
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(Level));
-                    level = (Level)x.Deserialize(reader);
-                }
-            }
+
             //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(1300, 1300), false));
             //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
 
+            /*
             level.BackgroundTexture = textures["background"];
             List<Texture2D> wall_textures = new List<Texture2D>();
             wall_textures.Add(textures["wall1"]);
@@ -285,6 +380,7 @@ namespace Pathogenesis
             level.Regions[0].Center = new Vector2(13, 16);
 
             levels.Add(level);
+             * */
         }
 
         public void UnloadAll()

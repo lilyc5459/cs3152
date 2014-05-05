@@ -10,6 +10,7 @@ namespace Pathogenesis.Models
 {
     public class SpawnPoint
     {
+        public int Id { get; set; }
         public Vector2 Pos { get; set; }
 
         public int SpawnDelay { get; set; }
@@ -25,6 +26,9 @@ namespace Pathogenesis.Models
         {
             stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            UnitProbabilities = new Dictionary<UnitType, float>();
+            LevelProbabilities = new Dictionary<int, float>();
         }
 
         public SpawnPoint(Vector2 pos, int spawndelay)

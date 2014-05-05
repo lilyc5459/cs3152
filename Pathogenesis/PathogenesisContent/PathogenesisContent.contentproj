@@ -421,15 +421,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Backgrounds\lightnbakgrd.png">
-      <Name>lightnbakgrd</Name>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Backgrounds\walltileneeeew.png">
+      <Name>walltileneeeew</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backgrounds\walltileneeeew.png">
-      <Name>walltileneeeew</Name>
+    <Compile Include="Backgrounds\lightbackground.png">
+      <Name>lightbackground</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

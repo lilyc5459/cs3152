@@ -49,12 +49,16 @@ namespace Pathogenesis.Models
             }
         }
         public int[][] tiles;
+        public int[][] textureTiles;
 
         public List<Texture2D> WallTextures { get; set; }
 
         private Random rand;
 
-        public Map() { }
+        public Map()
+        {
+            rand = new Random();
+        }
 
         public Map(int width, int height, List<Texture2D> wall_textures)
         {

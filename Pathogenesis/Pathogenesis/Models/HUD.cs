@@ -220,9 +220,9 @@ namespace Pathogenesis.Models
                     MINIMAP_WIDTH, MINIMAP_HEIGHT),
                 new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
 
-            for (int i = 0; i < exploredTiles.Length; i++)
+            for (int i = 0; i < exploredTiles[0].Length; i++)
             {
-                for (int j = 0; j < exploredTiles[0].Length; j++)
+                for (int j = 0; j < exploredTiles.Length; j++)
                 {
                     int x_trans = i - (int)px / Map.TILE_SIZE;
                     int y_trans = j - (int)py / Map.TILE_SIZE;
