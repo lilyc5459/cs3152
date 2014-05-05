@@ -83,6 +83,20 @@ $(".addCol").on("click", function() {
   addCol();
 });
 
+//BUTTON = Add Borders
+$(".addBorders").on("click", function() {
+  addBorders();
+});
+
+function addBorders(){
+  var blockWidth = (realWidth/TILE_REAL_LENGTH)-1;
+  var blockHeight = (realHeight/TILE_REAL_LENGTH)-1;
+  $('.tile[x="0"]').removeClass().addClass("tile").addClass("wall").attr("type",1);
+  $('.tile[y="0"]').removeClass().addClass("tile").addClass("wall").attr("type",1);
+  $('.tile[x="'+blockWidth+'"]').removeClass().addClass("tile").addClass("wall").attr("type",1);
+  $('.tile[y="'+blockHeight+'"]').removeClass().addClass("tile").addClass("wall").attr("type",1);
+}
+
 function addRow(){
   //Do Math for HTML elements
   var blockWidth = realWidth/TILE_REAL_LENGTH;
