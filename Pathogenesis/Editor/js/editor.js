@@ -534,12 +534,15 @@ for(var i=0; i<regionSel.length; i++){
 
 regionArr2 = [];
 for(var i=0; i<Regions.length; i++){
-  regionArr2.push(  
-                    { RegionSet : Regions[i].Region.RegionSet,
-                      Center : Regions[i].Region.Center,
-                      SpawnPoints : Regions[i].Region.SpawnPoints
-                    }
-                  );
+  console.log(Regions[i]);
+  if (Regions[i].Region.RegionSet != null && Regions[i].Region.RegionSet != ""){
+    regionArr2.push(  
+                      { RegionSet : Regions[i].Region.RegionSet,
+                        Center : Regions[i].Region.Center,
+                        SpawnPoints : Regions[i].Region.SpawnPoints
+                      }
+                    );
+  }
 }
 
 finRegions = {
