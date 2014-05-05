@@ -27,14 +27,15 @@ namespace Pathogenesis.Models
 
         public Level() { }
 
-        public Level(int width, int height, Texture2D bg_texture, Texture2D wall_texture, List<GameUnit> bosses)
+        public Level(int width, int height, Texture2D bg_texture,
+            List<Texture2D> wall_textures, List<GameUnit> bosses)
         {
             Width = width;
             Height = height;
 
             BackgroundTexture = bg_texture;
 
-            Map = new Map(width, height, wall_texture);
+            Map = new Map(width, height, wall_textures);
             Bosses = bosses;
             NumBosses = bosses.Count;
             BossesDefeated = 0;

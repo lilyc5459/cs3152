@@ -16,6 +16,7 @@ namespace Pathogenesis
 
         #region Fields and Properties
         public bool Alive;
+        public bool InfectEmpty { get; set; }
 
         // The position of the player's front in the direction they are going
         public Vector2 Front

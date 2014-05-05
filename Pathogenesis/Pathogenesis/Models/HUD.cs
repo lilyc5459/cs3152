@@ -16,14 +16,16 @@ namespace Pathogenesis.Models
         public const int MINIMAP_HEIGHT = 150;
 
         public const int PLAYER_MSG_TIME = 700;
+        public const int FLASH_TIME = 100;
  
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
+        public Texture2D ConversionTexture { get; set; }
 
         public static Color HEALTH_COLOR = Color.Red;
         public static Color INFECT_COLOR = Color.Red;
         public static Color FONT_COLOR = Color.Red;
-        public static Color FLASH_COLOR = Color.Red;
+        public static Color FLASH_COLOR = Color.Red * 0.5f;
 
         public bool Active { get; set; }
 
@@ -32,7 +34,7 @@ namespace Pathogenesis.Models
         private Stopwatch popmsg_stopwatch;
         private Stopwatch flash_stopwatch;
 
-        public HUD(Texture2D infect, Texture2D health)
+        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture)
         {
             InfectTexture = infect;
             HealthBarTexture = health;
@@ -101,6 +103,24 @@ namespace Pathogenesis.Models
             if (player == null) return;
 
             // Health
+            if (player.Damaged)
+            {
+                flash_stopwatch.Start();
+            }
+            if (flash_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+            {
+                flash_stopwatch.Stop();
+                flash_stopwatch.Reset();
+            }
+            if (flash_stopwatch.IsRunning)
+            {
+                float flash_time = flash_stopwatch.ElapsedMilliseconds / (float)FLASH_TIME;
+                canvas.DrawSprite(HealthBarTexture, FLASH_COLOR * (1-flash_time),
+                    new Rectangle((int)(center.X - canvas.Width / 2), (int)(center.Y - canvas.Height / 2),
+                        canvas.Width, canvas.Height),
+                    new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+            }
+
             canvas.DrawText("Health", new Color(220, 200, 80),
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
                 "font2", false);

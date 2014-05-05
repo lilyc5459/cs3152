@@ -50,11 +50,13 @@ namespace Pathogenesis.Models
         }
         public int[][] tiles;
 
-        public Texture2D WallTexture { get; set; }
+        public List<Texture2D> WallTextures { get; set; }
+
+        private Random rand;
 
         public Map() { }
 
-        public Map(int width, int height, Texture2D wall_texture)
+        public Map(int width, int height, List<Texture2D> wall_textures)
         {
             int[][] tiles = new int[height / TILE_SIZE][];
             for (int k = 0; k < tiles.Length; k++)
@@ -65,14 +67,9 @@ namespace Pathogenesis.Models
             Width = width;
             Height = height;
 
-            WallTexture = wall_texture;
+            WallTextures = wall_textures;
 
-            //test
-            setTiles(tiles);
-        }
-
-        public void setTiles(int[][] tiles)
-        {
+            rand = new Random();
         }
 
         #region Map Methods
@@ -199,6 +196,8 @@ namespace Pathogenesis.Models
         #region Draw
         public void Draw(GameCanvas canvas)
         {
+            Texture2D texture = WallTextures[0];
+
             for (int i = 0; i < tiles.Length; i++)
             {
                 for (int j = 0; j < tiles[0].Length; j++)
@@ -213,9 +212,9 @@ namespace Pathogenesis.Models
 
                     if (tiles[i][j] == 1)
                     {
-                        canvas.DrawSprite(WallTexture, Color.White,
+                        canvas.DrawSprite(texture, Color.White,
                             new Rectangle(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE),
-                            new Rectangle(0, 0, WallTexture.Width, WallTexture.Height));
+                            new Rectangle(0, 0, texture.Width, texture.Height));
                     }
                 }
             }

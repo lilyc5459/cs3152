@@ -266,7 +266,11 @@ namespace Pathogenesis
             //level.Organs.Add(createUnit(UnitType.ORGAN, UnitFaction.ENEMY, 1, new Vector2(500, 500), false));
 
             level.BackgroundTexture = textures["background"];
-            level.Map.WallTexture = textures["wall"];
+            List<Texture2D> wall_textures = new List<Texture2D>();
+            wall_textures.Add(textures["wall1"]);
+            wall_textures.Add(textures["wall2"]);
+            wall_textures.Add(textures["wall3"]);
+            level.Map.WallTextures = wall_textures;
             level.Bosses = goals;
             level.NumBosses = goals.Count;
             level.BossesDefeated = 0;
@@ -304,7 +308,7 @@ namespace Pathogenesis
 
         public HUD createHUD(Player player)
         {
-            return new HUD(textures["infect_range"], textures["health_bar"]);
+            return new HUD(textures["infect_range"], textures["health_bar"], textures["conversion_sheet"]);
         }
         
         // Returns an instance of a unit of the given type and faction
