@@ -10,16 +10,16 @@
 
   <Character>
     <Name>tank1</Name>
-    <FrameWidth>49</FrameWidth>
-    <FrameHeight>46</FrameHeight>
+    <FrameWidth>60</FrameWidth>
+    <FrameHeight>47</FrameHeight>
     <NumFrames>2</NumFrames>
     <FrameSpeed>15</FrameSpeed>
   </Character>
 
   <Character>
     <Name>tank2</Name>
-    <FrameWidth>70</FrameWidth>
-    <FrameHeight>81</FrameHeight>
+    <FrameWidth>60</FrameWidth>
+    <FrameHeight>47</FrameHeight>
     <NumFrames>3</NumFrames>
     <FrameSpeed>10</FrameSpeed>
   </Character>

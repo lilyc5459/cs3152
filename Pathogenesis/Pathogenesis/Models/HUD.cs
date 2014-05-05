@@ -20,11 +20,17 @@ namespace Pathogenesis.Models
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
 
+        public static Color HEALTH_COLOR = Color.Red;
+        public static Color INFECT_COLOR = Color.Red;
+        public static Color FONT_COLOR = Color.Red;
+        public static Color FLASH_COLOR = Color.Red;
+
         public bool Active { get; set; }
 
-        public String PlayerMsg { get; set; }         // Floating msg indicator above player
+        public String PopMsg { get; set; }         // Floating msg indicator above player
 
-        private Stopwatch stopwatch;
+        private Stopwatch popmsg_stopwatch;
+        private Stopwatch flash_stopwatch;
 
         public HUD(Texture2D infect, Texture2D health)
         {
@@ -32,7 +38,8 @@ namespace Pathogenesis.Models
             HealthBarTexture = health;
             Active = true;
 
-            stopwatch = new Stopwatch();
+            popmsg_stopwatch = new Stopwatch();
+            flash_stopwatch = new Stopwatch();
         }
 
         public void Update(InputController input_controller)
@@ -92,6 +99,7 @@ namespace Pathogenesis.Models
                 }
             }
             if (player == null) return;
+
             // Health
             canvas.DrawText("Health", new Color(220, 200, 80),
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
@@ -129,57 +137,57 @@ namespace Pathogenesis.Models
                     switch (item.Type)
                     {
                         case ItemType.PLASMID:
-                            PlayerMsg = "+Infection!";
+                            PopMsg = "+Infection!";
                             break;
                         case ItemType.HEALTH:
-                            PlayerMsg = "+Health!";
+                            PopMsg = "+Health!";
                             break;
                         case ItemType.ATTACK:
-                            PlayerMsg = "Allies +Attack!";
+                            PopMsg = "Allies +Attack!";
                             break;
                         case ItemType.ALLIES:
-                            PlayerMsg = "+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!";
+                            PopMsg = "+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!";
                             break;
                         case ItemType.RANGE:
-                            PlayerMsg = "+Range!";
+                            PopMsg = "+Range!";
                             break;
                         case ItemType.SPEED:
-                            PlayerMsg = "+Speed!";
+                            PopMsg = "+Speed!";
                             break;
                         case ItemType.MAX_HEALTH:
-                            PlayerMsg = "+Max Health!";
+                            PopMsg = "+Max Health!";
                             break;
                         case ItemType.MAX_INFECT:
-                            PlayerMsg = "+Max Infect!";
+                            PopMsg = "+Max Infect!";
                             break;
                         case ItemType.INFECT_REGEN:
-                            PlayerMsg = "+Infect Regen!";
+                            PopMsg = "+Infect Regen!";
                             break;
                         case ItemType.MYSTERY:
-                            PlayerMsg = "+Mystery!";
+                            PopMsg = "+Mystery!";
                             break;
                         default:
-                            PlayerMsg = "wat";
+                            PopMsg = "wat";
                             break;
                     }
                 }
-                stopwatch.Start();
+                popmsg_stopwatch.Start();
             }
 
-            if (PlayerMsg != null)
+            if (PopMsg != null)
             {
-                float time = stopwatch.ElapsedMilliseconds/(float)PLAYER_MSG_TIME;
-                canvas.DrawText(PlayerMsg,
-                    new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, time)/250),
-                    new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, time)),
+                float pop_time = popmsg_stopwatch.ElapsedMilliseconds / (float)PLAYER_MSG_TIME;
+                canvas.DrawText(PopMsg,
+                    new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, pop_time) / 250),
+                    new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, pop_time)),
                     "font2", true);
             }
 
-            if (stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+            if (popmsg_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
             {
-                stopwatch.Stop();
-                stopwatch.Reset();
-                PlayerMsg = null;
+                popmsg_stopwatch.Stop();
+                popmsg_stopwatch.Reset();
+                PopMsg = null;
             }
 
             // Draw minimap

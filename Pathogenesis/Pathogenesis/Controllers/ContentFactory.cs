@@ -276,7 +276,7 @@ namespace Pathogenesis
             s.UnitProbabilities.Add(UnitType.TANK, 1);
             s.LevelProbabilities.Add(1, 1);
             level.Regions[0].SpawnPoints.Add(s);
-            level.Regions[0].MaxUnits = 10;
+            level.Regions[0].MaxUnits = 1;
             level.Regions[1].Center = new Vector2(5, 5);
             level.Regions[0].Center = new Vector2(13, 16);
 

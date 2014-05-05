@@ -99,9 +99,24 @@ namespace Pathogenesis
         public int AttackRange { get; set; }
         public int AttackLockRange { get; set; }
         public GameUnit Attacking { get; set; }     // currently targetting this unit
+        public bool AttackingNow { get; set; }      // Used to indicate for animation
+        public bool AnimateAttack { get; set; }
 
         // Unit stat fields
-        public float Health { get; set; }
+        private float health;
+        public float Health
+        {
+            get { return health; }
+            set {
+                if (value < health) Damaged = true;
+                health = value;
+            }
+        }
+        public bool Damaged { get; set; }   // Used to indicate for animation
+        public bool AnimateDamage { get; set; }  // omg
+        public bool Dying { get; set; }     // Used to indicate for animation
+        public bool AnimateDying { get; set; }  // omg
+        public bool Dead { get; set; }      // Used to mark for deletion
         public float InfectionVitality { get; set; }
 
         public int Attack { get; set; }
@@ -218,7 +233,8 @@ namespace Pathogenesis
         // Increments animation frame according to the specified speed
         public void UpdateAnimation()
         {
-            if (NumFrames > 0 && (Vel.Length() > 0 || Vel.Length() == 0 && AnimateResting))
+            if (NumFrames > 0 && (Vel.Length() > 0 || AnimateDying || AnimateAttack || AnimateDamage
+                || Vel.Length() == 0 && AnimateResting))
             {
                 FrameTimeCounter++;
                 if (FrameTimeCounter >= FrameSpeed)
@@ -244,6 +260,8 @@ namespace Pathogenesis
         {
             Texture2D texture = Texture;
             int facingFrame = 0;
+            int startFrame = 0;
+            int numFrames = NumFrames;
 
             if (FrameSpeed > 0)
             {
@@ -278,13 +296,70 @@ namespace Pathogenesis
                 color = Color.Gray;
             }
 
+            if (AnimateAttack)
+            {
+                startFrame = 4;
+                if (Frame != 0)
+                {
+                    AttackingNow = false;
+                }
+                if (Frame == 0 && !AttackingNow)
+                {
+                    AnimateAttack = false;
+                }
+            }
+            if (AttackingNow)
+            {
+                Frame = 0;
+                AnimateAttack = true;
+            }
+
+            if (AnimateDamage)
+            {
+                startFrame = 2;
+                if (Frame != 0)
+                {
+                    Damaged = false;
+                }
+                if (Frame == 0 && !Damaged)
+                {
+                    AnimateDamage = false;
+                }
+            }
+            if (Damaged)
+            {
+                Frame = 0;
+                AnimateDamage = true;
+            }
+
+            if (AnimateDying)
+            {
+                startFrame = 6;
+                if(Frame != 0)
+                {
+                    Dying = false;
+                }
+                if (Frame == 0 && !Dying)
+                {
+                    Dead = true;
+                }
+            }
+            if (Dying)
+            {
+                Frame = 0;
+                AnimateDying = true;
+            }
+
             //TEMP
             if (NumFrames > 1)
             {
                 canvas.DrawSprite(texture, color,
                     new Rectangle((int)(Position.X - FrameSize.X / 2), (int)(Position.Y - FrameSize.Y / 2),
                         (int)FrameSize.X, (int)FrameSize.Y),
-                    new Rectangle(Frame * (int)FrameSize.X + 1, facingFrame * (int)FrameSize.Y + 1, (int)FrameSize.X-2, (int)FrameSize.Y-2));
+                    new Rectangle((startFrame + Frame) * (int)FrameSize.X + 1,
+                                facingFrame * (int)FrameSize.Y + 1,
+                                (int)FrameSize.X-2,
+                                (int)FrameSize.Y-2));
             }
             else
             {

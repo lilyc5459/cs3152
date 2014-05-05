@@ -177,10 +177,12 @@ namespace Pathogenesis
             Player.ExploredTiles = tiles;
 
             // Initial free allies
+            /*
             for (int i = 0; i < ITEM_FREE_ALLY_NUM*2; i++)
             {
                 AddAlly(null);
             }
+             * */
         }
         #endregion
 
@@ -216,6 +218,13 @@ namespace Pathogenesis
             // Execute moves and actions
             foreach (GameUnit unit in Units)
             {
+                // Handle dead unit
+                if (unit.Dead)
+                {
+                    DeadUnits.Add(unit);
+                    continue;
+                }
+
                 // Set next moves
                 if (unit.Faction == UnitFaction.ALLY)
                 {
@@ -239,6 +248,7 @@ namespace Pathogenesis
 
             // Spawn units from level
             SpawnUnits(level);
+
             // Spawning from other sources
             foreach (GameUnit unit in SpawnedUnits)
             {
@@ -716,7 +726,6 @@ namespace Pathogenesis
                         unit.NextMove = prev_move;
                     }
                 }
-
             }
         }
 
@@ -1043,6 +1052,7 @@ namespace Pathogenesis
         {
             if (victim.Invulnerable) return;
 
+            if(!aggressor.AnimateAttack) aggressor.AttackingNow = true;
             aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
             if (aggressor.Type == UnitType.TANK)
             {
@@ -1133,9 +1143,9 @@ namespace Pathogenesis
                 unit.Health -= ALLY_ATTRITION;
             }
             // Check health
-            if (unit.Health <= 0)
+            if (unit.Health <= 0 && !unit.AnimateDying)
             {
-                DeadUnits.Add(unit);
+                unit.Dying = true;
             }
         }
 

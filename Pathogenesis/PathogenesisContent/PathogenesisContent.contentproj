@@ -167,13 +167,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\enemy1\enemy1.png">
-      <Name>enemy1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Characters\enemy2\enemy2.png">
       <Name>enemy2</Name>
       <Importer>TextureImporter</Importer>
@@ -314,6 +307,7 @@
     <Folder Include="Characters\ally1\" />
     <Folder Include="Characters\ally2\" />
     <Folder Include="Characters\ally3\" />
+    <Folder Include="Characters\enemy1\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\health.png">
