@@ -456,10 +456,8 @@ var BackgroundTexture = {
 
 var defSpawnPntObj = {
   Pos : {
-    Vector2 : {
-      X: -1,
-      Y: -1
-    }
+    X : -1,
+    Y : -1
   },
   Id : -1
 }
@@ -496,8 +494,8 @@ for(var i=0; i<regionSel.length; i++){
     var index  = $(this).attr('eSpawnerID'+i);
     var newDefSpawnObject = jQuery.extend(true, {}, defSpawnObj);
     eSpawnerArr[index] = newDefSpawnObject;
-    eSpawnerArr[index].SpawnPoint.Pos.Vector2.X = $(this).attr('x');
-    eSpawnerArr[index].SpawnPoint.Pos.Vector2.Y = $(this).attr('y');
+    eSpawnerArr[index].SpawnPoint.Pos.X = $(this).attr('x');
+    eSpawnerArr[index].SpawnPoint.Pos.Y = $(this).attr('y');
     eSpawnerArr[index].SpawnPoint.Id = index;
     //If object not empty, push
     if(!jQuery.isEmptyObject(eSpawnerArr[index].SpawnPoint)){
@@ -652,8 +650,13 @@ function buildLevel(inputTxt){
       console.log(splength);
       for (var k=0; k<splength; k++){
         spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Id;
-        SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.X;
-        SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.Y;
+        if ($('#legacyCkBx').prop( "checked" )){
+          SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.X;
+          SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.Y;
+        }else{
+          SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.X;
+          SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Y;
+        }
         $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
       }
     }
