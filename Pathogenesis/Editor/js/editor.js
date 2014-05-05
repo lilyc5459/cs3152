@@ -687,8 +687,8 @@ function buildLevel(inputTxt){
   }
 
   //Load width and height
-  realWidth = levelObj.Level.Height;
-  realHeight = levelObj.Level.Width;
+  realWidth = levelObj.Level.Width;
+  realHeight = levelObj.Level.Height;
 
   //Do Math for HTML elements
   var blockWidth = realWidth/TILE_REAL_LENGTH;
