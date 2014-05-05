@@ -1,0 +1,15 @@
+MAIN
+total: 180x188
+frame: 60x47
+
+ENEMY/ALLY1
+total: 98x184
+frame: 49x46
+
+ENEMY/ALLY2
+total:
+frame:
+
+ENEMY/ALLY3
+total: 138x268
+frame: 69x67
