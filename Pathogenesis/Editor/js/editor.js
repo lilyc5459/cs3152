@@ -630,37 +630,86 @@ function buildLevel(inputTxt){
   //Loop through regions and add area,spawners,centers
   var curReg = 0;
   console.log(levelObj.Level);
-  for (var j=0; j<levelObj.Level.Regions.Region.length; j++) {
-    //Select tiles inside region and assign them the reg attribute
-    if (levelObj.Level.Regions.Region[j].RegionSet != "") {
-      console.log(curReg);
-      addRegion(curReg);
-      console.log(levelObj.Level.Regions);
-      for (var i=0; i<levelObj.Level.Regions.Region[j].RegionSet.Vector2.length; i++){
-        xCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].X;
-        yCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].Y;
-        $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
-      }
-      centXcord = +levelObj.Level.Regions.Region[j].Center.X;
-      centYcord = +levelObj.Level.Regions.Region[j].Center.Y;
-      $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
-      //Loop through spawners  -- other thing
-      console.log("j :"+j);
-      splength = levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.length;
-      console.log(splength);
-      for (var k=0; k<splength; k++){
-        spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Id;
-        if ($('#legacyCkBx').prop( "checked" )){
-          SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.X;
-          SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.Y;
-        }else{
-          SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.X;
-          SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Y;
+  if ($.isArray(levelObj.Level.Regions.Region)){
+    for (var j=0; j<levelObj.Level.Regions.Region.length; j++) {
+      //Select tiles inside region and assign them the reg attribute
+      if (levelObj.Level.Regions.Region[j].RegionSet != "") {
+        addRegion(curReg);
+        for (var i=0; i<levelObj.Level.Regions.Region[j].RegionSet.Vector2.length; i++){
+          xCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].X;
+          yCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].Y;
+          $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
         }
-        $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+        centXcord = +levelObj.Level.Regions.Region[j].Center.X;
+        centYcord = +levelObj.Level.Regions.Region[j].Center.Y;
+        $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
+        //Loop through spawners  -- other thing
+        if ($.isArray(levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint)){
+          splength = levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.length;
+          for (var k=0; k<splength; k++){
+            spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Id;
+            if ($('#legacyCkBx').prop( "checked" )){
+              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.X;
+              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Vector2.Y;
+            }else{
+              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.X;
+              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint[k].Pos.Y;
+            }
+            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+          }
+        }else{
+          spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Id;
+          if ($('#legacyCkBx').prop( "checked" )){
+            SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.X;
+            SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+          }else{
+            SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.X;
+            SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Y;
+          }
+          $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+        }
       }
+    curReg++;
     }
-  curReg++;
+  }else{
+      //Select tiles inside region and assign them the reg attribute
+      if (levelObj.Level.Regions.Region.RegionSet != "") {
+        addRegion(curReg);
+        for (var i=0; i<levelObj.Level.Regions.Region.RegionSet.Vector2.length; i++){
+          xCord = +levelObj.Level.Regions.Region.RegionSet.Vector2[i].X;
+          yCord = +levelObj.Level.Regions.Region.RegionSet.Vector2[i].Y;
+          $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
+        }
+        centXcord = +levelObj.Level.Regions.Region.Center.X;
+        centYcord = +levelObj.Level.Regions.Region.Center.Y;
+        $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
+        //Loop through spawners  -- other thing
+        if ($.isArray(levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint)){
+          splength = levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.length;
+          for (var k=0; k<splength; k++){
+            spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint[k].Id;
+            if ($('#legacyCkBx').prop( "checked" )){
+              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint[k].Pos.Vector2.X;
+              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint[k].Pos.Vector2.Y;
+            }else{
+              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint[k].Pos.X;
+              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint[k].Pos.Y;
+            }
+            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+          }
+        }else{
+          spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Id;
+          if ($('#legacyCkBx').prop( "checked" )){
+            SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.X;
+            SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+          }else{
+            SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.X;
+            SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Y;
+          }
+          $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
+        }
+      }
+    curReg++;
   }
 
   //Load width and height
