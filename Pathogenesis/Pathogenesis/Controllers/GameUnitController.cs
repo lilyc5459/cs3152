@@ -715,7 +715,8 @@ namespace Pathogenesis
                                 {
                                     unit.Attacking = Player;
                                 }
-                                if (Player.inRange(unit, ENEMY_CHASE_RANGE))
+                                if (Player.inRange(unit, ENEMY_CHASE_RANGE) &&
+                                    !level.Map.rayCastHasObstacle(unit.Position, Player.Position, unit.Size/2))
                                 {
                                     unit.Target = Player.Position;
                                 }

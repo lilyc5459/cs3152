@@ -82,7 +82,7 @@ namespace Pathogenesis.Models
                     //Infection range
                     // new Color(30, 0, 0, 30)
                     int range = player.InfectionRange;
-                    canvas.DrawSprite(InfectTexture, new Color(20, 20, 0, 1),
+                    canvas.DrawSprite(InfectTexture, new Color(24, 24, 0, 1),
                         new Rectangle((int)player.Position.X - range, (int)player.Position.Y - range, range * 2, range * 2),
                         new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                     /*
