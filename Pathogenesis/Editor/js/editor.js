@@ -117,7 +117,6 @@ function addRow(){
 }
 
 function addCol(){
-  console.log("adding col");
 
   //Do Math for HTML elements
   var blockWidth = (realWidth/TILE_REAL_LENGTH)+1;
@@ -125,9 +124,7 @@ function addCol(){
   finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
   finWidth = blockWidth * TILE_BORDER + blockWidth * TILE_LENGTH;
 
-  console.log(blockWidth);
   for (var y=0; y<blockHeight; y++){
-    console.log(y);
     x = blockWidth-1;
     oldX = blockWidth-2;
     $('.tile[x="'+oldX+'"][y="'+y+'"]').after('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
@@ -559,7 +556,6 @@ Level.Level.Map = Map;
 Level.Level.BackgroundTexture = BackgroundTexture;
 
 var JSONlevel = JSON.stringify(Level);
-console.log(JSONlevel);
 var XMLlevel = x2js.json2xml_str($.parseJSON(JSONlevel));
 
 //$("#output").text(XMLlevel);
@@ -576,7 +572,7 @@ function SaveXML(xml, filename){
 function loadMap (file) {
   var reader = new FileReader();
   reader.onload = function() {
-    buildMap(this.result);
+    buildLevel(this.result);
   }
   reader.readAsText(file)
 }
@@ -592,7 +588,6 @@ function loadRates (file) {
 function buildRates(inputTxt){
   var x2js = new X2JS();
   var rateObj = x2js.xml_str2json( inputTxt );
-  console.log(rateObj);
 
   var MaxId = 0;
   for (var i=0; i<rateObj.SpawnInfoArray.SpawnInfo.length; i++){
@@ -609,14 +604,13 @@ function buildRates(inputTxt){
   $("#loadRates").hide();
 }
 
-function buildMap(inputTxt){
+function buildLevel(inputTxt){
   //Convert input into an object
   var x2js = new X2JS();
   var levelObj = x2js.xml_str2json( inputTxt );
 
   //Clear the container
   $('#container').empty();
-
   //Load Array of integers
   for (var y = 0; y<levelObj.Level.Map.tiles.ArrayOfInt.length; y++){
     var innerArr = new Array();
@@ -647,6 +641,7 @@ function buildMap(inputTxt){
   //Loop through regions and add area,spawners,centers
   var curReg = 0;
   for (var Region in levelObj.Level.Regions) {
+    console.log(levelObj.Level.Regions[Region]);
     if (levelObj.Level.Regions.hasOwnProperty(Region) && levelObj.Level.Regions[Region].RegionSet != "") {
       addRegion(curReg);
       //Select tiles inside region and assign them the reg attribute
