@@ -617,6 +617,9 @@ function buildMap(inputTxt){
       else if (typeVal == 8){
         className = "pStart";
       }
+      else if (typeVal == 7){
+        className = "itemHolder";
+      }
       else if (typeVal == 9){
         className = "goalBoss";
       }
