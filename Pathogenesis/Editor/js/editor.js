@@ -113,6 +113,7 @@ function addRow(){
   
   for (var x=0; x<blockWidth; x++){
     y = blockHeight-1;
+    ArrayOfInt[x][y] = 0;
     $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
   }
 
@@ -132,13 +133,26 @@ function addCol(){
   finHeight = blockHeight * TILE_BORDER + blockHeight * TILE_LENGTH;
   finWidth = blockWidth * TILE_BORDER + blockWidth * TILE_LENGTH;
 
+
+  //Create empty inner arrays
+  intArr =  new Array(blockWidth);
+  for(var k=0; k<blockWidth; k++){
+    intArr[k] = 0;
+  }
+
+  int = intArr.slice(0);
+
   for (var y=0; y<blockHeight; y++){
     x = blockWidth-1;
     oldX = blockWidth-2;
+    ArrayOfInt[x] = int;
+    ArrayOfInt[x][y] = 0;
     $('.tile[x="'+oldX+'"][y="'+y+'"]').after('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
   }
 
   realWidth = blockWidth * TILE_REAL_LENGTH;
+
+
 
   //Set HMTL Elements
   $(".tile").width(TILE_LENGTH);
