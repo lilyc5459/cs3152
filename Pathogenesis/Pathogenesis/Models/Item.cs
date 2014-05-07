@@ -31,10 +31,13 @@ namespace Pathogenesis
 
         public ItemType Type { get; set; }
 
+        public bool Destroyed { get; set; }
+
         public Item(Texture2D texture, ItemType type)
         {
             Texture = texture;
             Type = type;
+            Size = ITEM_SIZE;
 
             Decel = 0.4f;
         }
@@ -58,6 +61,18 @@ namespace Pathogenesis
                     break;
                 case ItemType.RANGE:
                     color = Color.Orange;
+                    break;
+                case ItemType.MAX_HEALTH:
+                    color = Color.IndianRed;
+                    break;
+                case ItemType.MAX_INFECT:
+                    color = Color.RoyalBlue;
+                    break;
+                case ItemType.INFECT_REGEN:
+                    color = Color.Aqua;
+                    break;
+                case ItemType.MYSTERY:
+                    color = Color.Black;
                     break;
                 case ItemType.SPEED:
                     color = Color.Yellow;

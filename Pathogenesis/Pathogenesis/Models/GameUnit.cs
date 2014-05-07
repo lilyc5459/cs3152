@@ -87,7 +87,6 @@ namespace Pathogenesis
         public Vector2 Target { get; set; }
         public Vector2 NextMove { get; set; }
 
-        public int Size { get; set; }
         public float Mass { get; set; }
 
         // Unit type data
@@ -103,15 +102,7 @@ namespace Pathogenesis
         public bool AnimateAttack { get; set; }
 
         // Unit stat fields
-        private float health;
-        public float Health
-        {
-            get { return health; }
-            set {
-                if (value < health) Damaged = true;
-                health = value;
-            }
-        }
+        public float Health { get; set; }
         public bool Damaged { get; set; }   // Used to indicate for animation
         public bool AnimateDamage { get; set; }  // omg
         public bool Dying { get; set; }     // Used to indicate for animation

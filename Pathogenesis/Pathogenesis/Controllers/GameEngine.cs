@@ -293,7 +293,7 @@ namespace Pathogenesis
 
                     // Process and handle collisions
                     collision_controller.Update(unit_controller.Units, unit_controller.Player, unit_controller.PreviousPositions,
-                        level_controller.CurLevel, item_controller);
+                        level_controller.CurLevel, item_controller.Items, item_controller.PreviousPositions);
 
                     // Update the HUD
                     HUD_display.Update(input_controller);

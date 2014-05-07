@@ -543,6 +543,7 @@ namespace Pathogenesis
                     item = new Item(textures["health"], type);
                     break;
                 default:
+                    item = new Item(textures["health"], type);
                     break;
             }
             if (item != null)

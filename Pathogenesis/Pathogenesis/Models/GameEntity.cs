@@ -23,6 +23,7 @@ namespace Pathogenesis
                 return new Vector2((int)Position.X / Map.TILE_SIZE, (int)Position.Y / Map.TILE_SIZE);
             }
         }
+        public int Size { get; set; }
 
         // Movement
         public Vector2 Vel { get; set; }
