@@ -12,6 +12,7 @@ namespace Pathogenesis.Models
         public Map Map { get; set; }
 
         public Texture2D BackgroundTexture { get; set; }
+        public Texture2D TitleTexture { get; set; }
 
         // Dimensions in pixels
         public int Width { get; set; }
@@ -27,13 +28,14 @@ namespace Pathogenesis.Models
 
         public Level() { }
 
-        public Level(int width, int height, Texture2D bg_texture,
+        public Level(int width, int height, Texture2D title_texture, Texture2D bg_texture,
             List<Texture2D> wall_textures, List<GameUnit> bosses)
         {
             Width = width;
             Height = height;
 
             BackgroundTexture = bg_texture;
+            TitleTexture = title_texture;
 
             Map = new Map(width, height, wall_textures);
             Bosses = bosses;
@@ -67,6 +69,18 @@ namespace Pathogenesis.Models
                 }
             }
             Map.Draw(canvas);
+        }
+
+        /*
+         * Draw the title screen for this level
+         */
+        public void DrawTitle(GameCanvas canvas, Vector2 center)
+        {
+            canvas.DrawSprite(TitleTexture, new Color(90, 0, 0),
+                new Rectangle((int)(center.X - canvas.Width/2), (int)(center.Y - canvas.Height/2),
+                    canvas.Width, canvas.Height),
+                new Rectangle(0, 0, TitleTexture.Width, TitleTexture.Height));
+            canvas.DrawText("The Level Title. Woooo!", Menu.fontColor, center, "font3", true);
         }
     }
 }

@@ -31,6 +31,11 @@ namespace Pathogenesis
         }
 
         #region Methods
+        public void NextLevel2()
+        {
+            CurLevelNum++;
+        }
+
         /*
          * Loads the next level
          */
@@ -58,6 +63,21 @@ namespace Pathogenesis
         }
 
         /*
+         * Starts the current level
+         */
+        public void StartLevel(SoundController sound_controller)
+        {
+            switch (CurLevelNum)
+            {
+                case 0:
+                    sound_controller.loop(SoundType.MUSIC, "music1");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*
          * Loads the specified level
          */
         public void LoadLevel(ContentFactory factory, GameUnitController unit_controller, 
@@ -69,15 +89,6 @@ namespace Pathogenesis
             item_controller.Reset();
             unit_controller.Reset();
             unit_controller.SetLevel(CurLevel);
-            
-            switch (level_num)
-            {
-                case 0:
-                    sound_controller.loop(SoundType.MUSIC, "music1");
-                    break;
-                default:
-                    break;
-            }
         }
 
         /*
@@ -111,5 +122,9 @@ namespace Pathogenesis
             CurLevel.Draw(canvas);
         }
 
+        public void DrawTitle(GameCanvas canvas, Vector2 center)
+        {
+            CurLevel.DrawTitle(canvas, center);
+        }
     }
 }

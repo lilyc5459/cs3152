@@ -184,7 +184,7 @@ namespace Pathogenesis.Controllers
                                 LoadMenu(MenuType.OPTIONS);
                                 break;
                             case "Quit to Menu":
-                                engine.fadeTo(GameState.MAIN_MENU);
+                                engine.fadeTo(GameState.MENU);
                                 break;
                         }
                         break;
@@ -200,7 +200,7 @@ namespace Pathogenesis.Controllers
                         switch (curSelection)
                         {
                             case "Continue":
-                                engine.fadeTo(GameState.IN_GAME);
+                                engine.fadeTo(GameState.LOADING, 50, 80);
                                 break;
                         }
                         break;
@@ -211,7 +211,7 @@ namespace Pathogenesis.Controllers
                                 engine.fadeTo(GameState.IN_GAME);
                                 break;
                             case "Quit to Menu":
-                                engine.fadeTo(GameState.MAIN_MENU);
+                                engine.fadeTo(GameState.MENU);
                                 break;
                         }
                         break;

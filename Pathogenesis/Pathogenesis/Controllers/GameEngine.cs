@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Pathogenesis.Models;
 using Pathogenesis.Controllers;
+using System.Diagnostics;
 
 namespace Pathogenesis
 {
@@ -19,11 +20,12 @@ namespace Pathogenesis
      */ 
     public enum GameState
     {
-        MAIN_MENU,  // Player is at the main menu
+        MENU,       // Player is in a menu
         IN_GAME,    // Player is playing the game
         VICTORY,    // Player has completed the level
         LOSE,       // Player has died
-        PAUSED      // Player has activated the pause menu
+        PAUSED,      // Game is paused
+        LOADING     // Game or level is loading
     }
     #endregion
 
@@ -49,6 +51,9 @@ namespace Pathogenesis
 
         // Fades game to state
         private Fader fader;
+        // Times transitions
+        private Stopwatch transition_timer;
+        private const int LEVEL_TRANSITION_TIME = 3000;
 
         // Game operation controllers
         private InputController input_controller;
@@ -75,6 +80,7 @@ namespace Pathogenesis
             factory = new ContentFactory(new ContentManager(Services));
             camera = new Camera(canvas.Width, canvas.Height);
             fader = new Fader();
+            transition_timer = new Stopwatch();
         }
 
         /// <summary>
@@ -101,7 +107,7 @@ namespace Pathogenesis
             menu_controller = new MenuController(factory, sound_controller);
 
             // Game starts at the main menu
-            game_state = GameState.MAIN_MENU;
+            game_state = GameState.MENU;
             menu_controller.LoadMenu(MenuType.MAIN);
 
             // TEST
@@ -313,7 +319,7 @@ namespace Pathogenesis
                         camera.Position = unit_controller.Player.Position;
                     }
                     break;
-                case GameState.MAIN_MENU:
+                case GameState.MENU:
                     menu_controller.HandleMenuInput(this, input_controller);
                     break;
                 case GameState.PAUSED:
@@ -325,17 +331,33 @@ namespace Pathogenesis
                 case GameState.LOSE:
                     menu_controller.HandleMenuInput(this, input_controller);
                     break;
+                case GameState.LOADING:
+                    if (transition_timer.ElapsedMilliseconds >= LEVEL_TRANSITION_TIME)
+                    {
+                        transition_timer.Stop();
+                        transition_timer.Reset();
+                        fadeTo(GameState.IN_GAME, 50, 50);
+                    }
+                    break;
             }
 
             base.Update(gameTime);
         }
 
         /*
-         * Fade to the specified game state
+         * Fade to the specified game state with default fade speed
          */
         public void fadeTo(GameState state)
         {
-            fader.startFade(ChangeGameState, state);
+            fadeTo(state, 50, 50);
+        }
+
+        /*
+         * Fade to the specified game state
+         */
+        public void fadeTo(GameState state, int in_speed, int out_speed)
+        {
+            fader.startFade(ChangeGameState, state, in_speed, out_speed);
         }
 
         /*
@@ -347,7 +369,7 @@ namespace Pathogenesis
             switch (state)
             {
                 case GameState.IN_GAME:
-                    if (game_state == GameState.MAIN_MENU)
+                    if (game_state == GameState.MENU)
                     {
                         level_controller.LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
                     }
@@ -359,8 +381,12 @@ namespace Pathogenesis
                     {
                         level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
                     }
+                    else if (game_state == GameState.LOADING)
+                    {
+                        level_controller.StartLevel(sound_controller);
+                    }
                     break;
-                case GameState.MAIN_MENU:
+                case GameState.MENU:
                     menu_controller.LoadMenu(MenuType.MAIN);
                     sound_controller.pauseAll();
                     break;
@@ -369,6 +395,10 @@ namespace Pathogenesis
                 case GameState.VICTORY:
                     break;
                 case GameState.LOSE:
+                    break;
+                case GameState.LOADING:
+                    level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
+                    transition_timer.Start();
                     break;
             }
             game_state = state;
@@ -397,7 +427,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     DrawGame(canvas);
                     break;
-                case GameState.MAIN_MENU:
+                case GameState.MENU:
                     menu_controller.DrawMenu(canvas, camera.Position);
                     break;
                 case GameState.PAUSED:
@@ -412,12 +442,18 @@ namespace Pathogenesis
                     DrawGame(canvas);
                     menu_controller.DrawMenu(canvas, camera.Position);
                     break;
+                case GameState.LOADING:
+                    level_controller.DrawTitle(canvas, camera.Position);
+                    break;
             }
 
             // Draw fade effect
-            canvas.DrawSprite(solid, Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 250), (float)fader.fadeCounter / Fader.fadeTime),
-                new Rectangle((int)(camera.Position.X - canvas.Width / 2), (int)(camera.Position.Y - canvas.Height / 2), canvas.Width, canvas.Height),
-                new Rectangle(0, 0, solid.Width, solid.Height));
+            if (fader.Fading)
+            {
+                canvas.DrawSprite(solid, Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 250), (float)fader.fadeCounter / fader.fadeTime),
+                    new Rectangle((int)(camera.Position.X - canvas.Width / 2), (int)(camera.Position.Y - canvas.Height / 2), canvas.Width, canvas.Height),
+                    new Rectangle(0, 0, solid.Width, solid.Height));
+            }
 
             canvas.EndSpritePass();
             base.Draw(gameTime);

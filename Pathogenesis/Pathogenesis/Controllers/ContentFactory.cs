@@ -319,6 +319,9 @@ namespace Pathogenesis
                         }
                     }
 
+
+                    //TODO change
+                    level.TitleTexture = textures["solid"];
                     level.BackgroundTexture = textures["background"];
                     List<Texture2D> wall_textures = new List<Texture2D>();
                     wall_textures.Add(textures["wall1"]);
