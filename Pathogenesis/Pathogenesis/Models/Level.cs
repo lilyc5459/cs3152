@@ -43,7 +43,29 @@ namespace Pathogenesis.Models
 
         public void Draw(GameCanvas canvas)
         {
-            canvas.DrawOverlay(BackgroundTexture, Color.White, Vector2.Zero);
+            // Tile the background if necessary
+            int tile_x = (int)(Width / BackgroundTexture.Width) + 1;
+            int tile_y = (int)(Height / BackgroundTexture.Height) + 1;
+            for (int i = 0; i < tile_x; i++)
+            {
+                for (int j = 0; j < tile_y; j++)
+                {
+                    int edge_diff_x = 0;
+                    int edge_diff_y = 0;
+                    if (i == tile_x)
+                    {
+                        edge_diff_x = i * BackgroundTexture.Width - Width;
+                    }
+                    if (j == tile_y)
+                    {
+                        edge_diff_y = j * BackgroundTexture.Height - Height;
+                    }
+                    canvas.DrawOverlay(BackgroundTexture, Color.White,
+                        new Vector2(i * BackgroundTexture.Width, j * BackgroundTexture.Height),
+                        new Rectangle(0, 0, BackgroundTexture.Width - edge_diff_x,
+                            BackgroundTexture.Height - edge_diff_y));
+                }
+            }
             Map.Draw(canvas);
         }
     }

@@ -131,18 +131,4 @@
       <YOffset>30</YOffset>
     </Option>
   </Menu>
-
-  <Menu>
-    <Type>DIALOGUE</Type>
-    <Title>
-      <Text></Text>
-      <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
-    </Title>
-    <Option>
-      <Text></Text>
-      <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
-    </Option>
-  </Menu>
 </Menus>

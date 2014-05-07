@@ -667,6 +667,23 @@ namespace Pathogenesis
             spriteBatch.Draw(image, pos, null, tint, 0.0f, orig, scale, SpriteEffects.None, 0);
         }
 
+        /*
+         * Same as above but allows for a source rectangle to be specified
+         */ 
+        public void DrawOverlay(Texture2D image, Color tint, Vector2 pos, Rectangle source)
+        {
+            // Enforce invariants.
+            Debug.Assert(state == DrawState.SpritePass, "Drawing state is invalid (expected SpritePass)");
+
+            // Rescale position to align
+            pos = pos / Scale;
+            Vector2 orig = new Vector2(0, 0);
+            Vector2 scale = new Vector2(1 / SX, 1 / SY); // To counter global scale
+
+            // Draw this unscaled
+            spriteBatch.Draw(image, pos, source, tint, 0.0f, orig, scale, SpriteEffects.None, 0);
+        }
+
         /// <summary>
         /// Draw text to the screen.
         /// </summary>
