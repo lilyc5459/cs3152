@@ -156,6 +156,10 @@ div.wall{
 	background-size: contain;
 }
 
+#maxUnitsSet{
+	width: 70px;
+}
+
 div#loadRates{
 	display: none;
 }

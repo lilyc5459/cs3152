@@ -118,7 +118,7 @@ function addRow(){
     intArr[k] = 0;
   }
 
-  
+
   int = intArr.slice(0);
   y = blockHeight-1;
   ArrayOfInt[y] = int;
@@ -165,7 +165,8 @@ function addCol(){
 function addRegion(regId){
   option = {
     id: regId,
-    name: regId
+    name: regId,
+    maxUnits: 150
   }
   regionSel.push(option);
   $('#regsel').empty();
@@ -182,9 +183,16 @@ function addRegion(regId){
       $('[espawnerid'+$('#regsel').val()+'] > .spawnTxt').show();
       $('[centerForReg'+$('#regsel').val()+'] > .centerTxt').show();
       //show relevant
+      $('#maxUnitsSet').val(regionSel[$('#regsel').val()].maxUnits);
   });
+  $('#maxUnitsSet').val(regionSel[$('#regsel').val()].maxUnits);
   $("#regTools").show()
+
 }
+
+$( "#maxUnitsSet" ).change(function(){
+  regionSel[$('#regsel').val()].maxUnits = $(this).val();
+})
 
 function modifyTile($cur){
   id = $cur.attr('espawnerid'+$('#regsel').val());
@@ -488,6 +496,9 @@ defaultRegionJson = '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
 for(var i=0; i<regionSel.length; i++){
   defRegionObj = JSON.parse(defaultRegionJson);
   Regions[i] = defRegionObj;
+  //Add max units
+  Regions[i].Region.MaxUnits = regionSel[i].maxUnits;
+  //Add spawnpoints
   Regions[i].Region.SpawnPoints = [];
   Vector2arr = new Array();
   //loop through each relevant area block
@@ -540,7 +551,8 @@ for(var i=0; i<Regions.length; i++){
     regionArr2.push(  
                       { RegionSet : Regions[i].Region.RegionSet,
                         Center : Regions[i].Region.Center,
-                        SpawnPoints : Regions[i].Region.SpawnPoints
+                        SpawnPoints : Regions[i].Region.SpawnPoints,
+                        MaxUnits : Regions[i].Region.MaxUnits
                       }
                     );
   }
@@ -650,6 +662,7 @@ function buildLevel(inputTxt){
       //Select tiles inside region and assign them the reg attribute
       if (levelObj.Level.Regions.Region[j].RegionSet != "") {
         addRegion(curReg);
+        regionSel[j].maxUnits = levelObj.Level.Regions.Region[j].MaxUnits;
         for (var i=0; i<levelObj.Level.Regions.Region[j].RegionSet.Vector2.length; i++){
           xCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].X;
           yCord = +levelObj.Level.Regions.Region[j].RegionSet.Vector2[i].Y;
@@ -690,6 +703,7 @@ function buildLevel(inputTxt){
       //Select tiles inside region and assign them the reg attribute
       if (levelObj.Level.Regions.Region.RegionSet != "") {
         addRegion(curReg);
+        regionSel[j].maxUnits = levelObj.Level.Regions.Region.MaxUnits;
         for (var i=0; i<levelObj.Level.Regions.Region.RegionSet.Vector2.length; i++){
           xCord = +levelObj.Level.Regions.Region.RegionSet.Vector2[i].X;
           yCord = +levelObj.Level.Regions.Region.RegionSet.Vector2[i].Y;
