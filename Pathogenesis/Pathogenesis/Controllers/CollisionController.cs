@@ -39,9 +39,9 @@ namespace Pathogenesis
          */
 
         public void Update(List<GameUnit> units, Player player, Dictionary<int, Vector2> previousPositions,
-            Level level, ItemController item_controller)
+            Level level, List<Item> items, Dictionary<int, Vector2> previousItemPositions)
         {
-            ConstructCollisionGrids(units, item_controller.Items, particle_engine.particles, player, level);
+            ConstructCollisionGrids(units, items, particle_engine.particles, player, level);
 
             foreach (GameUnit unit in units)
             {
@@ -52,15 +52,20 @@ namespace Pathogenesis
             {
                 if (unit.Type != UnitType.FLYING)
                 {
-                    CheckWallCollision(unit, level.Map, previousPositions);
+                    HandleWallCollision(unit, level.Map, previousPositions);
                 }
+            }
+
+            foreach (Item item in items)
+            {
+                HandleWallCollision(item, level.Map, previousItemPositions);
             }
 
             if (player != null)
             {
                 ProcessUnitCollisions(player);
-                ProcessItems(player, item_controller);
-                CheckWallCollision(player, level.Map, previousPositions);
+                ProcessItems(player);
+                HandleWallCollision(player, level.Map, previousPositions);
             }
 
             /*
@@ -183,7 +188,7 @@ namespace Pathogenesis
         /*
          * Process item pickups
          */
-        public void ProcessItems(Player player, ItemController item_controller)
+        public void ProcessItems(Player player)
         {
             int x_indexp = (int)MathHelper.Clamp((player.Position.X / CELL_SIZE), 0, itemGrid.GetLength(1) - 1);
             int y_indexp = (int)MathHelper.Clamp((player.Position.Y / CELL_SIZE), 0, itemGrid.GetLength(0) - 1);
@@ -192,11 +197,11 @@ namespace Pathogenesis
             {
                 if (itemGrid[loc.Y, loc.X] != null)
                 {
-                    foreach (Item it in itemGrid[loc.Y, loc.X])
+                    foreach (Item item in itemGrid[loc.Y, loc.X])
                     {
-                        if (CheckItemCollision(player, it))
+                        if (CheckItemCollision(player, item))
                         {
-                            item_controller.RemoveItem(it);
+                            item.Destroyed = true;
                         }
                     }
                 }
@@ -268,13 +273,13 @@ namespace Pathogenesis
         }
 
         /*
-         * Handle a collision between a unit and wall
+         * Handle a collision between a game entity and wall
          */ 
-        public void CheckWallCollision(GameUnit unit, Map map, Dictionary<int, Vector2> previousPositions)
+        public void HandleWallCollision(GameEntity entity, Map map, Dictionary<int, Vector2> previousPositions)
         {
-            if (!previousPositions.ContainsKey(unit.ID)) return;
+            if (!previousPositions.ContainsKey(entity.ID)) return;
 
-            Vector2 pos_change = unit.Position - previousPositions[unit.ID];
+            Vector2 pos_change = entity.Position - previousPositions[entity.ID];
             float change_length = pos_change.Length();
 
             // Maybe the previous position thing is wrong cause it gets updated to a new, unwalkable position
@@ -284,7 +289,7 @@ namespace Pathogenesis
             {
                 dirs.Add(new Vector2(1, 0));
             }
-            else if(pos_change.X < 0)
+            else if (pos_change.X < 0)
             {
                 dirs.Add(new Vector2(-1, 0));
             }
@@ -292,7 +297,7 @@ namespace Pathogenesis
             {
                 dirs.Add(new Vector2(0, 1));
             }
-            else if(pos_change.Y < 0)
+            else if (pos_change.Y < 0)
             {
                 dirs.Add(new Vector2(0, -1));
             }
@@ -307,12 +312,12 @@ namespace Pathogenesis
 
             foreach (Vector2 dir in dirs)
             {
-                if(!map.canMoveToWorldPos(unit.Position + dir * unit.Size/2))
+                if (!map.canMoveToWorldPos(entity.Position + dir * entity.Size / 2))
                 {
                     int i = 0;
-                    while (i++ < unit.Size*3 && !map.canMoveToWorldPos(unit.Position + dir * unit.Size / 2))
+                    while (i++ < entity.Size * 3 && !map.canMoveToWorldPos(entity.Position + dir * entity.Size / 2))
                     {
-                        unit.Position -= dir;
+                        entity.Position -= dir;
                     }
                 }
             }
@@ -343,6 +348,7 @@ namespace Pathogenesis
                 if (!unit.Invulnerable)
                 {
                     unit.Health -= p.Damage;
+                    unit.Damaged = true;
                 }
                 particle_engine.GenerateParticle(5, p.Color, p.Position, null, UnitFaction.ALLY, false, false, 0,
                     10, 5, 1, 1, 30, 10, unit.Position - p.Position);

@@ -124,6 +124,7 @@ namespace Pathogenesis.Models
             if (player.Damaged)
             {
                 flash_stopwatch.Start();
+                player.Damaged = false;
             }
             if (flash_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
             {

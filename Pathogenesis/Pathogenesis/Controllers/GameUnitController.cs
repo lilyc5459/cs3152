@@ -74,8 +74,6 @@ namespace Pathogenesis
         public List<GameUnit> ConvertedUnits { get; set; }  // Units to be converted this frame
         public List<GameUnit> SpawnedUnits { get; set; }    // Units to be spawned this frame
 
-        private List<GameUnit> lostUnits;                   // Lost allies
-
         // The player object
         public Player Player { get; set; }
 
@@ -101,7 +99,6 @@ namespace Pathogenesis
             DeadUnits = new List<GameUnit>();
             ConvertedUnits = new List<GameUnit>();
             SpawnedUnits = new List<GameUnit>();
-            lostUnits = new List<GameUnit>();
             PreviousPositions = new Dictionary<int, Vector2>();
 
             rand = new Random();
@@ -1081,9 +1078,11 @@ namespace Pathogenesis
 
             if(!aggressor.AnimateAttack) aggressor.AttackingNow = true;
             aggressor.AttackCoolDown = aggressor.max_attack_cooldown;
+
             if (aggressor.Type == UnitType.TANK)
             {
                 victim.Health -= Math.Max(aggressor.Attack - victim.Defense, 0);
+                victim.Damaged = true;
                 if (victim.Type == UnitType.PLAYER)
                 {
                     sound_controller.play(SoundType.EFFECT, "ouch");

@@ -15,7 +15,11 @@ namespace Pathogenesis
         public Dictionary<ItemType, float> DropProbabilities { get; set; }
 
         // List of all items in the game
-        public List<Item> Items { get; set; }   
+        public List<Item> Items { get; set; }
+        public List<Item> DestroyedItems { get; set; }
+
+        // Previous positions of all items, used for collision
+        public Dictionary<int, Vector2> PreviousPositions { get; set; }
 
         public ItemController(ContentFactory factory)
         {
@@ -24,8 +28,19 @@ namespace Pathogenesis
             rand = new Random();
             DropProbabilities = new Dictionary<ItemType, float>();
             Items = new List<Item>();
+            DestroyedItems = new List<Item>();
+            PreviousPositions = new Dictionary<int, Vector2>();
 
-            DropProbabilities.Add(ItemType.PLASMID, 1);
+            DropProbabilities.Add(ItemType.PLASMID, 0.5f);
+            DropProbabilities.Add(ItemType.HEALTH, 0.3f);
+            DropProbabilities.Add(ItemType.ALLIES, 0.1f);
+            DropProbabilities.Add(ItemType.RANGE, 0.025f);
+            DropProbabilities.Add(ItemType.INFECT_REGEN, 0.025f);
+            DropProbabilities.Add(ItemType.MAX_HEALTH, 0.025f);
+            DropProbabilities.Add(ItemType.MAX_INFECT, 0.025f);
+            DropProbabilities.Add(ItemType.ATTACK, 0.0f);
+            DropProbabilities.Add(ItemType.MYSTERY, 0.0f);
+            DropProbabilities.Add(ItemType.SPEED, 0.0f);
         }
 
         /*
@@ -33,8 +48,33 @@ namespace Pathogenesis
          */
         public void Update()
         {
+            // Remove destroyed items
+            foreach(Item item in DestroyedItems)
+            {
+                Items.Remove(item);
+            }
+            DestroyedItems.Clear();
+
             foreach (Item item in Items)
             {
+                // Handle destroyed items
+                if (item.Destroyed)
+                {
+                    DestroyedItems.Add(item);
+                    continue;
+                }
+
+                // Update previous positions
+                if (PreviousPositions.ContainsKey(item.ID))
+                {
+                    PreviousPositions[item.ID] = item.Position;
+                }
+                else
+                {
+                    PreviousPositions.Add(item.ID, item.Position);
+                }
+
+                // Update item position
                 item.Position += item.Vel;
                 Vector2 vel_mod = item.Vel;
                 if (vel_mod.Length() > item.Decel / 2)

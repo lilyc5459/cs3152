@@ -1,6 +1,0 @@
-﻿//Menus - must correspond to menu type enum
-MAIN; Play,Options,Quit
-PAUSE; Resume,Map,Options,Quit to Menu
-OPTIONS; Music,Sound Effects,Back
-WIN; Continue
-LOSE; Restart,Quit to Menu
