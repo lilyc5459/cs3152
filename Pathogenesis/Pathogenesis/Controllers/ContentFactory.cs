@@ -319,6 +319,7 @@ namespace Pathogenesis
                         }
                     }
 
+                    level.Name = strings[2].Trim();
 
                     //TODO change
                     level.TitleTexture = textures["solid"];

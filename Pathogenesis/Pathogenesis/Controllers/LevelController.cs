@@ -31,9 +31,19 @@ namespace Pathogenesis
         }
 
         #region Methods
-        public void NextLevel2()
+        /*
+         * Starts the current level
+         */
+        public void StartLevel(SoundController sound_controller)
         {
-            CurLevelNum++;
+            switch (CurLevelNum)
+            {
+                case 0:
+                    sound_controller.loop(SoundType.MUSIC, "music1");
+                    break;
+                default:
+                    break;
+            }
         }
 
         /*
@@ -60,21 +70,6 @@ namespace Pathogenesis
             ItemController item_controller, SoundController sound_controller)
         {
             LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
-        }
-
-        /*
-         * Starts the current level
-         */
-        public void StartLevel(SoundController sound_controller)
-        {
-            switch (CurLevelNum)
-            {
-                case 0:
-                    sound_controller.loop(SoundType.MUSIC, "music1");
-                    break;
-                default:
-                    break;
-            }
         }
 
         /*
@@ -114,6 +109,11 @@ namespace Pathogenesis
             {
                 r.NumUnits = 0;
             }
+        }
+
+        public void Reset()
+        {
+            CurLevelNum = -1;
         }
         #endregion
 

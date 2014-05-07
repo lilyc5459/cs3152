@@ -8,6 +8,9 @@ namespace Pathogenesis.Models
 {
     public class Level
     {
+        // The name of this level
+        public String Name { get; set; }
+
         // Map layout of this level
         public Map Map { get; set; }
 
@@ -80,7 +83,7 @@ namespace Pathogenesis.Models
                 new Rectangle((int)(center.X - canvas.Width/2), (int)(center.Y - canvas.Height/2),
                     canvas.Width, canvas.Height),
                 new Rectangle(0, 0, TitleTexture.Width, TitleTexture.Height));
-            canvas.DrawText("The Level Title. Woooo!", Menu.fontColor, center, "font3", true);
+            canvas.DrawText(Name, Menu.fontColor, new Vector2(center.X, center.Y - 100), "font3", true);
         }
     }
 }

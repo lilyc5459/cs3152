@@ -162,7 +162,7 @@ namespace Pathogenesis.Controllers
                         switch (curSelection)
                         {
                             case "Play":
-                                engine.fadeTo(GameState.IN_GAME);
+                                engine.StartGame();
                                 break;
                             case "Options":
                                 LoadMenu(MenuType.OPTIONS);
@@ -177,6 +177,9 @@ namespace Pathogenesis.Controllers
                         {
                             case "Resume":
                                 engine.ChangeGameState(GameState.IN_GAME);
+                                break;
+                            case "Restart":
+                                //engine.RestartLevel();
                                 break;
                             case "Map":
                                 break;

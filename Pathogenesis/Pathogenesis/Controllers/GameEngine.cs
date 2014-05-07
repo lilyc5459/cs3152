@@ -345,6 +345,15 @@ namespace Pathogenesis
         }
 
         /*
+         * Loads and starts the first level
+         */
+        public void StartGame()
+        {
+            level_controller.Reset();
+            fadeTo(GameState.LOADING);
+        }
+
+        /*
          * Fade to the specified game state with default fade speed
          */
         public void fadeTo(GameState state)
@@ -371,7 +380,7 @@ namespace Pathogenesis
                 case GameState.IN_GAME:
                     if (game_state == GameState.MENU)
                     {
-                        level_controller.LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
+                        level_controller.StartLevel(sound_controller);
                     }
                     else if (game_state == GameState.VICTORY)
                     {
@@ -379,7 +388,8 @@ namespace Pathogenesis
                     }
                     else if (game_state == GameState.LOSE)
                     {
-                        level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
+                        level_controller.ResetLevel(factory, unit_controller, item_controller, sound_controller);
+                        level_controller.StartLevel(sound_controller);
                     }
                     else if (game_state == GameState.LOADING)
                     {
