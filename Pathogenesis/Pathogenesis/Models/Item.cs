@@ -33,6 +33,8 @@ namespace Pathogenesis
 
         public bool Destroyed { get; set; }
 
+        public Item() { }
+
         public Item(Texture2D texture, ItemType type)
         {
             Texture = texture;

@@ -14,14 +14,19 @@
       <YOffset>-90</YOffset>
     </Option>
     <Option>
-      <Text>Options</Text>
+      <Text>Load</Text>
       <XOffset>0</XOffset>
       <YOffset>-30</YOffset>
     </Option>
     <Option>
-      <Text>Quit</Text>
+      <Text>Options</Text>
       <XOffset>0</XOffset>
       <YOffset>30</YOffset>
+    </Option>
+    <Option>
+      <Text>Quit</Text>
+      <XOffset>0</XOffset>
+      <YOffset>90</YOffset>
     </Option>
   </Menu>
 
@@ -31,27 +36,37 @@
     <Title>
       <Text>Paused</Text>
       <XOffset>0</XOffset>
-      <YOffset>-150</YOffset>
+      <YOffset>0</YOffset>
     </Title>
     <Option>
       <Text>Resume</Text>
       <XOffset>0</XOffset>
+      <YOffset>-150</YOffset>
+    </Option>
+    <Option>
+      <Text>Restart</Text>
+      <XOffset>0</XOffset>
       <YOffset>-90</YOffset>
     </Option>
     <Option>
-      <Text>Map</Text>
+      <Text>Save</Text>
       <XOffset>0</XOffset>
       <YOffset>-30</YOffset>
     </Option>
     <Option>
-      <Text>Options</Text>
+      <Text>Load</Text>
       <XOffset>0</XOffset>
       <YOffset>30</YOffset>
     </Option>
     <Option>
-      <Text>Quit to Menu</Text>
+      <Text>Options</Text>
       <XOffset>0</XOffset>
       <YOffset>90</YOffset>
+    </Option>
+    <Option>
+      <Text>Quit to Menu</Text>
+      <XOffset>0</XOffset>
+      <YOffset>150</YOffset>
     </Option>
   </Menu>
 
@@ -129,20 +144,6 @@
       <Text>Quit to Menu</Text>
       <XOffset>0</XOffset>
       <YOffset>30</YOffset>
-    </Option>
-  </Menu>
-
-  <Menu>
-    <Type>DIALOGUE</Type>
-    <Title>
-      <Text></Text>
-      <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
-    </Title>
-    <Option>
-      <Text></Text>
-      <XOffset>0</XOffset>
-      <YOffset>0</YOffset>
     </Option>
   </Menu>
 </Menus>

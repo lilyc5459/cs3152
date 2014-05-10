@@ -319,6 +319,10 @@ namespace Pathogenesis
                         }
                     }
 
+                    level.Name = strings[2].Trim();
+
+                    //TODO change
+                    level.TitleTexture = textures["solid"];
                     level.BackgroundTexture = textures["background"];
                     List<Texture2D> wall_textures = new List<Texture2D>();
                     wall_textures.Add(textures["wall1"]);
@@ -340,7 +344,6 @@ namespace Pathogenesis
                             }
                             if (level.Map.tiles[i][j] == 9)
                             {
-                                level.NumBosses++;
                                 level.Bosses.Add(createUnit(UnitType.BOSS, UnitFaction.ENEMY, 1, new Vector2(j * Map.TILE_SIZE, i * Map.TILE_SIZE), false));
                             }
                             if (level.Map.tiles[i][j] == 7)
@@ -408,6 +411,20 @@ namespace Pathogenesis
             p.FrameSize = new Vector2(player_ani["FrameWidth"], player_ani["FrameHeight"]);
             p.FrameSpeed = player_ani["FrameSpeed"];
             p.Position = pos;
+            return p;
+        }
+
+        /*
+         * Creates a player with the same attributes as the specified one
+         */
+        public Player clonePlayer(Player player)
+        {
+            Player p = createPlayer(Vector2.Zero);
+            p.max_health = player.max_health;
+            p.max_infection_vitality = player.max_infection_vitality;
+            p.InfectionRecovery = player.InfectionRecovery;
+            p.InfectionRange = player.InfectionRange;
+            p.Speed = player.Speed;
             return p;
         }
 
@@ -560,11 +577,11 @@ namespace Pathogenesis
         {
             if (levels.Count > num)
             {
-                return levels[num];
+                return levels[num].Clone();
             }
             else
             {
-                return levels[levels.Count-1];
+                return levels[levels.Count-1].Clone();
             }
         }
 

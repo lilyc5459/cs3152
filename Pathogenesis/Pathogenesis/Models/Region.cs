@@ -11,12 +11,21 @@ namespace Pathogenesis.Models
         public int MaxUnits { get; set; }
         public int NumUnits { get; set; }
 
-        public HashSet<Vector2> RegionSet { get; set; }
-
         public Vector2 Center { get; set; }
-
+        public HashSet<Vector2> RegionSet { get; set; }
         public List<SpawnPoint> SpawnPoints { get; set; }
 
         public Region() { }
+
+        public Region Clone()
+        {
+            Region r = new Region();
+            r.MaxUnits = MaxUnits;
+            r.Center = Center;
+            r.RegionSet = RegionSet;
+            r.SpawnPoints = SpawnPoints;
+
+            return r;
+        }
     }
 }

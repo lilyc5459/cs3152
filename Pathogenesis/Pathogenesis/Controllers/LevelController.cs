@@ -13,10 +13,21 @@ namespace Pathogenesis
         #region Fields
         public Level CurLevel { get; set; }     // Stores Current Level Object
         public int CurLevelNum { get; set; }    // Stores Current Level Number
+
+        private ContentFactory factory;
+        private GameUnitController unit_controller;
+        private ItemController item_controller;
+        private SoundController sound_controller;
         #endregion
 
-        public LevelController()
+        public LevelController(ContentFactory factory, GameUnitController unit_controller,
+            ItemController item_controller, SoundController sound_controller)
         {
+            this.factory = factory;
+            this.unit_controller = unit_controller;
+            this.item_controller = item_controller;
+            this.sound_controller = sound_controller;
+
             CurLevelNum = -1;
         }
 
@@ -27,50 +38,16 @@ namespace Pathogenesis
          */
         public bool Update()
         {
-            return CurLevel.NumBosses != 0 && CurLevel.BossesDefeated == CurLevel.NumBosses;
+            return CurLevel.BossDefeated;
         }
 
         #region Methods
         /*
-         * Loads the next level
+         * Starts the current level
          */
-        public void NextLevel(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller, SoundController sound_controller){
-            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum+1);
-        }
-
-        /*
-         * Reloads the current level
-         */
-        public void ResetLevel(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller, SoundController sound_controller)
+        public void StartLevel(SoundController sound_controller)
         {
-            LoadLevel(factory, unit_controller, item_controller, sound_controller, CurLevelNum);
-        }
-
-        /*
-         * Restarts the game
-         */
-        public void Restart(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller, SoundController sound_controller)
-        {
-            LoadLevel(factory, unit_controller, item_controller, sound_controller, 0);
-        }
-
-        /*
-         * Loads the specified level
-         */
-        public void LoadLevel(ContentFactory factory, GameUnitController unit_controller, 
-            ItemController item_controller, SoundController sound_controller, int level_num)
-        {
-            CurLevel = factory.loadLevel(level_num);
-            CurLevelNum = level_num;
-            Reset(CurLevel);
-            item_controller.Reset();
-            unit_controller.Reset();
-            unit_controller.SetLevel(CurLevel);
-            
-            switch (level_num)
+            switch (CurLevelNum)
             {
                 case 0:
                     sound_controller.loop(SoundType.MUSIC, "music1");
@@ -81,11 +58,47 @@ namespace Pathogenesis
         }
 
         /*
+         * Loads the next level
+         */
+        public void NextLevel(){
+            LoadLevel(CurLevelNum+1);
+        }
+
+        /*
+         * Reloads the current level
+         */
+        public void ResetLevel()
+        {
+            LoadLevel(CurLevelNum);
+        }
+
+        /*
+         * Restarts the game
+         */
+        public void RestartGame()
+        {
+            LoadLevel(0);
+        }
+
+        /*
+         * Loads the specified level
+         */
+        public void LoadLevel(int level_num)
+        {
+            CurLevel = factory.loadLevel(level_num);
+            CurLevelNum = level_num;
+            //Reset(CurLevel);
+            item_controller.Reset();
+            unit_controller.Reset();
+            unit_controller.SetLevel(CurLevel);
+        }
+
+        /*
          * Resets the specified level to its beginning state
          */
         private void Reset(Level level)
         {
-            level.BossesDefeated = 0;
+            level.BossDefeated = false;
             foreach (GameUnit boss in level.Bosses)
             {
                 boss.Exists = true;
@@ -104,6 +117,11 @@ namespace Pathogenesis
                 r.NumUnits = 0;
             }
         }
+
+        public void Reset()
+        {
+            CurLevelNum = -1;
+        }
         #endregion
 
         public void Draw(GameCanvas canvas)
@@ -111,5 +129,9 @@ namespace Pathogenesis
             CurLevel.Draw(canvas);
         }
 
+        public void DrawTitle(GameCanvas canvas, Vector2 center)
+        {
+            CurLevel.DrawTitle(canvas, center);
+        }
     }
 }

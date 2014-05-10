@@ -1133,7 +1133,7 @@ namespace Pathogenesis
             {
                 if (unit.Type == UnitType.BOSS)
                 {
-                    level.BossesDefeated++;
+                    level.BossDefeated = true;
                     unit.Exists = false;
                     particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, UnitFaction.ALLY,
                         false, false, 0, 12, 7, 10, 5);

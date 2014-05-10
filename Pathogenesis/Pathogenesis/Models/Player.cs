@@ -55,6 +55,8 @@ namespace Pathogenesis
         public int[][] ExploredTiles { get; set; }
         #endregion
 
+        public Player() { }
+
         public Player(Texture2D texture_sheet)
             : base(texture_sheet, UnitType.PLAYER, UnitFaction.ALLY, 1, false)
         {
