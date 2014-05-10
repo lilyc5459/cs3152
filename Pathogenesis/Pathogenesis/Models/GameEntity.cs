@@ -41,7 +41,6 @@ namespace Pathogenesis
 
         public bool Exists { get; set; }    // Indicates if the entity exists in the game
         public bool Static { get; set; }    // Indicates if the entity is immovable
-
         public bool Ghost { get; set; }
         #endregion
 

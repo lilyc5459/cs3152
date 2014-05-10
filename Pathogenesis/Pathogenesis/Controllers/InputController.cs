@@ -86,6 +86,14 @@ namespace Pathogenesis
             }
 
             /// <summary>
+            /// Whether the enter button was pressed.
+            /// </summary>
+            public bool Escape
+            {
+                get { return keyStates[Keys.Escape] == KeyState.DOWN; }
+            }
+
+            /// <summary>
             /// Whether the left button was pressed.
             /// </summary>
             public bool Left

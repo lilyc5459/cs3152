@@ -19,6 +19,9 @@ namespace Pathogenesis.Controllers
         private Action<GameState> callback;
         private GameState arg;
 
+        private bool noargs;
+        private Action callback_noargs;
+
         public bool Fading
         {
             get { return fadeCounter > 0; }
@@ -32,11 +35,22 @@ namespace Pathogenesis.Controllers
 
         public void startFade(Action<GameState> callback, GameState arg, int in_time, int out_time)
         {
+            noargs = false;
             this.in_time = in_time;
             this.out_time = out_time;
             this.fadeTime = out_time;
             this.callback = callback;
             this.arg = arg;
+            fadeCounter++;
+        }
+
+        public void startFade(Action callback, int in_time, int out_time)
+        {
+            noargs = true;
+            this.in_time = in_time;
+            this.out_time = out_time;
+            this.fadeTime = out_time;
+            this.callback_noargs = callback;
             fadeCounter++;
         }
 
@@ -47,10 +61,19 @@ namespace Pathogenesis.Controllers
                 if (!fadeIn)
                 {
                     fadeCounter++;
-                    if (fadeCounter >= fadeTime && callback != null)
+                    if (fadeCounter >= fadeTime)
                     {
-                        callback(arg);
-                        callback = null;
+                        if (noargs)
+                        {
+                            callback_noargs();
+                            callback_noargs = null;
+                        }
+                        else
+                        {
+                            callback(arg);
+                            callback = null;
+                        }
+                        
                         fadeIn = true;
                         fadeTime = in_time;
                         fadeCounter = in_time;

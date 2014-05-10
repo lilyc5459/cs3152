@@ -11,6 +11,10 @@ using Microsoft.Xna.Framework.Media;
 using Pathogenesis.Models;
 using Pathogenesis.Controllers;
 using System.Diagnostics;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
+using Microsoft.Xna.Framework.Storage;
 
 namespace Pathogenesis
 {
@@ -100,11 +104,11 @@ namespace Pathogenesis
             sound_controller = new SoundController(factory);
             particle_engine = new ParticleEngine(factory.getParticleTextures());
             collision_controller = new CollisionController(sound_controller, particle_engine);
-
-            level_controller = new LevelController();
+            
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
             menu_controller = new MenuController(factory, sound_controller);
+            level_controller = new LevelController(factory, unit_controller, item_controller, sound_controller);
 
             // Game starts at the main menu
             game_state = GameState.MENU;
@@ -285,10 +289,10 @@ namespace Pathogenesis
                     //Restart
                     if (input_controller.Restart)
                     {
-                        level_controller.Restart(factory, unit_controller, item_controller, sound_controller);
+                        level_controller.ResetLevel();
                     }
 
-                    if (input_controller.Pause)
+                    if (input_controller.Pause || input_controller.Escape)
                     {
                         game_state = GameState.PAUSED;
                         menu_controller.LoadMenu(MenuType.PAUSE);
@@ -332,7 +336,7 @@ namespace Pathogenesis
                     menu_controller.HandleMenuInput(this, input_controller);
                     break;
                 case GameState.LOADING:
-                    if (transition_timer.ElapsedMilliseconds >= LEVEL_TRANSITION_TIME)
+                    if (input_controller.Enter || transition_timer.ElapsedMilliseconds >= LEVEL_TRANSITION_TIME)
                     {
                         transition_timer.Stop();
                         transition_timer.Reset();
@@ -351,6 +355,17 @@ namespace Pathogenesis
         {
             level_controller.Reset();
             fadeTo(GameState.LOADING);
+        }
+        
+        public void RestartLevel()
+        {
+            fader.startFade(RestartLevelCallback, 50, 50);
+        }
+
+        public void RestartLevelCallback()
+        {
+            level_controller.ResetLevel();
+            ChangeGameState(GameState.IN_GAME);
         }
 
         /*
@@ -384,11 +399,11 @@ namespace Pathogenesis
                     }
                     else if (game_state == GameState.VICTORY)
                     {
-                        level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
+                        level_controller.NextLevel();
                     }
                     else if (game_state == GameState.LOSE)
                     {
-                        level_controller.ResetLevel(factory, unit_controller, item_controller, sound_controller);
+                        level_controller.ResetLevel();
                         level_controller.StartLevel(sound_controller);
                     }
                     else if (game_state == GameState.LOADING)
@@ -407,11 +422,46 @@ namespace Pathogenesis
                 case GameState.LOSE:
                     break;
                 case GameState.LOADING:
-                    level_controller.NextLevel(factory, unit_controller, item_controller, sound_controller);
+                    level_controller.NextLevel();
                     transition_timer.Start();
                     break;
             }
             game_state = state;
+        }
+        #endregion
+
+        #region Saving and Loading
+        public void SaveGame()
+        {
+            if (unit_controller.Player == null) return;
+
+            SaveGame save = new SaveGame(unit_controller.Player, level_controller.CurLevelNum);
+
+            XmlSerializer serializer = new XmlSerializer(typeof(SaveGame));
+            //serializer.Serialize(new FileStream("Pathogenesis_" + level_controller.CurLevelNum.ToString() + "_" + save.Time.TimeOfDay.ToString(),
+            serializer.Serialize(new FileStream("savetest.xml",
+                FileMode.OpenOrCreate), save);
+        }
+
+        public void LoadGame(String filename)
+        {
+            
+            SaveGame save = null;
+            using (System.IO.Stream stream =  TitleContainer.OpenStream("SaveGames/" + filename))
+            {
+                using (XmlReader reader = XmlReader.Create(stream))
+                {
+                    XmlSerializer x = new XmlSerializer(typeof(SaveGame));
+                    save = (SaveGame)x.Deserialize(reader);
+                }
+            }
+            if (save != null)
+            {
+                unit_controller.Player = factory.clonePlayer(save.Player);
+                level_controller.LoadLevel(save.Level);
+                level_controller.StartLevel(sound_controller);
+                fadeTo(GameState.LOADING);
+            }
         }
         #endregion
 

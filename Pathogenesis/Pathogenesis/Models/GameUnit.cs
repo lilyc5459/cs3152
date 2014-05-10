@@ -236,7 +236,27 @@ namespace Pathogenesis
             }
         }
         #endregion
-        
+
+        /*
+         * Clones a GameUnit with default stats according to Type and Level
+         */
+        public GameUnit Clone()
+        {
+            GameUnit u = new GameUnit(Texture, Type, Faction, Level, Immune);
+            u.Region = Region;
+            u.Invulnerable = Invulnerable;
+            u.Position = Position;
+            u.AnimateResting = AnimateResting;
+            u.Static = Static;
+            u.Ghost = Ghost;
+            u.Directionless = Directionless;
+
+            u.FrameSize = FrameSize;
+            u.FrameSpeed = FrameSpeed;
+            u.NumFrames = NumFrames;
+            return u;
+        }
+
         public bool HasTarget()
         {
             return Target.X >= 0 && Target.Y >= 0;

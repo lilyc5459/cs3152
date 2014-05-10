@@ -8,14 +8,14 @@ health, Environment/health
 conversion_sheet, Environment/conversion_sheet
 
 // Walls
-//wall1, Environment/wall_square
-wall1, Backgrounds/2wall1
+wall1, Environment/wall_square
+//wall1, Backgrounds/2wall1
 wall2, Backgrounds/3wall33
 wall3, Backgrounds/walltileneeeew
 
 //Backgrounds
-//background, Backgrounds/background_long2
-background, Backgrounds/lightbackground
+background, Backgrounds/background_long2
+//background, Backgrounds/lightbackground
 
 //Characters
 boss1, Characters/boss

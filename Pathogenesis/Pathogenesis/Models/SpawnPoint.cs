@@ -10,9 +10,12 @@ namespace Pathogenesis.Models
 {
     public class SpawnPoint
     {
+        public const int MILLIS_IN_SECOND = 1000;
+
         public int Id { get; set; }
         public Vector2 Pos { get; set; }
 
+        // Spawn delay time in seconds
         public int SpawnDelay { get; set; }
 
         private Stopwatch stopwatch;
@@ -45,7 +48,7 @@ namespace Pathogenesis.Models
 
         public bool ShouldSpawn()
         {
-            if (stopwatch.ElapsedMilliseconds >= SpawnDelay)
+            if (stopwatch.ElapsedMilliseconds >= SpawnDelay * MILLIS_IN_SECOND)
             {
                 stopwatch.Restart();
                 return true;

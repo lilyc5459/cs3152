@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CollisionController.cs" />
+    <Compile Include="Models\SaveGame.cs" />
     <Compile Include="Util\Fader.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\ParticleEngine.cs" />
@@ -177,6 +178,9 @@
     <Content Include="Config\menu_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\pather_spawn_config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Patho-L2_spawn_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -194,6 +198,9 @@
     </Content>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png" />
+    <Content Include="SaveGames\savetest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PathogenesisContent\PathogenesisContent.contentproj">

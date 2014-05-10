@@ -16,6 +16,7 @@ namespace Pathogenesis.Models
 
         public Texture2D BackgroundTexture { get; set; }
         public Texture2D TitleTexture { get; set; }
+        public List<Texture2D> WallTextures { get; set; }
 
         // Dimensions in pixels
         public int Width { get; set; }
@@ -26,26 +27,56 @@ namespace Pathogenesis.Models
         public List<GameUnit> Bosses { get; set; }      // List of Boss units in this level
         public List<GameUnit> Organs { get; set; }      // List of the infection point organs that drop items
 
-        public int NumBosses { get; set; }              // The number of bosses in this level
-        public int BossesDefeated { get; set; }         // The number of bosses that the player has defeated
+        public bool BossDefeated { get; set; }          // Whether the player has defeate the boss
 
         public Level() { }
 
         public Level(int width, int height, Texture2D title_texture, Texture2D bg_texture,
-            List<Texture2D> wall_textures, List<GameUnit> bosses)
+            List<Texture2D> wall_textures)
         {
             Width = width;
             Height = height;
 
             BackgroundTexture = bg_texture;
             TitleTexture = title_texture;
+            WallTextures = wall_textures;
 
             Map = new Map(width, height, wall_textures);
-            Bosses = bosses;
-            NumBosses = bosses.Count;
-            BossesDefeated = 0;
+            Regions = new List<Region>();
+            Bosses = new List<GameUnit>();
+            Organs = new List<GameUnit>();
+
+            BossDefeated = false;
         }
 
+        /*
+         * Create a copy of this level
+         */
+        public Level Clone()
+        {
+            Level l = new Level(Width, Height, TitleTexture, BackgroundTexture, WallTextures);
+            l.Name = Name;
+            l.Map = Map;
+            l.PlayerStart = PlayerStart;
+
+            foreach (GameUnit boss in Bosses)
+            {
+                l.Bosses.Add(boss.Clone());
+            }
+            foreach (GameUnit organ in Organs)
+            {
+                l.Organs.Add(organ.Clone());
+            }
+            foreach (Region region in Regions)
+            {
+                l.Regions.Add(region.Clone());
+            }
+            return l;
+        }
+
+        /*
+         * Draw the level
+         */
         public void Draw(GameCanvas canvas)
         {
             // Tile the background if necessary

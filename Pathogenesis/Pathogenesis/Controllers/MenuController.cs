@@ -164,6 +164,9 @@ namespace Pathogenesis.Controllers
                             case "Play":
                                 engine.StartGame();
                                 break;
+                            case "Load":
+                                engine.LoadGame("savetest.xml");
+                                break;
                             case "Options":
                                 LoadMenu(MenuType.OPTIONS);
                                 break;
@@ -179,7 +182,13 @@ namespace Pathogenesis.Controllers
                                 engine.ChangeGameState(GameState.IN_GAME);
                                 break;
                             case "Restart":
-                                //engine.RestartLevel();
+                                engine.RestartLevel();
+                                break;
+                            case "Save":
+                                engine.SaveGame();
+                                break;
+                            case "Load":
+                                engine.LoadGame("savetest");
                                 break;
                             case "Map":
                                 break;
