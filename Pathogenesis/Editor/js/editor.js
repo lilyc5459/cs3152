@@ -492,16 +492,12 @@ var defSpawnObj = {
 Regions = [];
 //---SaveRegion stuff---
 //Save Region Areas
-defaultRegionJson = '{"Region":{"RegionSet":"","Center":"","SpawnPoints":""}}';
+defaultRegionJson = '{"Region":{"RegionSet":""}}';
 for(var i=0; i<regionSel.length; i++){
   defRegionObj = JSON.parse(defaultRegionJson);
   Regions[i] = defRegionObj;
-  //Add max units
-  Regions[i].Region.MaxUnits = regionSel[i].maxUnits;
-  //Add spawnpoints
-  Regions[i].Region.SpawnPoints = [];
-  Vector2arr = new Array();
   //loop through each relevant area block
+  Vector2arr = new Array();
   $('[reg'+i+']').each(function(){
     Vector2arr.push({
       X: $(this).attr("x"),
@@ -512,9 +508,9 @@ for(var i=0; i<regionSel.length; i++){
     };
     Regions[i].Region.RegionSet = Vector2;
   })
-
   //loop through each relevant espawner
   //TODO: Fix regions to going into same array
+  //Add spawnpoints
   var SpawnPointArr = new Array();
   $('[eSpawnerID'+i+']').each(function(indexesp){
     var index  = $(this).attr('eSpawnerID'+i);
@@ -528,10 +524,13 @@ for(var i=0; i<regionSel.length; i++){
       SpawnPointArr.push(eSpawnerArr[index].SpawnPoint);
     }
   })
-  finSpawnPoint = {
-    SpawnPoint: SpawnPointArr
-  };
-  Regions[i].Region.SpawnPoints = finSpawnPoint;
+  if(SpawnPointArr.length > 0){
+    Regions[i].Region.SpawnPoints = [];
+    finSpawnPoint = {
+      SpawnPoint: SpawnPointArr
+    };
+    Regions[i].Region.SpawnPoints = finSpawnPoint;
+  }
 
   //loop through each relevant center
   var centerPts = {};
@@ -542,6 +541,9 @@ for(var i=0; i<regionSel.length; i++){
     };
   })
   Regions[i].Region.Center = centerPts;
+
+  //Add max units
+  Regions[i].Region.MaxUnits = regionSel[i].maxUnits;
 }
 
 regionArr2 = [];
@@ -561,7 +563,6 @@ for(var i=0; i<Regions.length; i++){
 finRegions = {
   Region: regionArr2
 };
-
 
 //Build Level Object
 Level.Level.Regions = [];
@@ -669,13 +670,13 @@ function buildLevel(inputTxt){
           $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
         }
         //Add Center
-        if(levelObj.Level.Regions.Region[j].hasOwnProperty(Center){
+        if (levelObj.Level.Regions.Region[j].Center != null){
           centXcord = +levelObj.Level.Regions.Region[j].Center.X;
           centYcord = +levelObj.Level.Regions.Region[j].Center.Y;
           $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
         }
         //Loop through spawners  -- other thing
-        if(levelObj.Level.Regions.Region[j].hasOwnProperty(SpawnPoints){
+        if(levelObj.Level.Regions.Region[j].SpawnPoints != null){
           if ($.isArray(levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint)){
             splength = levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.length;
             for (var k=0; k<splength; k++){
@@ -715,13 +716,13 @@ function buildLevel(inputTxt){
           $('.tile[x="'+xCord+'"][y="'+yCord+'"]').attr('reg'+curReg, true);
         }
         //Add Center
-        if(levelObj.Level.Regions.Region.hasOwnProperty(Center){
+        if (levelObj.Level.Regions.Region.Center != null){
           centXcord = +levelObj.Level.Regions.Region.Center.X;
           centYcord = +levelObj.Level.Regions.Region.Center.Y;
           $('.tile[x="'+centXcord+'"][y="'+centYcord+'"]').attr('centerforreg'+curReg, true);
         }
         //Loop through spawners  -- other thing
-        if(levelObj.Level.Regions.Region.hasOwnProperty(SpawnPoints)){
+        if(levelObj.Level.Regions.Region.SpawnPoints != null){
           if ($.isArray(levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint)){
             splength = levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.length;
             for (var k=0; k<splength; k++){
