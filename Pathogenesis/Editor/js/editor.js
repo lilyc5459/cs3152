@@ -540,7 +540,9 @@ for(var i=0; i<regionSel.length; i++){
       Y: $(this).attr("y")
     };
   })
-  Regions[i].Region.Center = centerPts;
+  if (!($.isEmptyObject(centerPts))){
+    Regions[i].Region.Center = centerPts;
+  }
 
   //Add max units
   Regions[i].Region.MaxUnits = regionSel[i].maxUnits;
