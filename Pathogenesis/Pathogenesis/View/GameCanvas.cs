@@ -117,9 +117,24 @@ namespace Pathogenesis
         // Attributes to rescale the image
         protected Matrix transform;
         protected Vector2 worldScale;
+
+        protected RenderTarget2D renderTarget;
+
+        public readonly static BlendState bs_subtractive = new BlendState
+        {
+            ColorSourceBlend = Blend.SourceAlpha,
+            ColorDestinationBlend = Blend.One,
+            ColorBlendFunction = BlendFunction.ReverseSubtract,
+            AlphaSourceBlend = Blend.SourceAlpha,
+            AlphaDestinationBlend = Blend.One,
+            AlphaBlendFunction = BlendFunction.ReverseSubtract
+        };
         #endregion
 
         #region Properties (READ-WRITE)
+        
+        public BlendState BlendState { get; set; }
+
         /// <summary>
         /// Whether this instance is fullscreen.
         /// </summary>
@@ -425,6 +440,13 @@ namespace Pathogenesis
 
             // We are not actively drawing
             state = DrawState.Inactive;
+
+            BlendState = BlendState.AlphaBlend;
+
+            renderTarget = new RenderTarget2D(
+                graphics.GraphicsDevice,
+                Width,
+                Height);
         }
 
         /// <summary>

@@ -53,6 +53,22 @@ namespace Pathogenesis.Models
             }
         }
 
+
+        public void DrawTutorial(GameCanvas canvas, List<GameUnit> units, Player player)
+        {
+            if (player == null) return;
+            foreach (GameUnit unit in units)
+            {
+                if(unit.Faction == UnitFaction.ENEMY && player.inRange(unit, player.InfectionRange))
+                {
+                    canvas.DrawSprite(InfectTexture,
+                        new Color(100, 100, 0, 100),
+                        new Rectangle((int)unit.Position.X - unit.Size / 2 - 10, (int)unit.Position.Y - unit.Size/2 - 10, unit.Size + 20, unit.Size + 20),
+                        new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
+                }
+            }
+        }
+
         public void DrawLayerOne(GameCanvas canvas, List<GameUnit> units, Player player)
         {
             if (Active)
@@ -60,18 +76,7 @@ namespace Pathogenesis.Models
                 foreach (GameUnit unit in units)
                 {
                     if (!unit.Exists) continue;
-
-                    //Attack indicator
-                    /*
-                    if (unit.AttackCoolDown != 0 && unit.Type != UnitType.FLYING && unit.Type != UnitType.BOSS)
-                    {
-                        int range = unit.AttackRange + unit.Size / 2;
-                        canvas.DrawSprite(InfectTexture,
-                            new Color(70, 20, 20, (int)(unit.AttackCoolDown * 2.5)),
-                            new Rectangle((int)unit.Position.X - range, (int)unit.Position.Y - range, range * 2, range * 2),
-                            new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
-                    }
-                     * */
+                    // Drop shadows
                     canvas.DrawSprite(InfectTexture,
                             new Color(0, 0, 0, 100),
                             new Rectangle((int)unit.Position.X - (unit.Size+10)/2 + 10, (int)unit.Position.Y + 10, unit.Size + 10, unit.Size/2),
@@ -80,15 +85,10 @@ namespace Pathogenesis.Models
                 if (player != null)
                 {
                     //Infection range
-                    // new Color(30, 0, 0, 30)
                     int range = player.InfectionRange;
                     canvas.DrawSprite(InfectTexture, new Color(24, 24, 0, 1),
                         new Rectangle((int)player.Position.X - range, (int)player.Position.Y - range, range * 2, range * 2),
                         new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
-                    /*
-                    canvas.DrawSprite(InfectTexture, new Color(70, 70, 0, 50),
-                        new Rectangle((int)player.Position.X - 40, (int)player.Position.Y - 40, 40 * 2, 40 * 2),
-                        new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));*/
                 }
             }
         }
@@ -265,6 +265,7 @@ namespace Pathogenesis.Models
                     }
                 }
             }
+
         }
     }
 }

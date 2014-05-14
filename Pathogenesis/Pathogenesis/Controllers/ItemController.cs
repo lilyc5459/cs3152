@@ -48,13 +48,6 @@ namespace Pathogenesis
          */
         public void Update()
         {
-            // Remove destroyed items
-            foreach(Item item in DestroyedItems)
-            {
-                Items.Remove(item);
-            }
-            DestroyedItems.Clear();
-
             foreach (Item item in Items)
             {
                 // Handle destroyed items
@@ -88,6 +81,13 @@ namespace Pathogenesis
                     item.Vel = Vector2.Zero;
                 }
             }
+
+            // Remove destroyed items
+            foreach (Item item in DestroyedItems)
+            {
+                Items.Remove(item);
+            }
+            DestroyedItems.Clear();
         }
 
         public void Reset()

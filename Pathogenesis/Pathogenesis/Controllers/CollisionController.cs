@@ -199,10 +199,7 @@ namespace Pathogenesis
                 {
                     foreach (Item item in itemGrid[loc.Y, loc.X])
                     {
-                        if (CheckItemCollision(player, item))
-                        {
-                            item.Destroyed = true;
-                        }
+                        CheckItemCollision(player, item);
                     }
                 }
             }
@@ -330,7 +327,8 @@ namespace Pathogenesis
         {
             if (player.distance(item) < (player.Size + Item.ITEM_SIZE)/2)
             {
-                return player.PickupItem(item);
+                player.PickupItem(item);
+                item.Destroyed = true;
             }
             return false;
         }

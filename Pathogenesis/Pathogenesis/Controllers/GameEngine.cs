@@ -353,6 +353,15 @@ namespace Pathogenesis
          */
         public void StartGame()
         {
+            level_controller.LoadLevel(1);
+            fadeTo(GameState.LOADING);
+        }
+
+        /*
+        * Loads and starts the tutorial
+        */
+        public void StartTutorial()
+        {
             level_controller.Reset();
             fadeTo(GameState.LOADING);
         }
@@ -480,7 +489,7 @@ namespace Pathogenesis
         protected override void Draw(GameTime gameTime)
         {
             canvas.Reset();
-            canvas.BeginSpritePass(BlendState.AlphaBlend, camera);
+            canvas.BeginSpritePass(canvas.BlendState, camera);
 
             switch (game_state)
             {
@@ -526,6 +535,10 @@ namespace Pathogenesis
         {
             level_controller.Draw(canvas);
             HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
+            if (level_controller.CurLevelNum == 0)
+            {
+                HUD_display.DrawTutorial(canvas, unit_controller.Units, unit_controller.Player);
+            }
             item_controller.Draw(canvas, false);
             unit_controller.Draw(canvas);
             item_controller.Draw(canvas, true);

@@ -164,6 +164,9 @@ namespace Pathogenesis.Controllers
                             case "Play":
                                 engine.StartGame();
                                 break;
+                            case "Tutorial":
+                                engine.StartTutorial();
+                                break;
                             case "Load":
                                 engine.LoadGame("savetest.xml");
                                 break;
