@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Pathogenesis.Controllers
 {
@@ -58,6 +59,7 @@ namespace Pathogenesis.Controllers
         {   
             if (fadeCounter > 0)
             {
+                SoundEffect.MasterVolume = 1 - (float)fadeCounter / fadeTime;
                 if (!fadeIn)
                 {
                     fadeCounter++;

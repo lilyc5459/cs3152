@@ -108,7 +108,7 @@ namespace Pathogenesis
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
             menu_controller = new MenuController(factory, sound_controller);
-            level_controller = new LevelController(factory, unit_controller, item_controller, sound_controller);
+            level_controller = new LevelController(factory, unit_controller, item_controller, sound_controller, menu_controller);
 
             // Game starts at the main menu
             game_state = GameState.MENU;
@@ -413,7 +413,7 @@ namespace Pathogenesis
                     break;
                 case GameState.MENU:
                     menu_controller.LoadMenu(MenuType.MAIN);
-                    sound_controller.pauseAll();
+                    sound_controller.stopAll();
                     break;
                 case GameState.PAUSED:
                     break;

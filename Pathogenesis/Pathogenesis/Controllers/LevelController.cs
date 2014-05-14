@@ -18,15 +18,17 @@ namespace Pathogenesis
         private GameUnitController unit_controller;
         private ItemController item_controller;
         private SoundController sound_controller;
+        private MenuController menu_controller;
         #endregion
 
         public LevelController(ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller, SoundController sound_controller)
+            ItemController item_controller, SoundController sound_controller, MenuController menu_controller)
         {
             this.factory = factory;
             this.unit_controller = unit_controller;
             this.item_controller = item_controller;
             this.sound_controller = sound_controller;
+            this.menu_controller = menu_controller;
 
             CurLevelNum = -1;
         }
@@ -55,6 +57,7 @@ namespace Pathogenesis
                 default:
                     break;
             }
+            sound_controller.loop(SoundType.MUSIC, "music1");
         }
 
         /*
@@ -87,35 +90,10 @@ namespace Pathogenesis
         {
             CurLevel = factory.loadLevel(level_num);
             CurLevelNum = level_num;
-            //Reset(CurLevel);
             item_controller.Reset();
             unit_controller.Reset();
             unit_controller.SetLevel(CurLevel);
-        }
-
-        /*
-         * Resets the specified level to its beginning state
-         */
-        private void Reset(Level level)
-        {
-            level.BossDefeated = false;
-            foreach (GameUnit boss in level.Bosses)
-            {
-                boss.Exists = true;
-                boss.InfectionVitality = boss.max_infection_vitality;
-                //boss.Position = 
-            }
-            foreach (GameUnit organ in level.Organs)
-            {
-                organ.Exists = true;
-                organ.InfectionVitality = organ.max_infection_vitality;
-                //organ.Position
-            }
-
-            foreach (Region r in level.Regions)
-            {
-                r.NumUnits = 0;
-            }
+            menu_controller.CurDialogue = 0;
         }
 
         public void Reset()

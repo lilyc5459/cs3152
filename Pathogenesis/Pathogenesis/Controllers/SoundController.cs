@@ -74,17 +74,17 @@ namespace Pathogenesis.Controllers
         }
 
         /*
-         * Pause all clips
+         * Stop all clips
          */
-        public void pauseAll()
+        public void stopAll()
         {
             foreach (Sound sound in music.Values)
             {
-                sound.Pause();
+                sound.Stop();
             }
             foreach (Sound sound in effects.Values)
             {
-                sound.Pause();
+                sound.Stop();
             }
         }
 
