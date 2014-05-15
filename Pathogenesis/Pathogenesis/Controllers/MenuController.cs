@@ -265,7 +265,7 @@ namespace Pathogenesis.Controllers
                         switch (curSelection)
                         {
                             case "Start Over":
-                                engine.fadeTo(GameState.IN_GAME);
+                                engine.fadeTo(GameState.LOADING);
                                 break;
                             case "Quit to Menu":
                                 engine.fadeTo(GameState.MENU);

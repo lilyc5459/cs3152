@@ -298,7 +298,7 @@ namespace Pathogenesis
         */
         public void StartTutorial()
         {
-            level_controller.Reset();
+            level_controller.LoadLevel(0);
             fadeTo(GameState.LOADING);
         }
         
@@ -342,15 +342,6 @@ namespace Pathogenesis
                     {
                         level_controller.StartLevel(sound_controller);
                     }
-                    else if (game_state == GameState.VICTORY)
-                    {
-                        level_controller.NextLevel();
-                    }
-                    else if (game_state == GameState.LOSE)
-                    {
-                        level_controller.ResetLevel();
-                        level_controller.StartLevel(sound_controller);
-                    }
                     else if (game_state == GameState.LOADING)
                     {
                         level_controller.StartLevel(sound_controller);
@@ -367,7 +358,14 @@ namespace Pathogenesis
                 case GameState.LOSE:
                     break;
                 case GameState.LOADING:
-                    level_controller.NextLevel();
+                    if (game_state == GameState.VICTORY)
+                    {
+                        level_controller.NextLevel();
+                    }
+                    else if (game_state == GameState.LOSE)
+                    {
+                        level_controller.ResetLevel();
+                    }
                     transition_timer.Start();
                     break;
             }

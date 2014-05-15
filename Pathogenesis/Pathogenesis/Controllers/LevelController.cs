@@ -162,8 +162,16 @@ namespace Pathogenesis
             CurLevelNum = level_num;
             item_controller.Reset();
             unit_controller.Reset();
+            if (level_num < 3)  // Reset player, will be created in SetLevel function of unit_controller
+            {
+                unit_controller.Player = null;
+            }
             unit_controller.SetLevel(CurLevel);
             menu_controller.CurDialogue = 0;
+
+
+
+            sound_controller.stopAll();
         }
 
         public void Reset()
