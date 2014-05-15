@@ -496,10 +496,10 @@ namespace Pathogenesis
                 switch (item.Type)
                 {
                     case ItemType.PLASMID:
-                        Player.InfectionPoints += PLASMID_POINTS;
+                        Player.InfectionPoints = MathHelper.Clamp(Player.InfectionPoints + PLASMID_POINTS, 0, Player.MaxInfectionPoints);
                         break;
                     case ItemType.HEALTH:
-                        Player.Health += HEALTH_POINTS;
+                        Player.Health = MathHelper.Clamp(Player.Health + HEALTH_POINTS, 0, Player.max_health);
                         break;
                     case ItemType.ATTACK:
                         break;

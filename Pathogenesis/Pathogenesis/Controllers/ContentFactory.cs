@@ -414,7 +414,6 @@ namespace Pathogenesis
                             }
                         }
                     }
-
                     levels.Add(level);
                 }
             }

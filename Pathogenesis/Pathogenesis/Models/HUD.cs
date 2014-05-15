@@ -29,9 +29,11 @@ namespace Pathogenesis.Models
 
         public bool Active { get; set; }
 
-        public String PopMsg { get; set; }         // Floating msg indicator above player
+        public List<String> PopMsg { get; set; }         // Floating msg indicator above player
+        private List<int> finished_msgs;
 
-        private Stopwatch popmsg_stopwatch;
+        private List<Stopwatch> popmsg_stopwatches;
+        private List<int> finished_stopwatches;
         private Stopwatch flash_stopwatch;
         private Stopwatch glow_stopwatch;
 
@@ -42,10 +44,13 @@ namespace Pathogenesis.Models
             ConversionTexture = conversion_texture;
             Active = true;
 
-            popmsg_stopwatch = new Stopwatch();
+            PopMsg = new List<String>();
+            finished_msgs = new List<int>();
+            
+            popmsg_stopwatches = new List<Stopwatch>();
+            finished_stopwatches = new List<int>();
             flash_stopwatch = new Stopwatch();
             glow_stopwatch = new Stopwatch();
-            //glow_stopwatch.Start();
         }
 
         public void Update(InputController input_controller)
@@ -208,63 +213,78 @@ namespace Pathogenesis.Models
 
             if (player.Items.Count > 0)
             {
+                Stopwatch new_stopwatch = new Stopwatch();
+                popmsg_stopwatches.Add(new_stopwatch);
                 foreach (Item item in player.Items)
                 {
                     switch (item.Type)
                     {
                         case ItemType.PLASMID:
-                            PopMsg = "+Infection!";
+                            PopMsg.Add("+Infection!");
                             break;
                         case ItemType.HEALTH:
-                            PopMsg = "+Health!";
+                            PopMsg.Add("+Health!");
                             break;
                         case ItemType.ATTACK:
-                            PopMsg = "Allies +Attack!";
+                            PopMsg.Add("Allies +Attack!");
                             break;
                         case ItemType.ALLIES:
-                            PopMsg = "+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!";
+                            PopMsg.Add("+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!");
                             break;
                         case ItemType.RANGE:
-                            PopMsg = "+Range!";
+                            PopMsg.Add("+Range!");
                             break;
                         case ItemType.SPEED:
-                            PopMsg = "+Speed!";
+                            PopMsg.Add("+Speed!");
                             break;
                         case ItemType.MAX_HEALTH:
-                            PopMsg = "+Max Health!";
+                            PopMsg.Add("+Max Health!");
                             break;
                         case ItemType.MAX_INFECT:
-                            PopMsg = "+Max Infect!";
+                            PopMsg.Add("+Max Infect!");
                             break;
                         case ItemType.INFECT_REGEN:
-                            PopMsg = "+Infect Regen!";
+                            PopMsg.Add("+Infect Regen!");
                             break;
                         case ItemType.MYSTERY:
-                            PopMsg = "+Mystery!";
+                            PopMsg.Add("+Mystery!");
                             break;
                         default:
-                            PopMsg = "wat";
+                            PopMsg.Add("wat");
                             break;
                     }
                 }
-                popmsg_stopwatch.Start();
+                new_stopwatch.Start();
             }
 
-            if (PopMsg != null)
+            if (PopMsg.Count > 0)
             {
-                float pop_time = popmsg_stopwatch.ElapsedMilliseconds / (float)PLAYER_MSG_TIME;
-                canvas.DrawText(PopMsg,
-                    new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, pop_time) / 250),
-                    new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, pop_time)),
-                    "font2", true);
+                for (int i = 0; i < PopMsg.Count; i++)
+                {
+                    float pop_time = popmsg_stopwatches[i].ElapsedMilliseconds / (float)PLAYER_MSG_TIME;
+                    canvas.DrawText(PopMsg[i],
+                        new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, pop_time) / 250),
+                        new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, pop_time)),
+                        "font2", true);
+
+                    if (popmsg_stopwatches[i].ElapsedMilliseconds >= PLAYER_MSG_TIME)
+                    {
+                        finished_stopwatches.Add(i);
+                        finished_msgs.Add(i);
+                    }
+                }
             }
 
-            if (popmsg_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+            foreach (int i in finished_stopwatches)
             {
-                popmsg_stopwatch.Stop();
-                popmsg_stopwatch.Reset();
-                PopMsg = null;
+                popmsg_stopwatches.RemoveAt(i);
             }
+            finished_stopwatches.Clear();
+            foreach (int i in finished_msgs)
+            {
+                PopMsg.RemoveAt(i);
+            }
+            finished_msgs.Clear();
 
             // Draw minimap
             int[][] exploredTiles = player.ExploredTiles;

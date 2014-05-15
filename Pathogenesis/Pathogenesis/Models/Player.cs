@@ -73,21 +73,9 @@ namespace Pathogenesis
         }
 
         // Adds items to player's pickup list
-        public bool PickupItem(Item item)
+        public void PickupItem(Item item)
         {
-            switch (item.Type)
-            {
-                case ItemType.PLASMID:
-                    if (InfectionPoints == MaxInfectionPoints) return false;
-                    break;
-                case ItemType.HEALTH:
-                    if (Health == max_health) return false;
-                    break;
-                case ItemType.ATTACK:
-                    break;
-            }
             pickups.Add(item);
-            return true;
         }
     }
 }
