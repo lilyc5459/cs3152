@@ -281,14 +281,11 @@ namespace Pathogenesis
                         SpawnPoint spawnPoint = null;
                         foreach (Region r in level.Regions)
                         {
-                            //TODO get rid of this
-                            r.MaxUnits = 10;
                             foreach (SpawnPoint s in r.SpawnPoints)
                             {
                                 if (s.Id == id)
                                 {
                                     spawnPoint = s;
-                                    //s.Pos = new Vector2(21, 3);
                                 }
                             }
                         }

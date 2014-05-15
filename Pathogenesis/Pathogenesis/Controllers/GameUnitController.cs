@@ -305,9 +305,13 @@ namespace Pathogenesis
          */
         private void SpawnUnits(Level level)
         {
+            if (Player == null) return;
             foreach (Region r in level.Regions)
             {
-                if (r.NumUnits >= r.MaxUnits) continue;
+                bool playerInRegion = r.RegionSet.Contains(new Vector2(
+                                (int)Player.Position.X / Map.TILE_SIZE,
+                                (int)Player.Position.Y / Map.TILE_SIZE));
+                if (r.NumUnits >= r.MaxUnits || playerInRegion) continue;
 
                 foreach (SpawnPoint sp in r.SpawnPoints)
                 {

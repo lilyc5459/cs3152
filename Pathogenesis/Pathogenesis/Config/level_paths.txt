@@ -1,6 +1,6 @@
 ﻿// Levels
 num, 10
-1, tut, First Steps
+1, tutorial1, The Basics
 2, pather, The Spleen
 //2, lvl1, Level 1 baby
 //3, lvl2, Level 2 babay
