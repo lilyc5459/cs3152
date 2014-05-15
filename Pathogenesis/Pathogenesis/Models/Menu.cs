@@ -23,9 +23,15 @@ namespace Pathogenesis.Models
     {
         public static Color fontColor = new Color(220, 200, 80);
         public static Color fontHighlightColor = new Color(250, 230, 200);
+        public const int ANIMATION_TIME = 20;
 
         public MenuType Type { get; set; }
         public Texture2D Background { get; set; }
+
+        public bool AnimatingIn { get; set; }
+        public bool AnimatingOut { get; set; }
+        public int Frame { get; set; }
+        public int AnimationTime { get; set; }
 
         public List<MenuOption> Options { get; set; }
         public int CurSelection { get; set; }
@@ -42,6 +48,8 @@ namespace Pathogenesis.Models
             Background = background;
 
             CurSelection = 0;
+
+            if (type == MenuType.DIALOGUE) AnimationTime = ANIMATION_TIME;
         }
 
         public void Draw(GameCanvas canvas, Vector2 center)
@@ -79,8 +87,8 @@ namespace Pathogenesis.Models
             // Background
             if (Type == MenuType.DIALOGUE)
             {
-                canvas.DrawSprite(Background, color,
-                    new Rectangle((int)center.X - canvas.Width / 2, (int)center.Y + canvas.Height / 4, canvas.Width, canvas.Height/3),
+                canvas.DrawSprite(Background, color * ((float)Frame/AnimationTime),
+                    new Rectangle((int)center.X - canvas.Width / 2 + 20, (int)center.Y + canvas.Height / 7, canvas.Width - 40, 250),
                     new Rectangle(0, 0, Background.Width, Background.Height));
             }
             else
@@ -90,25 +98,27 @@ namespace Pathogenesis.Models
                     new Rectangle(0, 0, Background.Width, Background.Height));
             }
 
-            // Title
-            canvas.DrawText(title, new Color(220, 200, 80),
-                 new Vector2((int)center.X, (int)center.Y - canvas.Height/2 + 100), "font3", true);
 
             // Draw dialogue if applicable
             if (Type == MenuType.DIALOGUE && Text1 != null)
             {
-                canvas.DrawText(Text1, new Color(220, 200, 80),
-                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 150), "font1", true);
+                Color font_draw_color = fontColor * ((float)Frame / AnimationTime);
+                canvas.DrawText(Text1, font_draw_color,
+                    new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 200), "font1", true);
                 if (Text2 != null)
                 {
-                    canvas.DrawText(Text2, new Color(220, 200, 80),
-                        new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 100), "font1", true);
+                    canvas.DrawText(Text2, font_draw_color,
+                        new Vector2((int)center.X, (int)center.Y + canvas.Height / 2 - 150), "font1", true);
                 }
-                canvas.DrawText("Enter >", new Color(220, 200, 80),
-                    new Vector2((int)center.X + 300, (int)center.Y + canvas.Height / 2 - 50), "font1", true);
+                canvas.DrawText("Enter >", font_draw_color,
+                    new Vector2((int)center.X + 320, (int)center.Y + canvas.Height / 2 - 70), "font1", true);
                 return;
             }
-           
+
+            // Title
+            canvas.DrawText(title, fontColor,
+                 new Vector2((int)center.X, (int)center.Y - canvas.Height / 2 + 100), "font3", true);
+
             // Options
             for (int i = 0; i < Options.Count; i++)
             {

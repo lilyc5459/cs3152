@@ -26,13 +26,15 @@ namespace Pathogenesis.Controllers
         public int CurDialogue { get; set; }
 
         private SoundController sound_controller;
+        private GameEngine engine;
 
-        public MenuController(ContentFactory factory, SoundController sound_controller)
+        public MenuController(GameEngine engine, ContentFactory factory, SoundController sound_controller)
         {
             menus = factory.getMenus();
             dialogues = factory.getDialogues();
             OpenMenus = new List<Menu>();
             this.sound_controller = sound_controller;
+            this.engine = engine;
         }
 
         /*
@@ -58,23 +60,62 @@ namespace Pathogenesis.Controllers
         {
             OpenMenus.Clear();
             OpenMenus.Add(dialogues[id]);
+            dialogues[id].AnimatingIn = true;
+            dialogues[id].Frame = 0;
             CurDialogue++;
         }
 
         /*
-         * Update menu selection
+         * Update menus
          */
-        public void Update(InputController input_controller)
+        public void Update()
         {
             if (OpenMenus.Count == 0) return;
-
-            Menu menu = OpenMenus.Last();
+            foreach(Menu menu in menus.Values)
+            {
+                if (menu.AnimatingIn)
+                {
+                    menu.Frame++;
+                    if (menu.Frame >= menu.AnimationTime)
+                    {
+                        menu.AnimatingIn = false;
+                    }
+                }
+                else if (menu.AnimatingOut)
+                {
+                    menu.Frame--;
+                    if (menu.Frame <= 0)
+                    {
+                        menu.AnimatingOut = false;
+                    }
+                }
+            }
+            foreach (Menu menu in dialogues.Values)
+            {
+                if (menu.AnimatingIn)
+                {
+                    menu.Frame++;
+                    if (menu.Frame >= menu.AnimationTime)
+                    {
+                        menu.AnimatingIn = false;
+                    }
+                }
+                else if (menu.AnimatingOut)
+                {
+                    menu.Frame--;
+                    if (menu.Frame <= 0)
+                    {
+                        menu.AnimatingOut = false;
+                        engine.ChangeGameState(GameState.IN_GAME);
+                    }
+                }
+            }
         }
 
         /*
          * Handle all menu selections
          */
-        public void HandleMenuInput(GameEngine engine, InputController input_controller)
+        public void HandleMenuInput(InputController input_controller)
         {
             if (OpenMenus.Count == 0) return;
 
@@ -85,12 +126,13 @@ namespace Pathogenesis.Controllers
             if (input_controller.DownOnce)
             {
                 sound_controller.play(SoundType.EFFECT, "menu_move");
-                menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection + 1, 0, menu.Options.Count - 1);
+                menu.CurSelection = (menu.CurSelection + 1) % menu.Options.Count;
             }
             if (input_controller.UpOnce)
             {
                 sound_controller.play(SoundType.EFFECT, "menu_move");
-                menu.CurSelection = (int)MathHelper.Clamp(menu.CurSelection - 1, 0, menu.Options.Count - 1);
+                if(menu.CurSelection == 0) menu.CurSelection = menu.Options.Count-1;
+                else menu.CurSelection--;
             }
 
             // Handle secondary selection (left right)
@@ -231,7 +273,13 @@ namespace Pathogenesis.Controllers
                         }
                         break;
                     case MenuType.DIALOGUE:
-                        engine.ChangeGameState(GameState.IN_GAME);
+                        switch(CurDialogue) {
+                            case 0:
+                                break;
+                            default:
+                                break;
+                        }
+                        menu.AnimatingOut = true;
                         break;
                 }
             }

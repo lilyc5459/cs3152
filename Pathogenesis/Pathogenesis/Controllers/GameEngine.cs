@@ -107,7 +107,7 @@ namespace Pathogenesis
             
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
-            menu_controller = new MenuController(factory, sound_controller);
+            menu_controller = new MenuController(this, factory, sound_controller);
             level_controller = new LevelController(factory, unit_controller, item_controller, sound_controller, menu_controller);
 
             // Game starts at the main menu
@@ -158,6 +158,7 @@ namespace Pathogenesis
 
             fader.Update();
             input_controller.Update(fader.Fading);    // Receive and process input
+            menu_controller.Update();
             sound_controller.Update();
 
             switch (game_state)
@@ -324,16 +325,16 @@ namespace Pathogenesis
                     }
                     break;
                 case GameState.MENU:
-                    menu_controller.HandleMenuInput(this, input_controller);
+                    menu_controller.HandleMenuInput(input_controller);
                     break;
                 case GameState.PAUSED:
-                    menu_controller.HandleMenuInput(this, input_controller);
+                    menu_controller.HandleMenuInput(input_controller);
                     break;
                 case GameState.VICTORY:
-                    menu_controller.HandleMenuInput(this, input_controller);
+                    menu_controller.HandleMenuInput(input_controller);
                     break;
                 case GameState.LOSE:
-                    menu_controller.HandleMenuInput(this, input_controller);
+                    menu_controller.HandleMenuInput(input_controller);
                     break;
                 case GameState.LOADING:
                     if (input_controller.Enter || transition_timer.ElapsedMilliseconds >= LEVEL_TRANSITION_TIME)
@@ -537,7 +538,7 @@ namespace Pathogenesis
             HUD_display.DrawLayerOne(canvas, unit_controller.Units, unit_controller.Player);
             if (level_controller.CurLevelNum == 0)
             {
-                HUD_display.DrawTutorial(canvas, unit_controller.Units, unit_controller.Player);
+                HUD_display.DrawTutorial(canvas, unit_controller.Units, unit_controller.Player, camera.Position);
             }
             item_controller.Draw(canvas, false);
             unit_controller.Draw(canvas);

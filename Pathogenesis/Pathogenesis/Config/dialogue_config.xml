@@ -7,17 +7,17 @@
   </Dialogue>
   <Dialogue>
     <Id>1</Id>
-    <Text1>Hey, look at that little guy. Let's work some virus magic...</Text1>
-    <Text2>(Hold SPACE to convert an enemy)</Text2>
+    <Text1>Look at that nasty little guy.</Text1>
+    <Text2>Let's "persuade" him to join us heheh.</Text2>
   </Dialogue>
   <Dialogue>
     <Id>2</Id>
     <Text1>Check out that organ! Wonder what's inside...</Text1>
-    <Text2>(Infect the organ for plasmids)</Text2>
+    <Text2></Text2>
   </Dialogue>
   <Dialogue>
     <Id>3</Id>
     <Text1>Whoah, that's a big one!</Text1>
-    <Text2>(Infect the boss to win)</Text2>
+    <Text2>If I want to move on, I'll have to infect him.</Text2>
   </Dialogue>
 </Dialogues>

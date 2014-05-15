@@ -33,6 +33,7 @@ namespace Pathogenesis.Models
 
         private Stopwatch popmsg_stopwatch;
         private Stopwatch flash_stopwatch;
+        private Stopwatch glow_stopwatch;
 
         public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture)
         {
@@ -43,6 +44,8 @@ namespace Pathogenesis.Models
 
             popmsg_stopwatch = new Stopwatch();
             flash_stopwatch = new Stopwatch();
+            glow_stopwatch = new Stopwatch();
+            //glow_stopwatch.Start();
         }
 
         public void Update(InputController input_controller)
@@ -53,19 +56,53 @@ namespace Pathogenesis.Models
             }
         }
 
-
-        public void DrawTutorial(GameCanvas canvas, List<GameUnit> units, Player player)
+        public void DrawTutorial(GameCanvas canvas, List<GameUnit> units, Player player, Vector2 center)
         {
             if (player == null) return;
+            float glowtime;
+            if (glow_stopwatch.ElapsedMilliseconds < (float)PLAYER_MSG_TIME / 2)
+            {
+                glowtime = (float)glow_stopwatch.ElapsedMilliseconds / ((float)PLAYER_MSG_TIME / 2);
+            }
+            else
+            {
+                glowtime = 1 - ((float)glow_stopwatch.ElapsedMilliseconds - PLAYER_MSG_TIME / 2) / ((float)PLAYER_MSG_TIME / 2);
+            }
+
+            bool in_range = false;
+
             foreach (GameUnit unit in units)
             {
-                if(unit.Faction == UnitFaction.ENEMY && player.inRange(unit, player.InfectionRange))
+                if(unit.Exists && unit.Faction == UnitFaction.ENEMY && player.inRange(unit, player.InfectionRange))
                 {
+                    in_range = true;
                     canvas.DrawSprite(InfectTexture,
-                        new Color(100, 100, 0, 100),
+                        new Color(100, 100, 0, 100) * (MathHelper.Lerp(100, 250, glowtime) / 250),
                         new Rectangle((int)unit.Position.X - unit.Size / 2 - 10, (int)unit.Position.Y - unit.Size/2 - 10, unit.Size + 20, unit.Size + 20),
                         new Rectangle(0, 0, InfectTexture.Width, InfectTexture.Height));
                 }
+            }
+
+            if (in_range)
+            {
+                Color color = new Color((int)MathHelper.Lerp(180, 220, glowtime), 200, 80);
+
+                canvas.DrawText("Infect [SPACE]",
+                    color * (MathHelper.Lerp(120, 250, glowtime) / 250),
+                    new Vector2(center.X, center.Y + 200),
+                    "font2", true);
+
+                if (!glow_stopwatch.IsRunning) glow_stopwatch.Start();
+                if (glow_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+                {
+                    glow_stopwatch.Reset();
+                    glow_stopwatch.Start();
+                }
+            }
+            else
+            {
+                glow_stopwatch.Reset();
+                glow_stopwatch.Stop();
             }
         }
 
