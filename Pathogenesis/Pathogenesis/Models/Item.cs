@@ -47,6 +47,7 @@ namespace Pathogenesis
         public void Draw(GameCanvas canvas, bool top)
         {
             Color color = Color.White;
+            /*
             switch (Type)
             {
                 case ItemType.PLASMID:
@@ -80,6 +81,7 @@ namespace Pathogenesis
                     color = Color.Yellow;
                     break;
             }
+             */
             if (top)
             {
                 color.A = 30;

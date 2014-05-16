@@ -31,13 +31,13 @@ namespace Pathogenesis
             DestroyedItems = new List<Item>();
             PreviousPositions = new Dictionary<int, Vector2>();
 
-            DropProbabilities.Add(ItemType.PLASMID, 0.5f);
-            DropProbabilities.Add(ItemType.HEALTH, 0.3f);
+            DropProbabilities.Add(ItemType.PLASMID, 0.6f);
+            DropProbabilities.Add(ItemType.HEALTH, 0.25f);
             DropProbabilities.Add(ItemType.ALLIES, 0.1f);
-            DropProbabilities.Add(ItemType.RANGE, 0.025f);
-            DropProbabilities.Add(ItemType.INFECT_REGEN, 0.025f);
-            //DropProbabilities.Add(ItemType.MAX_HEALTH, 0.025f);
-            //DropProbabilities.Add(ItemType.MAX_INFECT, 0.025f);
+            DropProbabilities.Add(ItemType.RANGE, 0.05f);
+            DropProbabilities.Add(ItemType.INFECT_REGEN, 0.0f);
+            DropProbabilities.Add(ItemType.MAX_HEALTH, 0.0f);
+            DropProbabilities.Add(ItemType.MAX_INFECT, 0.0f);
             DropProbabilities.Add(ItemType.ATTACK, 0.0f);
             DropProbabilities.Add(ItemType.MYSTERY, 0.0f);
             DropProbabilities.Add(ItemType.SPEED, 0.0f);

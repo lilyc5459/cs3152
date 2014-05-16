@@ -654,16 +654,13 @@ namespace Pathogenesis
             switch (type)
             {
                 case ItemType.PLASMID:
-                    item = new Item(textures["plasmid"], type);
+                    item = new Item(textures["infect_plasmid"], type);
                     break;
                 case ItemType.HEALTH:
-                    item = new Item(textures["health"], type);
-                    break;
-                case ItemType.ALLIES:
-                    item = new Item(textures["health"], type);
+                    item = new Item(textures["health_plasmid"], type);
                     break;
                 default:
-                    item = new Item(textures["health"], type);
+                    item = new Item(textures["other_plasmid"], type);
                     break;
             }
             if (item != null)

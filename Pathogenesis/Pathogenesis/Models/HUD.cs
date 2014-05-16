@@ -289,7 +289,7 @@ namespace Pathogenesis.Models
                             PopMsg.Add("Allies +Attack!");
                             break;
                         case ItemType.ALLIES:
-                            PopMsg.Add("+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!");
+                            PopMsg.Add("+" + GameUnitController.ITEM_FREE_ALLY_NUM + "Allies!");
                             break;
                         case ItemType.RANGE:
                             PopMsg.Add("+Range!");
