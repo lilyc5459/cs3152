@@ -13,7 +13,7 @@ namespace Pathogenesis
     {
         #region Fields
         private const int TUTORIAL2_FREE_ALLIES = 6;
-        private const int TUTORIAL_START_DELAY = 2000;
+        private const int TUTORIAL_START_DELAY = 1500;
 
         public Level CurLevel { get; set; }     // Stores Current Level Object
         public int CurLevelNum { get; set; }    // Stores Current Level Number
@@ -164,7 +164,7 @@ namespace Pathogenesis
                     foreach (GameUnit unit in unit_controller.Units)
                     {
                         if (unit.Type == UnitType.FLYING && unit.Faction == UnitFaction.ENEMY &&
-                            unit_controller.Player.inRange(unit, 300))
+                            unit_controller.Player.inRange(unit, unit_controller.Player.InfectionRange))
                         {
                             show = true;
                             break;

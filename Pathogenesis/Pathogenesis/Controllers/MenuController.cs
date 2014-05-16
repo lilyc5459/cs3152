@@ -74,6 +74,7 @@ namespace Pathogenesis.Controllers
             OpenMenus.Add(menus[type]);
             if (type == MenuType.MAIN)
             {
+                MainMenuState = MainMenuState.NORMAL;
                 CurMenu.SetAnimation("heart");
                 CurMenu.MASK_OPACITY = CurMenu.DEFAULT_MASK_OPACITY;
             }
@@ -92,7 +93,7 @@ namespace Pathogenesis.Controllers
         }
 
         /*
-         * Transitions from main menu with cool heart animation
+         * Begins transition from main menu with cool heart animation
          */
         public void StartMain(Menu menu)
         {
@@ -100,6 +101,26 @@ namespace Pathogenesis.Controllers
             menu.SetAnimation("infectingheart");
             mainmenu_stopwatch.Start();
             mainfade_stopwatch.Start();
+        }
+
+        /*
+         * Starts the game
+         */
+        public void StartGame()
+        {
+            mainmenu_stopwatch.Stop();
+            mainmenu_stopwatch.Reset();
+            mainfade_stopwatch.Stop();
+            mainfade_stopwatch.Reset();
+            switch (curSelection)
+            {
+                case "Play":
+                    engine.StartGame();
+                    break;
+                case "Tutorial":
+                    engine.StartTutorial();
+                    break;
+            }
         }
 
         /*
@@ -124,19 +145,7 @@ namespace Pathogenesis.Controllers
                 else if (MainMenuState == MainMenuState.INFECTED &&
                   mainmenu_stopwatch.ElapsedMilliseconds >= MAIN_INFECTED_TIME)
                 {
-                    mainmenu_stopwatch.Stop();
-                    mainmenu_stopwatch.Reset();
-                    mainfade_stopwatch.Stop();
-                    mainfade_stopwatch.Reset();
-                    switch (curSelection)
-                    {
-                        case "Play":
-                            engine.StartGame();
-                            break;
-                        case "Tutorial":
-                            engine.StartTutorial();
-                            break;
-                    }
+                    StartGame();
                 }
             }
 
@@ -172,6 +181,14 @@ namespace Pathogenesis.Controllers
         public void HandleMenuInput(InputController input_controller)
         {
             if (OpenMenus.Count == 0) return;
+            if (CurMenu.Type == MenuType.MAIN && MainMenuState != MainMenuState.NORMAL)
+            {
+                if(input_controller.Enter)
+                {
+                    StartGame();
+                }
+                return;
+            }
 
             Menu menu = OpenMenus.Last();
             MenuOption option = menu.Options[menu.CurSelection];
@@ -345,7 +362,7 @@ namespace Pathogenesis.Controllers
         {
             foreach (Menu menu in OpenMenus)
             {
-                menu.Draw(canvas, center);
+                menu.Draw(canvas, center, menu == CurMenu);
             }
         }
     }

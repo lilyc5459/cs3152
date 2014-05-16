@@ -306,6 +306,11 @@ namespace Pathogenesis
             {
                 color = Color.Gray;
             }
+            if (Type == UnitType.BOSS)
+            {
+                color = Color.Lerp(new Color(50, 100, 50), Color.White, InfectionVitality/max_infection_vitality);
+            }
+
 
             if (AnimateAttack)
             {

@@ -102,7 +102,7 @@ namespace Pathogenesis.Models
             FrameSize = new Vector2(AnimationData[animation]["FrameWidth"], AnimationData[animation]["FrameHeight"]);
         }
 
-        public void Draw(GameCanvas canvas, Vector2 center)
+        public void Draw(GameCanvas canvas, Vector2 center, bool on_top)
         {
             Color color = Color.Black;
             String title = "";
@@ -119,7 +119,7 @@ namespace Pathogenesis.Models
                     break;
                 case MenuType.OPTIONS:
                     title = "Options";
-                    color = new Color(90, 0, 0, 250);
+                    color = new Color(0, 0, 0, 0);
                     break;
                 case MenuType.WIN:
                     title = "Victory!";
@@ -200,25 +200,31 @@ namespace Pathogenesis.Models
                 return;
             }
 
-            Color fontDrawColor = fontColor * MathHelper.Lerp(0, 1, MASK_OPACITY/DEFAULT_MASK_OPACITY);
-            // Title
-            canvas.DrawText(title, fontDrawColor,
-                 new Vector2((int)center.X, (int)center.Y - canvas.Height / 2 + 100), "font3", true);
-
             // Options
-            for (int i = 0; i < Options.Count; i++)
+            if (on_top)
             {
-                MenuOption option = Options[i];
-                Color option_color = fontDrawColor;
-                if (i == CurSelection)
+                Color fontDrawColor = fontColor * MathHelper.Lerp(0, 1, MASK_OPACITY / DEFAULT_MASK_OPACITY);
+                // Title
+                canvas.DrawText(title, fontDrawColor,
+                     new Vector2((int)center.X, (int)center.Y - canvas.Height / 2 + 100), "font3", true);
+
+                for (int i = 0; i < Options.Count; i++)
                 {
-                    option_color = fontHighlightColor;
-                    canvas.DrawSprite(Textures["solid"], option_color,
-                        new Rectangle((int)(center.X + option.Offset.X - 150), (int)(center.Y + option.Offset.Y), 15, 15),
-                        new Rectangle(0, 0, Textures["solid"].Width, Textures["solid"].Height));
-                    option.Draw(canvas, center + new Vector2(3, 3), Color.Black);
+                    MenuOption option = Options[i];
+                    Color option_color = fontDrawColor;
+                    if (i == CurSelection)
+                    {
+                        option_color = fontHighlightColor;
+                        canvas.DrawSprite(Textures["solid"], option_color,
+                            new Rectangle((int)(center.X + option.Offset.X - 150), (int)(center.Y + option.Offset.Y), 15, 15),
+                            new Rectangle(0, 0, Textures["solid"].Width, Textures["solid"].Height));
+                        option.Draw(canvas, center, option_color, true);
+                    }
+                    else
+                    {
+                        option.Draw(canvas, center, option_color, false);
+                    }
                 }
-                option.Draw(canvas, center, option_color);
             }
         }
     }
