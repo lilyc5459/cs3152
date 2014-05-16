@@ -338,6 +338,96 @@ namespace Pathogenesis
                     {
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
+                            //Code for adjacent tiles stuff
+                            //Organized as such: Top = 1, Bot = 10, Right = 100, Left = 10000
+                            int top= 0, bot= 0, right= 0, left = 0;
+                            if (level.Map.tiles[i][j] == 1)
+                            {
+                                if (j != 0 && level.Map.tiles[i][j - 1] == 1)
+                                {
+                                    top = 1000;
+                                }
+                                if (j != level.Map.tiles[0].Length && level.Map.tiles[i][j + 1] == 1)
+                                {
+                                    bot = 10;
+                                }
+                                if (j != level.Map.tiles.Length && level.Map.tiles[i + 1][j] == 1)
+                                {
+                                    right = 100;
+                                }
+                                if (i != 0 && level.Map.tiles[i - 1][j] == 1)
+                                {
+                                    left = 1;
+                                }
+                            }
+                            int wallBye = top + bot + right + left;
+                            switch (wallBye){
+                                case 0
+                            if (top & bot & right & left) 
+                            {
+
+                            }
+                            else if (top & bot & right) 
+                            { 
+
+                            }
+                            else if (top & left & bot) 
+                            {
+
+                            }
+                            else if (left & right & top)
+                            {
+
+                            }
+                            else if (left & right & bot)
+                            {
+
+                            }
+                            else if (top & right)
+                            {
+
+                            }
+                            else if (left & top)
+                            {
+
+                            }
+                            else if (bot & right)
+                            {
+
+                            }
+                            else if (bot & left)
+                            {
+
+                            }
+                            else if (left & left)
+                            {
+
+                            }
+                            else if (top & bot)
+                            {
+
+                            }
+                            else if (left)
+                            {
+
+                            }
+                            else if (right)
+                            {
+
+                            }
+                            else if (top)
+                            {
+
+                            }
+                            else if (bot)
+                            {
+
+                            }
+                            else
+                            {
+
+                            }
+                            //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
                             {
                                 level.PlayerStart = new Vector2(j, i);
