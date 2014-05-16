@@ -43,6 +43,7 @@ div#wall_sel{
 }
 
 div#container{
+	margin-top: 150px;
 	margin-left: 160px;
 	float: left;
 	width: 510px;
@@ -113,6 +114,9 @@ div#title{
 }
 
 div#spawnEdit{
+	left: 160px;
+	position: fixed;
+	background-color: white;
 	width: auto;
 	height: 150px;
 	border: solid black;
