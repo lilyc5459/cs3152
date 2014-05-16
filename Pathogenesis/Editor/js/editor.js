@@ -22,6 +22,7 @@ function init() {
     lvl2: .20,
     lvl3: .05,
     rate: 10,
+    immune: .2
   }
 
   defSpawnerProbs = {
