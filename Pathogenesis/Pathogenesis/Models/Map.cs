@@ -49,7 +49,7 @@ namespace Pathogenesis.Models
             }
         }
         public int[][] tiles;
-        public int[][] textureTiles;
+        public Texture2D[][] textureTiles;
 
         public List<Texture2D> WallTextures { get; set; }
 

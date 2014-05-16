@@ -339,7 +339,7 @@ namespace Pathogenesis
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
                             //Code for adjacent tiles stuff
-                            //Organized as such: TRLB in binary notaion
+                            //Organized as such: TRBL in binary notaion
                             int top= 0, bot= 0, right= 0, left = 0;
                             if (level.Map.tiles[i][j] == 1)
                             {
@@ -368,35 +368,48 @@ namespace Pathogenesis
                                     break;
                                 case 1:
                                     //left wall
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 10:
                                     //bot wall
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 100:
                                     //right wall
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1000:
                                     //top wall
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 11:
                                     // Lleft & Bot
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 101:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1001:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1100:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 111:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1110:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1101:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1011:
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 case 1111:
                                     //full borders
+                                    //level.Map.textureTiles[i][j] =
                                     break;
                                 default:
                                     break;
