@@ -7,7 +7,13 @@ div#page{
 	height: auto;
 }
 
+.test{
+	background-color:rgba(255,0,0,0.5);
+}
+
 div#sidebar{
+	background-color: white;
+	position: fixed;
 	padding: 5px;
 	float: left;
 	width: 140px;
@@ -41,6 +47,8 @@ div#wall_sel{
 }
 
 div#container{
+	margin-top: 150px;
+	margin-left: 160px;
 	float: left;
 	width: 510px;
 	height: 102px;
@@ -52,8 +60,8 @@ div#container{
 
 div.tile{
 	float: left;
-	width: 50px;
-	height: 50px;
+	width: 40px;
+	height: 40px;
 	display:inline-block;
 	border: solid black;
 	border-width: 1px 0 0 1px;
@@ -110,21 +118,35 @@ div#title{
 }
 
 div#spawnEdit{
+	z-index: 3;
+	left: 160px;
+	position: fixed;
+	background-color: white;
 	width: auto;
 	height: 150px;
 	border: solid black;
 }
 
-.test{
-	background-color: black;
+.areaOverlay{
+	pointer-events:none;
+	z-index: 2;
+	background: rgba(200, 54, 54, 0.32); 
+	float: left;
+	width: 40px;
+	height: 40px;
+	display:inline-block;
+	border: solid black;
+	border-width: 1px 0 0 1px;
 }
 
 .spawnTxt{
+	z-index: 10;
 	display: none;
 	margin-top: 10px;
 }
 
 .centerTxt{
+	z-index: 10;
 	display: none;
 	margin-top: 20px;
 }

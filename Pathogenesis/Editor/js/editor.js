@@ -3,6 +3,7 @@ function init() {
   TILE_LENGTH = 40;
   TILE_BORDER = 1;
   TILE_REAL_LENGTH = 40;
+  REGION_OVERLAY = '<div class="areaOverlay"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>';
 
   ArrayOfInt = [];
   realWidth = 0;
@@ -51,9 +52,10 @@ $("#open_region_editor").on("click", function() {
   $("#NonRegionStuff").hide();
   //Show region if it exists:
   if (regionSel.length>0){
-    $('[reg'+$('#regsel').val()+']').addClass("spawnArea");
-    $('[espawnerid'+$('#regsel').val()+'] > .spawnTxt').show();
-    $('[centerForReg'+$('#regsel').val()+'] > .centerTxt').show();
+    //$('[reg'+$('#regsel').val()+']').addClass("spawnArea");
+    $('[reg'+$('#regsel').val()+']').append(REGION_OVERLAY);
+    $('[espawnerid'+$('#regsel').val()+'] > .areaOverlay > .spawnTxt').show();
+    $('[centerForReg'+$('#regsel').val()+'] > .areaOverlay > .centerTxt').show();
   }
 });
 
@@ -61,8 +63,8 @@ $("#open_region_editor").on("click", function() {
 $("#close_region_editor").on("click", function() {
   $("#RegionStuff").hide();
   $("#NonRegionStuff").show();
-  $(".tile").removeClass("spawnArea");
-  $(".tile").removeClass("regCntr");
+  //$(".tile").removeClass("spawnArea");
+  $('.areaOverlay').remove();
   $(".spawnTxt").hide();
   $(".centerTxt").hide();
   advMode = false;
@@ -125,7 +127,7 @@ function addRow(){
 
   for (var x=0; x<blockWidth; x++){
     ArrayOfInt[y][x] = 0;
-    $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+    $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"></div>');
   }
 
   realHeight = blockHeight * TILE_REAL_LENGTH;
@@ -148,7 +150,7 @@ function addCol(){
     x = blockWidth-1;
     oldX = blockWidth-2;
     ArrayOfInt[y][x] = 0;
-    $('.tile[x="'+oldX+'"][y="'+y+'"]').after('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+    $('.tile[x="'+oldX+'"][y="'+y+'"]').after('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"></div>');
   }
 
   realWidth = blockWidth * TILE_REAL_LENGTH;
@@ -175,13 +177,13 @@ function addRegion(regId){
   });
   $( "#regsel" ).change(function() {
       for(var i=0; i<regionSel.length; i++){
-        $('[reg'+i+']').removeClass("spawnArea");
-        $('[espawnerid'+i+'] > .spawnTxt').hide();
-        $('[centerForReg'+i+'] > .centerTxt').hide();
+        $('.areaOverlay').remove();
+        $('.spawnTxt').hide();
+        $('.centerTxt').hide();
       }
-      $('[reg'+$('#regsel').val()+']').addClass("spawnArea");
-      $('[espawnerid'+$('#regsel').val()+'] > .spawnTxt').show();
-      $('[centerForReg'+$('#regsel').val()+'] > .centerTxt').show();
+      $('[reg'+$('#regsel').val()+']').append(REGION_OVERLAY);
+      $('[espawnerid'+$('#regsel').val()+'] > .areaOverlay > .spawnTxt').show();
+      $('[centerForReg'+$('#regsel').val()+'] > .areaOverlay > .centerTxt').show();
       //show relevant
       $('#maxUnitsSet').val(regionSel[$('#regsel').val()].maxUnits);
   });
@@ -230,6 +232,11 @@ function drawing(){
       ArrayOfInt[y][x] = selectedType; 
     //Methods for region stuff!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     }else{
+      //Find out if it is an area (no other methods worked but this)
+      var isArea = false;
+      $cur.children('.areaOverlay').each(function(){
+        isArea = true;
+      })
       if(selectedTile == "empty"){
         //remove spawner
         //-remove object TODO: Do I need to really set this to null?
@@ -245,7 +252,7 @@ function drawing(){
         $cur.removeAttr("reg"+$('#regsel').val());
 
         //Remove Visulizations
-        $cur.removeClass("spawnArea");
+        $cur.empty(); //or remove area
         $cur.children(".spawnTxt").hide();
         $cur.children(".centerTxt").hide();
       }
@@ -255,15 +262,19 @@ function drawing(){
         }
       }
       else if(selectedTile == "spawnArea"){
-        $cur.addClass(selectedTile);
-        $cur.attr("reg"+$('#regsel').val(), true);
+        //$cur.addClass(selectedTile);
+        //append the elements here
+        if(!isArea){
+          $cur.append(REGION_OVERLAY);
+          $cur.attr("reg"+$('#regsel').val(), true);
+        }
       }
-      else if ($cur.attr("class").indexOf("spawnArea") !== -1){
+      else if (isArea){
         //Add unique ID to enemy spawns
         if(selectedTile == "eSpawner"){
           //Add spawner class and show text
           $cur.attr('eSpawnerID'+$('#regsel').val(), eSpawnerID);
-          $cur.children(".spawnTxt").show();
+          $cur.children('.areaOverlay').children(".spawnTxt").show();
           //Javascript spaner info creation
           var newDefSpwnRates = jQuery.extend(true, {}, defSpawnerProbs);
           newDefSpwnRates.Id = eSpawnerID;
@@ -271,10 +282,10 @@ function drawing(){
           eSpawnerID++;
         }
         else if(selectedTile == "regCntr"){
-          $('[centerForReg'+$('#regsel').val()+'] > .centerTxt').hide();
+          $('[centerForReg'+$('#regsel').val()+'] > .areaOverlay > .centerTxt').hide();
           $('[centerForReg'+$('#regsel').val()+']').removeAttr('centerforreg'+$('#regsel').val());
           $cur.attr("centerForReg"+$('#regsel').val(), true);
-          $cur.children(".centerTxt").show();
+          $cur.children('.areaOverlay').children(".centerTxt").show();
         }
       }
     }
@@ -394,7 +405,7 @@ function setup(){
 
             for(var y=0; y<lvlHeight.val(); y++){
               for(var x=0; x<lvlWidth.val(); x++){
-                $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+                $("#container").append('<div class="tile empty" type="0" x="'+x+'" y="'+y+'"></div>');
               }
             }
 
@@ -652,7 +663,7 @@ function buildLevel(inputTxt){
       else if (typeVal == 9){
         className = "goalBoss";
       }
-      $("#container").append('<div class="tile '+className+'" type="'+typeVal+'" x="'+x+'" y="'+y+'"><div class="spawnTxt">Spawn</div></br><div class="centerTxt">Center</div></div>');
+      $("#container").append('<div class="tile '+className+'" type="'+typeVal+'" x="'+x+'" y="'+y+'"></div>');
     }
     ArrayOfInt[y]=innerArr;
   }
@@ -693,15 +704,17 @@ function buildLevel(inputTxt){
               $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
           }else{
-            spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Id;
-            if ($('#legacyCkBx').prop( "checked" )){
-              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.X;
-              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.Y;
-            }else{
-              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.X;
-              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Y;
+            if (levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint != ''){
+              spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Id;
+              if ($('#legacyCkBx').prop( "checked" )){
+                SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.X;
+                SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+              }else{
+                SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.X;
+                SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Y;
+              }
+              $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
-            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
           }
         }
       }
@@ -739,15 +752,17 @@ function buildLevel(inputTxt){
               $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
           }else{
-            spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Id;
-            if ($('#legacyCkBx').prop( "checked" )){
-              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.X;
-              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.Y;
-            }else{
-              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.X;
-              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Y;
+            if (levelObj.Level.Regions.Region.SpawnPointsZ.SpawnPoint != ''){
+              spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Id;
+              if ($('#legacyCkBx').prop( "checked" )){
+                SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.X;
+                SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+              }else{
+                SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.X;
+                SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Y;
+              }
+              $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
-            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
           }
         }
       }
