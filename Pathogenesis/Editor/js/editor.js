@@ -693,15 +693,17 @@ function buildLevel(inputTxt){
               $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
           }else{
-            spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Id;
-            if ($('#legacyCkBx').prop( "checked" )){
-              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.X;
-              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.Y;
-            }else{
-              SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.X;
-              SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Y;
+            if (levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint != ''){
+              spawnId = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Id;
+              if ($('#legacyCkBx').prop( "checked" )){
+                SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.X;
+                SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+              }else{
+                SpawnxCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.X;
+                SpawnyCord = +levelObj.Level.Regions.Region[j].SpawnPoints.SpawnPoint.Pos.Y;
+              }
+              $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
-            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
           }
         }
       }
@@ -739,15 +741,17 @@ function buildLevel(inputTxt){
               $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
           }else{
-            spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Id;
-            if ($('#legacyCkBx').prop( "checked" )){
-              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.X;
-              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.Y;
-            }else{
-              SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.X;
-              SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Y;
+            if (levelObj.Level.Regions.Region.SpawnPointsZ.SpawnPoint != ''){
+              spawnId = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Id;
+              if ($('#legacyCkBx').prop( "checked" )){
+                SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.X;
+                SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Vector2.Y;
+              }else{
+                SpawnxCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.X;
+                SpawnyCord = +levelObj.Level.Regions.Region.SpawnPoints.SpawnPoint.Pos.Y;
+              }
+              $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
             }
-            $('.tile[x="'+SpawnxCord+'"][y="'+SpawnyCord+'"]').attr('espawnerid'+curReg, spawnId);
           }
         }
       }
