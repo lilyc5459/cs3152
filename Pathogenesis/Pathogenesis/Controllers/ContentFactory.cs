@@ -339,7 +339,7 @@ namespace Pathogenesis
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
                             //Code for adjacent tiles stuff
-                            //Organized as such: Top = 1, Bot = 10, Right = 100, Left = 10000
+                            //Organized as such: TRLB in binary notaion
                             int top= 0, bot= 0, right= 0, left = 0;
                             if (level.Map.tiles[i][j] == 1)
                             {
@@ -361,72 +361,47 @@ namespace Pathogenesis
                                 }
                             }
                             int wallBye = top + bot + right + left;
-                            switch (wallBye){
-                                case 0
-                            if (top & bot & right & left) 
+                            switch (wallBye)
                             {
-
+                                case 0:
+                                    //no wall
+                                    break;
+                                case 1:
+                                    //left wall
+                                    break;
+                                case 10:
+                                    //bot wall
+                                    break;
+                                case 100:
+                                    //right wall
+                                    break;
+                                case 1000:
+                                    //top wall
+                                    break;
+                                case 11:
+                                    // Lleft & Bot
+                                    break;
+                                case 101:
+                                    break;
+                                case 1001:
+                                    break;
+                                case 1100:
+                                    break;
+                                case 111:
+                                    break;
+                                case 1110:
+                                    break;
+                                case 1101:
+                                    break;
+                                case 1011:
+                                    break;
+                                case 1111:
+                                    //full borders
+                                    break;
+                                default:
+                                    break;
                             }
-                            else if (top & bot & right) 
-                            { 
-
-                            }
-                            else if (top & left & bot) 
-                            {
-
-                            }
-                            else if (left & right & top)
-                            {
-
-                            }
-                            else if (left & right & bot)
-                            {
-
-                            }
-                            else if (top & right)
-                            {
-
-                            }
-                            else if (left & top)
-                            {
-
-                            }
-                            else if (bot & right)
-                            {
-
-                            }
-                            else if (bot & left)
-                            {
-
-                            }
-                            else if (left & left)
-                            {
-
-                            }
-                            else if (top & bot)
-                            {
-
-                            }
-                            else if (left)
-                            {
-
-                            }
-                            else if (right)
-                            {
-
-                            }
-                            else if (top)
-                            {
-
-                            }
-                            else if (bot)
-                            {
-
-                            }
-                            else
-                            {
-
-                            }
+                           
                             //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
                             {
