@@ -20,6 +20,8 @@ namespace Pathogenesis.Models
 
         private Stopwatch stopwatch;
 
+        public float ImmumeProbability { get; set; }
+
         [XmlIgnoreAttribute]
         public Dictionary<UnitType, float> UnitProbabilities { get; set; }
         [XmlIgnoreAttribute]
@@ -32,6 +34,7 @@ namespace Pathogenesis.Models
 
             UnitProbabilities = new Dictionary<UnitType, float>();
             LevelProbabilities = new Dictionary<int, float>();
+            ImmumeProbability = 0.0f;
         }
 
         public SpawnPoint(Vector2 pos, int spawndelay)
@@ -41,6 +44,7 @@ namespace Pathogenesis.Models
 
             UnitProbabilities = new Dictionary<UnitType, float>();
             LevelProbabilities = new Dictionary<int, float>();
+            ImmumeProbability = 0.0f;
 
             stopwatch = new Stopwatch();
             stopwatch.Start();

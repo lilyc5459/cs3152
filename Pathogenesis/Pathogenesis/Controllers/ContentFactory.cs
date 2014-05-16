@@ -335,6 +335,9 @@ namespace Pathogenesis
                                     case "rate":
                                         spawnPoint.SpawnDelay = int.Parse(prob_entry.Value);
                                         break;
+                                    case "immune":
+                                        spawnPoint.ImmumeProbability = float.Parse(prob_entry.Value);
+                                        break;
                                 }
                             }
                         }

@@ -47,7 +47,6 @@ namespace Pathogenesis
         public const int EXPLORE_SIGHT_RANGE = 15;   // The range of the player's explore vision, updating the minimap
         
         // Spawning parameters
-        public const float IMMUNE_SPAWN_PROB = 0.0f;    //TODO change
         public const int RANDOM_SPAWN_DIST = 10;
 
         // Item parameters
@@ -61,6 +60,9 @@ namespace Pathogenesis
         public const float ITEM_MAX_HEALTH_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECT_POINTS_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
         public const float ITEM_INFECTION_REGEN_INCREASE = 1.2f;  // The amount of speed increse upon picking up speed item
+
+        //This changes -immune ratio
+        public float immune_spawn_prob = 0.0f;    //default val
         #endregion
 
         #region Fields
@@ -188,6 +190,7 @@ namespace Pathogenesis
                 {
                     UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
                     int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
+                    immune_spawn_prob = sp.ImmumeProbability;
 
                     if (type != null && unit_lvl != null)
                     {
@@ -196,7 +199,7 @@ namespace Pathogenesis
                             sp.Pos * Map.TILE_SIZE +
                             new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
                                         (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
-                                        rand.NextDouble() < IMMUNE_SPAWN_PROB);
+                                        rand.NextDouble() < immune_spawn_prob);
                         if (unit != null)
                         {
                             unit.Region = r;
@@ -319,6 +322,7 @@ namespace Pathogenesis
 
                     UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
                     int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
+                    immune_spawn_prob = sp.ImmumeProbability;
 
                     if(type != null && unit_lvl != null) {
                         // Create new unit
@@ -326,7 +330,7 @@ namespace Pathogenesis
                             sp.Pos * Map.TILE_SIZE +
                             new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
                                         (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
-                                        rand.NextDouble() < IMMUNE_SPAWN_PROB);
+                                        rand.NextDouble() < immune_spawn_prob);
                         if (unit != null)
                         {
                             unit.Region = r;
