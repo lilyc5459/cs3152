@@ -270,13 +270,14 @@ namespace Pathogenesis
         private void LoadLevels()
         {
             // Load Levels
+            int num = 0; //level num, used for loading correct wall tyles later
             String line;
             StreamReader sr = new StreamReader("Config/level_paths.txt");
             while ((line = sr.ReadLine()) != null)
             {
                 if (line.StartsWith("num"))
                 {
-                    int num = int.Parse(line.Split(new char[] { ',' })[1].Trim());
+                    num = int.Parse(line.Split(new char[] { ',' })[1].Trim());
                     levels = new List<Level>(num);
                     continue;
                 }
@@ -392,48 +393,47 @@ namespace Pathogenesis
                                     break;
                                 case 1:
                                     //left wall
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_"+num+"_0001");
                                     break;
                                 case 10:
                                     //bot wall
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_0010");
                                     break;
                                 case 100:
                                     //right wall
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_0100");
                                     break;
                                 case 1000:
                                     //top wall
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1000");
                                     break;
                                 case 11:
                                     // Lleft & Bot
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_0011");
                                     break;
                                 case 101:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_0101");
                                     break;
                                 case 1001:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1001");
                                     break;
                                 case 1100:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1100");
                                     break;
                                 case 111:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_0111");
                                     break;
                                 case 1110:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1110");
                                     break;
                                 case 1101:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1101");
                                     break;
                                 case 1011:
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1011");
                                     break;
                                 case 1111:
-                                    //full borders
-                                    //level.Map.textureTiles[i][j] =
+                                    level.Map.textureTiles[i][j] = getTexture("Wall_" + num + "_1111");
                                     break;
                                 default:
                                     break;
