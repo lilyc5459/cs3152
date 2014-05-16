@@ -359,21 +359,20 @@ namespace Pathogenesis
                     {
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
-                            /*
                             //Code for adjacent tiles stuff
                             //Organized as such: TRBL in binary notaion
-                            int top= 0, bot= 0, right= 0, left = 0;
+                            int top = 0, bot = 0, right = 0, left = 0;
                             if (level.Map.tiles[i][j] == 1)
                             {
                                 if (j != 0 && level.Map.tiles[i][j - 1] == 1)
                                 {
                                     top = 1000;
                                 }
-                                if (j != level.Map.tiles[0].Length && level.Map.tiles[i][j + 1] == 1)
+                                if (j != level.Map.tiles[0].Length - 1 && level.Map.tiles[i][j + 1] == 1)
                                 {
                                     bot = 10;
                                 }
-                                if (j != level.Map.tiles.Length && level.Map.tiles[i + 1][j] == 1)
+                                if (i != level.Map.tiles.Length - 1 && level.Map.tiles[i + 1][j] == 1)
                                 {
                                     right = 100;
                                 }
@@ -382,8 +381,8 @@ namespace Pathogenesis
                                     left = 1;
                                 }
                             }
-                            int wallBye = top + bot + right + left;
-                            switch (wallBye)
+                            int wallByte = top + bot + right + left;
+                            switch (wallByte)
                             {
                                 case 0:
                                     //no wall
@@ -436,7 +435,6 @@ namespace Pathogenesis
                                 default:
                                     break;
                             }
-                             * */
                            
                             //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
