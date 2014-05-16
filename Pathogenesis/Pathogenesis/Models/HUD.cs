@@ -100,12 +100,12 @@ namespace Pathogenesis.Models
 
                 canvas.DrawText("Infect ",
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
-                    new Vector2(center.X - 120, center.Y + 200),
+                    new Vector2(center.X - 140, center.Y + 200),
                     "font2", false);
 
                 canvas.DrawSprite(SpaceTexture,
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
-                    new Rectangle((int)center.X + 20, (int)center.Y + 190, SpaceTexture.Width/2, SpaceTexture.Height/2),
+                    new Rectangle((int)center.X + 20, (int)center.Y + 190, SpaceTexture.Width, SpaceTexture.Height),
                     new Rectangle(0, 0, SpaceTexture.Width, SpaceTexture.Height));
 
                 if (!glow_stopwatch.IsRunning) glow_stopwatch.Start();
@@ -162,14 +162,14 @@ namespace Pathogenesis.Models
                 }
 
                 //Infected bar indicator
-                
+                /*
                 if ((unit.Type == UnitType.BOSS || unit.Type == UnitType.ORGAN) && unit.InfectionVitality != unit.max_infection_vitality)
                 {
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                         new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                         new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }
-                
+                */
             }
             if (player == null) return;
 

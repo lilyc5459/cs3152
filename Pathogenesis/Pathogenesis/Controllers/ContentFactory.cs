@@ -359,6 +359,7 @@ namespace Pathogenesis
                     {
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
+                            /*
                             //Code for adjacent tiles stuff
                             //Organized as such: TRLB in binary notaion
                             int top= 0, bot= 0, right= 0, left = 0;
@@ -422,6 +423,7 @@ namespace Pathogenesis
                                 default:
                                     break;
                             }
+                             * */
                            
                             //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
@@ -577,6 +579,7 @@ namespace Pathogenesis
                         unit = new GameUnit(textures["enemy3_sheet"], type, faction, level, immune);
                     }
                     animation_data = animations["flying1"];
+                    unit.AnimateResting = true;
                     break;
                 case UnitType.BOSS:
                     unit = new GameUnit(textures["boss1"], type, faction, level, immune);

@@ -168,35 +168,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\enemy2\enemy2.png">
-      <Name>enemy2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Characters\enemy3\enemy3_back.png">
-      <Name>enemy3_back</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy3\enemy3_front.png">
-      <Name>enemy3_front</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy3\enemy3_left.png">
-      <Name>enemy3_left</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Characters\enemy3\enemy3_right.png">
-      <Name>enemy3_right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Characters\main\main-back.png">
       <Name>main-back</Name>
       <Importer>TextureImporter</Importer>
@@ -310,6 +281,8 @@
     <Folder Include="Characters\ally2\" />
     <Folder Include="Characters\ally3\" />
     <Folder Include="Characters\enemy1\" />
+    <Folder Include="Characters\enemy2\" />
+    <Folder Include="Characters\enemy3\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Environment\health.png">
@@ -498,6 +471,33 @@
   <ItemGroup>
     <Compile Include="Backgrounds\infectingheart.png">
       <Name>infectingheart</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Environment\plaz1.png">
+      <Name>plaz1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Environment\plaz2.png">
+      <Name>plaz2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Environment\plaz3.png">
+      <Name>plaz3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Environment\space4mini.png">
+      <Name>space4mini</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Environment\wasd4mini.png">
+      <Name>wasd4mini</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

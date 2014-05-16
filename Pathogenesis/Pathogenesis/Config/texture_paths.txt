@@ -8,8 +8,8 @@ health, Environment/health
 conversion_sheet, Environment/conversion_sheet
 
 //Tutorial
-space, Environment/space
-WASD, Environment/WASD
+space, Environment/space4mini
+WASD, Environment/wasd4mini
 
 // Walls
 wall1, Environment/wall_square
