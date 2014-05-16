@@ -216,6 +216,7 @@ namespace Pathogenesis.Models
 
                     if (tiles[i][j] == 1)
                     {
+                        texture = textureTiles[i][j];
                         canvas.DrawSprite(texture, Color.White,
                             new Rectangle(j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                             new Rectangle(0, 0, texture.Width, texture.Height));
