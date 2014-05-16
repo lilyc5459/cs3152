@@ -2,11 +2,14 @@
 solid, Environment/solid
 circle, Environment/circle
 infect_range, Environment/infect
-health_bar, Environment/healthbar
 infect_plasmid, Environment/plaz2
 health_plasmid, Environment/plaz1
 other_plasmid, Environment/plaz3
 conversion_sheet, Environment/conversion_sheet
+
+bar_border, Environment/bar-border
+health_bar, Environment/health-bar
+infect_bar, Environment/plasmid-bar
 
 //Tutorial
 space, Environment/space4mini

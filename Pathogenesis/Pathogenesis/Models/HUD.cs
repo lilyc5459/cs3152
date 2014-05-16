@@ -19,9 +19,12 @@ namespace Pathogenesis.Models
         public const int FLASH_TIME = 100;
         public const int WASD_DELAY_TIME = 1000;
         public const int WASD_DISPLAY_TIME = 3000;
- 
+
+        public Texture2D Solid { get; set; }
         public Texture2D InfectTexture { get; set; }
+        public Texture2D InfectBarTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
+        public Texture2D BarBorderTexture { get; set; }
         public Texture2D ConversionTexture { get; set; }
         public Texture2D SpaceTexture { get; set; }
         public Texture2D WASDTexture { get; set; }
@@ -43,11 +46,15 @@ namespace Pathogenesis.Models
         private Stopwatch tip_stopwatch;
         public static bool showWASD { get; set; }
 
-        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture,
+        public HUD(Texture2D solid, Texture2D infect_range, Texture2D infect_bar, Texture2D health_bar, Texture2D bar_border,
+            Texture2D conversion_texture,
             Texture2D space_texture, Texture2D wasd_texture)
         {
-            InfectTexture = infect;
-            HealthBarTexture = health;
+            Solid = solid;
+            InfectTexture = infect_range;
+            InfectBarTexture = infect_bar;
+            HealthBarTexture = health_bar;
+            BarBorderTexture = bar_border;
             ConversionTexture = conversion_texture;
             SpaceTexture = space_texture;
             WASDTexture = wasd_texture;
@@ -245,11 +252,17 @@ namespace Pathogenesis.Models
             canvas.DrawText("Health", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
                 "font2", false);
-            canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
-                new Rectangle((int)(center.X - canvas.Width/2 + 150),
+
+            canvas.DrawSprite(HealthBarTexture, new Color(200, 200, 200),
+                new Rectangle((int)(center.X - canvas.Width/2 + 170),
                     (int)(center.Y - canvas.Height / 2 + 10),
-                    (int)(MathHelper.Lerp(0, 500, player.Health/player.max_health)), 30),
+                    (int)(MathHelper.Lerp(0, 365, player.Health/player.max_health)), HealthBarTexture.Height),
                 new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+            canvas.DrawSprite(BarBorderTexture, Color.White,
+                new Rectangle((int)(center.X - canvas.Width / 2 + 170),
+                    (int)(center.Y - canvas.Height / 2 + 10),
+                    BarBorderTexture.Width, BarBorderTexture.Height),
+                new Rectangle(0, 0, BarBorderTexture.Width, BarBorderTexture.Height));
             /*
             canvas.DrawText(player.Health + "/" + player.max_health, Color.White,
                 new Vector2(player.Position.X - canvas.Width / 2 + 10, player.Position.Y - canvas.Height / 2 + 10),
@@ -260,11 +273,17 @@ namespace Pathogenesis.Models
             canvas.DrawText("Infect", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 55),
                 "font2", false);
-            canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
-                new Rectangle((int)(center.X - canvas.Width/2 + 150),
+            canvas.DrawSprite(InfectBarTexture, new Color(200, 200, 200),
+                new Rectangle((int)(center.X - canvas.Width/2 + 170),
                     (int)(center.Y - canvas.Height / 2 + 50),
-                    (int)(MathHelper.Lerp(0, 500, player.InfectionPoints / player.MaxInfectionPoints)), 30),
-                new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
+                    (int)(MathHelper.Lerp(0, 365, player.InfectionPoints / player.MaxInfectionPoints)), InfectBarTexture.Height),
+                new Rectangle(0, 0, InfectBarTexture.Width, InfectBarTexture.Height));
+            canvas.DrawSprite(BarBorderTexture, Color.White,
+                new Rectangle((int)(center.X - canvas.Width / 2 + 170),
+                    (int)(center.Y - canvas.Height / 2 + 50),
+                    BarBorderTexture.Width, BarBorderTexture.Height),
+                new Rectangle(0, 0, BarBorderTexture.Width, BarBorderTexture.Height));
+            
             /*
             canvas.DrawText(player.InfectionPoints + "/" + player.MaxInfectionPoints, Color.White,
                 new Vector2(player.Position.X - canvas.Width/2 + 10, player.Position.Y - canvas.Height / 2 + 50),
@@ -353,7 +372,7 @@ namespace Pathogenesis.Models
             int[][] mapTiles = level.Map.tiles;
             float px = center.X;
             float py = center.Y;
-            canvas.DrawSprite(HealthBarTexture, new Color(0, 0, 0, 100),
+            canvas.DrawSprite(Solid, new Color(0, 0, 0, 100),
                 new Rectangle((int)px - MINIMAP_WIDTH/2 + 350, (int)py - MINIMAP_HEIGHT/2 - 300,
                     MINIMAP_WIDTH, MINIMAP_HEIGHT),
                 new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
@@ -377,7 +396,7 @@ namespace Pathogenesis.Models
                         {
                             color = mapTiles[j][i] == 1 ? Color.Maroon : Color.LightPink;
                         }
-                        canvas.DrawSprite(HealthBarTexture, color,
+                        canvas.DrawSprite(Solid, color,
                             new Rectangle((int)(px + x_trans * MINIMAP_TILE_SIZE + 350), (int)(py + y_trans * MINIMAP_TILE_SIZE - 300),
                                 MINIMAP_TILE_SIZE, MINIMAP_TILE_SIZE),
                             new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));

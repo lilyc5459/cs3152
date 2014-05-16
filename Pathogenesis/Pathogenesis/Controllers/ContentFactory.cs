@@ -531,7 +531,8 @@ namespace Pathogenesis
 
         public HUD createHUD(Player player)
         {
-            return new HUD(textures["infect_range"], textures["health_bar"], textures["conversion_sheet"],
+            return new HUD(textures["solid"], textures["infect_range"], textures["infect_bar"], textures["health_bar"],
+                textures["bar_border"], textures["conversion_sheet"],
                 textures["space"], textures["WASD"]);
         }
         
