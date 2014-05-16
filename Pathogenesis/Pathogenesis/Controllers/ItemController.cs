@@ -36,8 +36,8 @@ namespace Pathogenesis
             DropProbabilities.Add(ItemType.ALLIES, 0.1f);
             DropProbabilities.Add(ItemType.RANGE, 0.025f);
             DropProbabilities.Add(ItemType.INFECT_REGEN, 0.025f);
-            DropProbabilities.Add(ItemType.MAX_HEALTH, 0.025f);
-            DropProbabilities.Add(ItemType.MAX_INFECT, 0.025f);
+            //DropProbabilities.Add(ItemType.MAX_HEALTH, 0.025f);
+            //DropProbabilities.Add(ItemType.MAX_INFECT, 0.025f);
             DropProbabilities.Add(ItemType.ATTACK, 0.0f);
             DropProbabilities.Add(ItemType.MYSTERY, 0.0f);
             DropProbabilities.Add(ItemType.SPEED, 0.0f);

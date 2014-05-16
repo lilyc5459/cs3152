@@ -108,7 +108,7 @@ namespace Pathogenesis
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
             menu_controller = new MenuController(this, factory, sound_controller);
-            level_controller = new LevelController(factory, unit_controller, item_controller, sound_controller, menu_controller);
+            level_controller = new LevelController(this, factory, unit_controller, item_controller, sound_controller, menu_controller);
 
             // Game starts at the main menu
             game_state = GameState.MENU;
@@ -173,72 +173,7 @@ namespace Pathogenesis
                     bool victory = level_controller.Update();
 
                     #region Tutorial
-                    if (menu_controller.CurDialogue == 0 &&
-                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
-                    {
-                        if (level_controller.CurLevel.Regions[0].RegionSet.Contains(new Vector2(
-                            (int)unit_controller.Player.Position.X / Map.TILE_SIZE,
-                            (int)unit_controller.Player.Position.Y / Map.TILE_SIZE)))
-                        {
-                            //tip #1
-                            game_state = GameState.PAUSED;
-                            menu_controller.LoadDialogue(0);
-                        }
-                    }
-                    if (menu_controller.CurDialogue == 1 &&
-                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
-                    {
-                        bool show = false;
-                        foreach(GameUnit unit in unit_controller.Units)
-                        {
-                            if(unit.Type == UnitType.TANK && unit.Faction == UnitFaction.ENEMY &&
-                                unit_controller.Player.inRange(unit, 250)) {
-                                show = true;
-                            }
-                        }
-                        if (show)
-                        {
-                            //tip #2
-                            game_state = GameState.PAUSED;
-                            menu_controller.LoadDialogue(1);
-                        }
-                    }
-                    if (menu_controller.CurDialogue == 2 &&
-                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
-                    {
-                        bool show = false;
-                        foreach (GameUnit unit in level_controller.CurLevel.Organs)
-                        {
-                            if (unit_controller.Player.inRange(unit, 250))
-                            {
-                                show = true;
-                            }
-                        }
-                        if (show)
-                        {
-                            //tip #3
-                            game_state = GameState.PAUSED;
-                            menu_controller.LoadDialogue(2);
-                        }
-                    }
-                    if (menu_controller.CurDialogue == 3 &&
-                        level_controller.CurLevelNum == 0 && unit_controller.Player != null)
-                    {
-                        bool show = false;
-                        foreach (GameUnit unit in level_controller.CurLevel.Bosses)
-                        {
-                            if (unit_controller.Player.inRange(unit, 250))
-                            {
-                                show = true;
-                            }
-                        }
-                        if (show)
-                        {
-                            //tip #4
-                            game_state = GameState.PAUSED;
-                            menu_controller.LoadDialogue(3);
-                        }
-                    }
+
                     #endregion
 
                     // Remove later
@@ -354,7 +289,7 @@ namespace Pathogenesis
          */
         public void StartGame()
         {
-            level_controller.LoadLevel(1);
+            level_controller.LoadLevel(2);
             fadeTo(GameState.LOADING);
         }
 
@@ -363,7 +298,7 @@ namespace Pathogenesis
         */
         public void StartTutorial()
         {
-            level_controller.Reset();
+            level_controller.LoadLevel(0);
             fadeTo(GameState.LOADING);
         }
         
@@ -407,15 +342,6 @@ namespace Pathogenesis
                     {
                         level_controller.StartLevel(sound_controller);
                     }
-                    else if (game_state == GameState.VICTORY)
-                    {
-                        level_controller.NextLevel();
-                    }
-                    else if (game_state == GameState.LOSE)
-                    {
-                        level_controller.ResetLevel();
-                        level_controller.StartLevel(sound_controller);
-                    }
                     else if (game_state == GameState.LOADING)
                     {
                         level_controller.StartLevel(sound_controller);
@@ -432,7 +358,14 @@ namespace Pathogenesis
                 case GameState.LOSE:
                     break;
                 case GameState.LOADING:
-                    level_controller.NextLevel();
+                    if (game_state == GameState.VICTORY)
+                    {
+                        level_controller.NextLevel();
+                    }
+                    else if (game_state == GameState.LOSE)
+                    {
+                        level_controller.ResetLevel();
+                    }
                     transition_timer.Start();
                     break;
             }

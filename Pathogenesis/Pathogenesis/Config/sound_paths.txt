@@ -4,3 +4,7 @@ music1, MUSIC, Sounds/music1
 menu_move, EFFECT, Sounds/menu_move
 menu_select, EFFECT, Sounds/menu_select
 ouch, EFFECT, Sounds/ouch2
+shoot, EFFECT, Sounds/shoot2
+infect, EFFECT, Sounds/infect
+powerup, EFFECT, Sounds/powerup
+conversion, EFFECT, Sounds/conversion

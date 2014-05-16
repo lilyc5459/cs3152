@@ -123,6 +123,7 @@ namespace Pathogenesis
                     fonts.Add(strings[0].Trim(), content.Load<SpriteFont>(strings[1].Trim()));
                 }
 
+                /*
                 // Setup menus
                 sr = new StreamReader("Config/menu_config.txt");
                 while ((line = sr.ReadLine()) != null)
@@ -132,6 +133,7 @@ namespace Pathogenesis
                     if (strings.Length < 2) continue;
                     //menu_options.Add(strings[0].Trim(), strings[1].Trim().Split(new char[] { ',' }));
                 }
+                 * */
             }
             catch (Exception e)
             {
@@ -187,7 +189,26 @@ namespace Pathogenesis
                     List<MenuOption> options = AddMenuOptions(menuElement);
 
                     // Create menus
-                    Menu menu = new Menu(type, options, children, textures["solid"]);
+                    Dictionary<String, Texture2D> menu_textures = new Dictionary<string,Texture2D>();
+                    Dictionary<String, Dictionary<String, int>> menu_animations = new Dictionary<string, Dictionary<string, int>>();
+                    menu_textures.Add("solid", textures["solid"]);
+                    switch (type)
+                    {
+                        case MenuType.MAIN:
+                            menu_textures.Add("mainmenu", textures["mainmenu"]);
+                            menu_textures.Add("heart", textures["heart"]);
+                            menu_textures.Add("infectedheart", textures["infectedheart"]);
+                            menu_textures.Add("infectingheart", textures["infectingheart"]);
+
+                            menu_animations = new Dictionary<string, Dictionary<string, int>>();
+                            menu_animations.Add("heart", animations["heart"]);
+                            menu_animations.Add("infectedheart", animations["infectedheart"]);
+                            menu_animations.Add("infectingheart", animations["infectingheart"]);
+                            break;
+                        default:
+                            break;
+                    }
+                    Menu menu = new Menu(type, options, children, menu_textures, menu_animations);
                     menus.Add(type, menu);
                 }
                 catch (ArgumentException)
@@ -211,8 +232,11 @@ namespace Pathogenesis
                     MenuOption option = new MenuOption("", new Vector2(), new List<MenuOption>());
                     List<MenuOption> options = new List<MenuOption>();
                     options.Add(option);
-                    Menu dialogue = new Menu(MenuType.DIALOGUE,
-                        options, new List<MenuType>(), textures["solid"]);
+                    Dictionary<string, Texture2D> menu_textures = new Dictionary<string, Texture2D>();
+                    menu_textures.Add("solid", textures["solid"]);
+
+                    Dictionary<String, Dictionary<String, int>> menu_animations = new Dictionary<string, Dictionary<string, int>>();
+                    Menu dialogue = new Menu(MenuType.DIALOGUE, options, new List<MenuType>(), menu_textures, menu_animations);
                     dialogue.Text1 = text1;
                     dialogue.Text2 = text2;
                     dialogues.Add(id, dialogue);
@@ -281,14 +305,11 @@ namespace Pathogenesis
                         SpawnPoint spawnPoint = null;
                         foreach (Region r in level.Regions)
                         {
-                            //TODO get rid of this
-                            r.MaxUnits = 10;
                             foreach (SpawnPoint s in r.SpawnPoints)
                             {
                                 if (s.Id == id)
                                 {
                                     spawnPoint = s;
-                                    //s.Pos = new Vector2(21, 3);
                                 }
                             }
                         }
@@ -338,6 +359,7 @@ namespace Pathogenesis
                     {
                         for (int j = 0; j < level.Map.tiles[0].Length; j++)
                         {
+                            /*
                             //Code for adjacent tiles stuff
                             //Organized as such: TRBL in binary notaion
                             int top= 0, bot= 0, right= 0, left = 0;
@@ -414,6 +436,7 @@ namespace Pathogenesis
                                 default:
                                     break;
                             }
+                             * */
                            
                             //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
@@ -430,7 +453,6 @@ namespace Pathogenesis
                             }
                         }
                     }
-
                     levels.Add(level);
                 }
             }
@@ -508,7 +530,8 @@ namespace Pathogenesis
 
         public HUD createHUD(Player player)
         {
-            return new HUD(textures["infect_range"], textures["health_bar"], textures["conversion_sheet"]);
+            return new HUD(textures["infect_range"], textures["health_bar"], textures["conversion_sheet"],
+                textures["space"], textures["WASD"]);
         }
         
         // Returns an instance of a unit of the given type and faction
@@ -569,6 +592,7 @@ namespace Pathogenesis
                         unit = new GameUnit(textures["enemy3_sheet"], type, faction, level, immune);
                     }
                     animation_data = animations["flying1"];
+                    unit.AnimateResting = true;
                     break;
                 case UnitType.BOSS:
                     unit = new GameUnit(textures["boss1"], type, faction, level, immune);

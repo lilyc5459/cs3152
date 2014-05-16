@@ -21,31 +21,42 @@ namespace Pathogenesis.Models
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
         public Texture2D ConversionTexture { get; set; }
+        public Texture2D SpaceTexture { get; set; }
+        public Texture2D WASDTexture { get; set; }
 
         public static Color HEALTH_COLOR = Color.Red;
         public static Color INFECT_COLOR = Color.Red;
-        public static Color FONT_COLOR = Color.Red;
+        public static Color FONT_COLOR = Color.Wheat;
         public static Color FLASH_COLOR = Color.Red * 0.5f;
 
         public bool Active { get; set; }
 
-        public String PopMsg { get; set; }         // Floating msg indicator above player
+        public List<String> PopMsg { get; set; }         // Floating msg indicator above player
+        private List<int> finished_msgs;
 
-        private Stopwatch popmsg_stopwatch;
+        private List<Stopwatch> popmsg_stopwatches;
+        private List<Stopwatch> finished_stopwatches;
         private Stopwatch flash_stopwatch;
         private Stopwatch glow_stopwatch;
 
-        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture)
+        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture,
+            Texture2D space_texture, Texture2D wasd_texture)
         {
             InfectTexture = infect;
             HealthBarTexture = health;
             ConversionTexture = conversion_texture;
+            SpaceTexture = space_texture;
+            WASDTexture = wasd_texture;
+
             Active = true;
 
-            popmsg_stopwatch = new Stopwatch();
+            PopMsg = new List<String>();
+            finished_msgs = new List<int>();
+            
+            popmsg_stopwatches = new List<Stopwatch>();
+            finished_stopwatches = new List<Stopwatch>();
             flash_stopwatch = new Stopwatch();
             glow_stopwatch = new Stopwatch();
-            //glow_stopwatch.Start();
         }
 
         public void Update(InputController input_controller)
@@ -87,10 +98,15 @@ namespace Pathogenesis.Models
             {
                 Color color = new Color((int)MathHelper.Lerp(180, 220, glowtime), 200, 80);
 
-                canvas.DrawText("Infect [SPACE]",
+                canvas.DrawText("Infect ",
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
-                    new Vector2(center.X, center.Y + 200),
-                    "font2", true);
+                    new Vector2(center.X - 140, center.Y + 200),
+                    "font2", false);
+
+                canvas.DrawSprite(SpaceTexture,
+                    color * (MathHelper.Lerp(120, 250, glowtime) / 250),
+                    new Rectangle((int)center.X + 20, (int)center.Y + 190, SpaceTexture.Width, SpaceTexture.Height),
+                    new Rectangle(0, 0, SpaceTexture.Width, SpaceTexture.Height));
 
                 if (!glow_stopwatch.IsRunning) glow_stopwatch.Start();
                 if (glow_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
@@ -146,14 +162,14 @@ namespace Pathogenesis.Models
                 }
 
                 //Infected bar indicator
-                
+                /*
                 if ((unit.Type == UnitType.BOSS || unit.Type == UnitType.ORGAN) && unit.InfectionVitality != unit.max_infection_vitality)
                 {
                     canvas.DrawSprite(HealthBarTexture, new Color(0, 50, 100, 200),
                                         new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                         new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }
-                
+                */
             }
             if (player == null) return;
 
@@ -177,7 +193,7 @@ namespace Pathogenesis.Models
                     new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
             }
 
-            canvas.DrawText("Health", new Color(220, 200, 80),
+            canvas.DrawText("Health", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
                 "font2", false);
             canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
@@ -192,7 +208,7 @@ namespace Pathogenesis.Models
                 * */
                     
             // Infection points
-            canvas.DrawText("Infect", new Color(220, 200, 80),
+            canvas.DrawText("Infect", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 55),
                 "font2", false);
             canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
@@ -210,61 +226,78 @@ namespace Pathogenesis.Models
             {
                 foreach (Item item in player.Items)
                 {
+                    Stopwatch new_stopwatch = new Stopwatch();
+                    popmsg_stopwatches.Add(new_stopwatch);
                     switch (item.Type)
                     {
                         case ItemType.PLASMID:
-                            PopMsg = "+Infection!";
+                            PopMsg.Add("+Infection!");
                             break;
                         case ItemType.HEALTH:
-                            PopMsg = "+Health!";
+                            PopMsg.Add("+Health!");
                             break;
                         case ItemType.ATTACK:
-                            PopMsg = "Allies +Attack!";
+                            PopMsg.Add("Allies +Attack!");
                             break;
                         case ItemType.ALLIES:
-                            PopMsg = "+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!";
+                            PopMsg.Add("+" + GameUnitController.ITEM_FREE_ALLY_NUM + " Allies!");
                             break;
                         case ItemType.RANGE:
-                            PopMsg = "+Range!";
+                            PopMsg.Add("+Range!");
                             break;
                         case ItemType.SPEED:
-                            PopMsg = "+Speed!";
+                            PopMsg.Add("+Speed!");
                             break;
                         case ItemType.MAX_HEALTH:
-                            PopMsg = "+Max Health!";
+                            PopMsg.Add("+Max Health!");
                             break;
                         case ItemType.MAX_INFECT:
-                            PopMsg = "+Max Infect!";
+                            PopMsg.Add("+Max Infect!");
                             break;
                         case ItemType.INFECT_REGEN:
-                            PopMsg = "+Infect Regen!";
+                            PopMsg.Add("+Infect Regen!");
                             break;
                         case ItemType.MYSTERY:
-                            PopMsg = "+Mystery!";
+                            PopMsg.Add("+Mystery!");
                             break;
                         default:
-                            PopMsg = "wat";
+                            PopMsg.Add("wat");
                             break;
                     }
+                    new_stopwatch.Start();
                 }
-                popmsg_stopwatch.Start();
             }
 
-            if (PopMsg != null)
+            if (PopMsg.Count > 0)
             {
-                float pop_time = popmsg_stopwatch.ElapsedMilliseconds / (float)PLAYER_MSG_TIME;
-                canvas.DrawText(PopMsg,
-                    new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, pop_time) / 250),
-                    new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, pop_time)),
-                    "font2", true);
+                for (int i = 0; i < PopMsg.Count; i++)
+                {
+                    float pop_time = popmsg_stopwatches[i].ElapsedMilliseconds / (float)PLAYER_MSG_TIME;
+                    canvas.DrawText(PopMsg[i],
+                        new Color(220, 200, 80) * (MathHelper.Lerp(250, 50, pop_time) / 250),
+                        new Vector2(center.X, center.Y - MathHelper.Lerp(70, 120, pop_time)),
+                        "font2", true);
+
+                    if (popmsg_stopwatches[i].ElapsedMilliseconds >= PLAYER_MSG_TIME)
+                    {
+                        finished_stopwatches.Add(popmsg_stopwatches[i]);
+                        finished_msgs.Add(i);
+                    }
+                }
             }
 
-            if (popmsg_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+            foreach (Stopwatch s in finished_stopwatches)
             {
-                popmsg_stopwatch.Stop();
-                popmsg_stopwatch.Reset();
-                PopMsg = null;
+                popmsg_stopwatches.Remove(s);
             }
+            finished_stopwatches.Clear();
+            finished_msgs.Sort();
+            finished_msgs.Reverse();
+            for (int i = 0; i < finished_msgs.Count; i++)
+            {
+                PopMsg.RemoveAt(finished_msgs[i]);
+            }
+            finished_msgs.Clear();
 
             // Draw minimap
             int[][] exploredTiles = player.ExploredTiles;

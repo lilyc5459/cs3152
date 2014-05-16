@@ -8,12 +8,18 @@ namespace Pathogenesis.Models
 {
     public class Sound
     {
+        public String Name { get; set; }
         SoundEffectInstance instance;
         bool restart;
 
-        public Sound(SoundEffectInstance instance)
+        public bool isPlaying {
+            get { return instance.State == SoundState.Playing; }
+            set { isPlaying = value; } }
+
+        public Sound(SoundEffectInstance instance, String name)
         {
             this.instance = instance;
+            this.Name = name;
             restart = false;
         }
 

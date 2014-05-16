@@ -305,9 +305,13 @@ namespace Pathogenesis
          */
         private void SpawnUnits(Level level)
         {
+            if (Player == null) return;
             foreach (Region r in level.Regions)
             {
-                if (r.NumUnits >= r.MaxUnits) continue;
+                bool playerInRegion = r.RegionSet.Contains(new Vector2(
+                                (int)Player.Position.X / Map.TILE_SIZE,
+                                (int)Player.Position.Y / Map.TILE_SIZE));
+                if (r.NumUnits >= r.MaxUnits || playerInRegion) continue;
 
                 foreach (SpawnPoint sp in r.SpawnPoints)
                 {
@@ -409,6 +413,7 @@ namespace Pathogenesis
             else
             {
                 Player.Infecting = null;
+                sound_controller.stop(SoundType.EFFECT, "infect");
             }
         }
 
@@ -420,7 +425,7 @@ namespace Pathogenesis
             if (Player.Infecting != null)
             {
                 if (Player.InfectionPoints > Player.InfectionRecovery &&
-                    Player.Infecting.InfectionVitality > 0 && 
+                    Player.Infecting.InfectionVitality > 0 &&
                     Player.Infecting.inRange(Player, Player.InfectionRange))
                 {
                     Player.Infecting.InfectionVitality -= INFECTION_SPEED;
@@ -435,7 +440,8 @@ namespace Pathogenesis
                 }
                 else
                 {
-                    Player.Infecting = null;                    
+                    Player.Infecting = null;
+                    sound_controller.stop(SoundType.EFFECT, "infect");
                 }
             }
         }
@@ -463,6 +469,7 @@ namespace Pathogenesis
             if (closestInRange != null && !Player.MaxAllies)
             {
                 Player.Infecting = closestInRange;
+                sound_controller.loop(SoundType.EFFECT, "infect");
             }
         }
 
@@ -492,10 +499,10 @@ namespace Pathogenesis
                 switch (item.Type)
                 {
                     case ItemType.PLASMID:
-                        Player.InfectionPoints += PLASMID_POINTS;
+                        Player.InfectionPoints = MathHelper.Clamp(Player.InfectionPoints + PLASMID_POINTS, 0, Player.MaxInfectionPoints);
                         break;
                     case ItemType.HEALTH:
-                        Player.Health += HEALTH_POINTS;
+                        Player.Health = MathHelper.Clamp(Player.Health + HEALTH_POINTS, 0, Player.max_health);
                         break;
                     case ItemType.ATTACK:
                         break;
@@ -1097,6 +1104,7 @@ namespace Pathogenesis
                 }
                 particle_engine.GenerateParticle(1, color, aggressor.Position, victim, aggressor.Faction,
                     false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0, 100, 0, Vector2.Zero);
+                sound_controller.play(SoundType.EFFECT, "shoot");
             }
             else if(aggressor.Type == UnitType.BOSS)
             {
@@ -1148,6 +1156,7 @@ namespace Pathogenesis
                 }
                 else
                 {
+                    sound_controller.play(SoundType.EFFECT, "conversion");
                     ConvertedUnits.Add(unit);
                 }
             }

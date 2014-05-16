@@ -329,6 +329,7 @@ namespace Pathogenesis
             {
                 player.PickupItem(item);
                 item.Destroyed = true;
+                sound_controller.play(SoundType.EFFECT, "powerup");
             }
             return false;
         }

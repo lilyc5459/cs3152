@@ -16,61 +16,101 @@ namespace Pathogenesis.Controllers
     public class SoundController
     {
         private Dictionary<String, Sound> music;
-        private Dictionary<String, Sound> effects;
+        private Dictionary<String, SoundEffect> effects;
+        private List<Sound> effect_instances;
+        private List<Sound> finished_effects;
 
         public SoundController(ContentFactory factory)
         {
             music = new Dictionary<string, Sound>();
-            effects = new Dictionary<string, Sound>();
+            effects = new Dictionary<string, SoundEffect>();
+            effect_instances = new List<Sound>();
+            finished_effects = new List<Sound>();
 
             Dictionary<String, SoundEffect> loaded_music = factory.getMusic();
             foreach (String key in loaded_music.Keys)
             {
-                music.Add(key.Substring(key.LastIndexOf("/") + 1), new Sound(loaded_music[key].CreateInstance()));
+                music.Add(key.Substring(key.LastIndexOf("/") + 1), new Sound(loaded_music[key].CreateInstance(), key));
             }
 
             Dictionary<String, SoundEffect> loaded_effects = factory.getSoundEffects();
             foreach (String key in loaded_effects.Keys)
             {
-                effects.Add(key.Substring(key.LastIndexOf("/") + 1), new Sound(loaded_effects[key].CreateInstance()));
+                effects.Add(key.Substring(key.LastIndexOf("/") + 1), loaded_effects[key]);
             }
         }
 
         public void loop(SoundType type, String name)
         {
-            Dictionary<String, Sound> sounds = filter(type);
-            if (!sounds[name].IsLooped)
+            Sound sound = null;
+            if (type == SoundType.MUSIC && music.ContainsKey(name))
             {
-                sounds[name].IsLooped = true;
+                sound = music[name];
             }
-            sounds[name].Restart();
+            else if (type == SoundType.EFFECT && effects.ContainsKey(name))
+            {
+                sound = new Sound(effects[name].CreateInstance(), name);
+                effect_instances.Add(sound);
+            }
+
+            if (sound != null)
+            {
+                if (!sound.IsLooped)
+                {
+                    sound.IsLooped = true;
+                }
+                sound.Restart();
+            }
         }
 
         public void play(SoundType type, String name)
         {
-            filter(type)[name].Restart();
+            if (type == SoundType.EFFECT)
+            {
+                Sound s = new Sound(effects[name].CreateInstance(), name);
+                effect_instances.Add(s);
+                s.Restart();
+            }
+            else if(type == SoundType.MUSIC)
+            {
+                music[name].Restart();
+            }
         }
 
         public void pause(SoundType type, String name)
         {
-            filter(type)[name].Pause();
+            if (type == SoundType.MUSIC && music.ContainsKey(name))
+            {
+                music[name].Pause();
+            }
+            else if (type == SoundType.EFFECT)
+            {
+                foreach (Sound sound in effect_instances)
+                {
+                    if (sound.Name.Equals(name))
+                    {
+                        sound.Pause();
+                    }
+                }
+            }
         }
 
         public void stop(SoundType type, String name)
         {
-            filter(type)[name].Stop();
-        }
-
-        private Dictionary<string, Sound> filter(SoundType type)
-        {
-            switch (type)
+            if (type == SoundType.MUSIC && music.ContainsKey(name))
             {
-                case SoundType.MUSIC:
-                    return music;
-                case SoundType.EFFECT:
-                    return effects;
+                music[name].Stop();
             }
-            return null;
+            else if (type == SoundType.EFFECT)
+            {
+                foreach (Sound sound in effect_instances)
+                {
+                    if (sound.Name.Equals(name))
+                    {
+                        sound.Stop();
+                    }
+                }
+            }
         }
 
         /*
@@ -82,7 +122,18 @@ namespace Pathogenesis.Controllers
             {
                 sound.Stop();
             }
-            foreach (Sound sound in effects.Values)
+            foreach (Sound sound in effect_instances)
+            {
+                sound.Stop();
+            }
+        }
+
+        /*
+         * Stop all music clips
+         */
+        public void stopMusic()
+        {
+            foreach (Sound sound in music.Values)
             {
                 sound.Stop();
             }
@@ -93,8 +144,11 @@ namespace Pathogenesis.Controllers
          */
         public void MuteSounds(SoundType type)
         {
-            Dictionary<String, Sound> sounds = filter(type);
-            foreach (Sound sound in sounds.Values)
+            foreach (Sound sound in music.Values)
+            {
+                sound.Mute();
+            }
+            foreach (Sound sound in effect_instances)
             {
                 sound.Mute();
             }
@@ -105,8 +159,11 @@ namespace Pathogenesis.Controllers
          */
         public void UnmuteSounds(SoundType type)
         {
-            Dictionary<String, Sound> sounds = filter(type);
-            foreach (Sound sound in sounds.Values)
+            foreach (Sound sound in music.Values)
+            {
+                sound.Unmute();
+            }
+            foreach (Sound sound in effect_instances)
             {
                 sound.Unmute();
             }
@@ -118,10 +175,20 @@ namespace Pathogenesis.Controllers
             {
                 sound.Update();
             }
-            foreach (Sound sound in effects.Values)
+            foreach (Sound sound in effect_instances)
             {
                 sound.Update();
+                if (!sound.isPlaying)
+                {
+                    finished_effects.Add(sound);
+                }
             }
+
+            foreach (Sound sound in finished_effects)
+            {
+                effect_instances.Remove(sound);
+            }
+            finished_effects.Clear();
         }
     }
 }

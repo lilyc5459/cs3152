@@ -23,8 +23,13 @@ namespace Pathogenesis.Models
             CurSelection = 0;
         }
 
-        public void Draw(GameCanvas canvas, Vector2 center, Color color)
+        public void Draw(GameCanvas canvas, Vector2 center, Color color, bool selected)
         {
+            if (selected)
+            {
+                canvas.DrawText(Text, Color.Black,
+                    new Vector2(center.X + Offset.X + 3, center.Y + Offset.Y + 3), "font2", Offset.X == 0);
+            }
             canvas.DrawText(Text, color,
                 new Vector2(center.X + Offset.X, center.Y + Offset.Y), "font2", Offset.X == 0);
 
@@ -32,11 +37,11 @@ namespace Pathogenesis.Models
             {
                 if (i == CurSelection)
                 {
-                    Options[i].Draw(canvas, center, Menu.fontHighlightColor);
+                    Options[i].Draw(canvas, center, Menu.fontHighlightColor, true);
                 }
                 else
                 {
-                    Options[i].Draw(canvas, center, Menu.fontColor);
+                    Options[i].Draw(canvas, center, Menu.fontColor, false);
                 }
             }
         }

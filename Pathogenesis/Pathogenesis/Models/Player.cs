@@ -11,7 +11,7 @@ namespace Pathogenesis
     {
         // Distance from player that allies will target when player moves in a direction
         private const int ALLY_FRONT_DISTANCE = 100;
-        private const int BASE_INFECTION_RANGE = 180;
+        private const int BASE_INFECTION_RANGE = 200;
         private const float BASE_INFECTION_RECOVERY = 1f;
 
         #region Fields and Properties
@@ -73,21 +73,9 @@ namespace Pathogenesis
         }
 
         // Adds items to player's pickup list
-        public bool PickupItem(Item item)
+        public void PickupItem(Item item)
         {
-            switch (item.Type)
-            {
-                case ItemType.PLASMID:
-                    if (InfectionPoints == MaxInfectionPoints) return false;
-                    break;
-                case ItemType.HEALTH:
-                    if (Health == max_health) return false;
-                    break;
-                case ItemType.ATTACK:
-                    break;
-            }
             pickups.Add(item);
-            return true;
         }
     }
 }
