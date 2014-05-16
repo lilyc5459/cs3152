@@ -8,6 +8,8 @@ div#page{
 }
 
 div#sidebar{
+	background-color: white;
+	position: fixed;
 	padding: 5px;
 	float: left;
 	width: 140px;
@@ -41,6 +43,7 @@ div#wall_sel{
 }
 
 div#container{
+	margin-left: 160px;
 	float: left;
 	width: 510px;
 	height: 102px;
