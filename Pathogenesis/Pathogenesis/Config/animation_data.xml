@@ -55,4 +55,28 @@
     <NumFrames>2</NumFrames>
     <FrameSpeed>20</FrameSpeed>
   </Character>
+
+  <Character>
+    <Name>heart</Name>
+    <FrameWidth>541</FrameWidth>
+    <FrameHeight>708</FrameHeight>
+    <NumFrames>2</NumFrames>
+    <FrameSpeed>30</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>infectedheart</Name>
+    <FrameWidth>504</FrameWidth>
+    <FrameHeight>660</FrameHeight>
+    <NumFrames>2</NumFrames>
+    <FrameSpeed>12</FrameSpeed>
+  </Character>
+
+  <Character>
+    <Name>infectingheart</Name>
+    <FrameWidth>310</FrameWidth>
+    <FrameHeight>428</FrameHeight>
+    <NumFrames>16</NumFrames>
+    <FrameSpeed>12</FrameSpeed>
+  </Character>
 </Animations>

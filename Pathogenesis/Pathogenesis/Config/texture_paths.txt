@@ -7,6 +7,10 @@ plasmid, Environment/plasmid
 health, Environment/health
 conversion_sheet, Environment/conversion_sheet
 
+//Tutorial
+space, Environment/space
+WASD, Environment/WASD
+
 // Walls
 wall1, Environment/wall_square
 //wall1, Backgrounds/2wall1
@@ -16,6 +20,10 @@ wall3, Backgrounds/walltileneeeew
 //Backgrounds
 background, Backgrounds/background_long2
 //background, Backgrounds/lightbackground
+heart, Backgrounds/heart
+infectedheart, Backgrounds/infectedheart
+infectingheart, Backgrounds/infectingheart
+mainmenu, Backgrounds/mainmenu
 
 //Characters
 boss1, Characters/boss

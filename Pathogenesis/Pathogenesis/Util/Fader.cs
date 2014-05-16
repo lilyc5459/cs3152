@@ -42,6 +42,7 @@ namespace Pathogenesis.Controllers
             this.fadeTime = out_time;
             this.callback = callback;
             this.arg = arg;
+            fadeIn = false;
             fadeCounter++;
         }
 
@@ -52,6 +53,7 @@ namespace Pathogenesis.Controllers
             this.out_time = out_time;
             this.fadeTime = out_time;
             this.callback_noargs = callback;
+            fadeIn = false;
             fadeCounter++;
         }
 

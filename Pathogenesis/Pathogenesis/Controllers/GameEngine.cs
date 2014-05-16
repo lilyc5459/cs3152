@@ -289,7 +289,7 @@ namespace Pathogenesis
          */
         public void StartGame()
         {
-            level_controller.LoadLevel(1);
+            level_controller.LoadLevel(2);
             fadeTo(GameState.LOADING);
         }
 

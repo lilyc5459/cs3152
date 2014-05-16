@@ -2,8 +2,8 @@
 <Dialogues>
   <Dialogue>
     <Id>0</Id>
-    <Text1>Time to infect some stuff! Let's take a look around.</Text1>
-    <Text2>(Use WASD or Arrow Keys to move)</Text2>
+    <Text1>Time to infect some stuff!</Text1>
+    <Text2>Let's take a look around.</Text2>
   </Dialogue>
   <Dialogue>
     <Id>1</Id>
@@ -12,12 +12,27 @@
   </Dialogue>
   <Dialogue>
     <Id>2</Id>
-    <Text1>Check out that organ! Wonder what's inside...</Text1>
-    <Text2></Text2>
+    <Text1>Check out that organ!</Text1>
+    <Text2>Wonder what's inside...</Text2>
   </Dialogue>
   <Dialogue>
     <Id>3</Id>
     <Text1>Whoah, that's a big one!</Text1>
     <Text2>If I want to move on, I'll have to infect him.</Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>4</Id>
+    <Text1>Ha! This is too easy.</Text1>
+    <Text2></Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>5</Id>
+    <Text1>Hey, these guys look tough!</Text1>
+    <Text2>I better watch out...</Text2>
+  </Dialogue>
+  <Dialogue>
+    <Id>6</Id>
+    <Text1>Seriously? </Text1>
+    <Text2>They can fly AND shoot stuff?</Text2>
   </Dialogue>
 </Dialogues>

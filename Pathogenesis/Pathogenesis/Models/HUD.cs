@@ -21,10 +21,12 @@ namespace Pathogenesis.Models
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
         public Texture2D ConversionTexture { get; set; }
+        public Texture2D SpaceTexture { get; set; }
+        public Texture2D WASDTexture { get; set; }
 
         public static Color HEALTH_COLOR = Color.Red;
         public static Color INFECT_COLOR = Color.Red;
-        public static Color FONT_COLOR = Color.Red;
+        public static Color FONT_COLOR = Color.Wheat;
         public static Color FLASH_COLOR = Color.Red * 0.5f;
 
         public bool Active { get; set; }
@@ -33,22 +35,26 @@ namespace Pathogenesis.Models
         private List<int> finished_msgs;
 
         private List<Stopwatch> popmsg_stopwatches;
-        private List<int> finished_stopwatches;
+        private List<Stopwatch> finished_stopwatches;
         private Stopwatch flash_stopwatch;
         private Stopwatch glow_stopwatch;
 
-        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture)
+        public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture,
+            Texture2D space_texture, Texture2D wasd_texture)
         {
             InfectTexture = infect;
             HealthBarTexture = health;
             ConversionTexture = conversion_texture;
+            SpaceTexture = space_texture;
+            WASDTexture = wasd_texture;
+
             Active = true;
 
             PopMsg = new List<String>();
             finished_msgs = new List<int>();
             
             popmsg_stopwatches = new List<Stopwatch>();
-            finished_stopwatches = new List<int>();
+            finished_stopwatches = new List<Stopwatch>();
             flash_stopwatch = new Stopwatch();
             glow_stopwatch = new Stopwatch();
         }
@@ -92,10 +98,15 @@ namespace Pathogenesis.Models
             {
                 Color color = new Color((int)MathHelper.Lerp(180, 220, glowtime), 200, 80);
 
-                canvas.DrawText("Infect [SPACE]",
+                canvas.DrawText("Infect ",
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
-                    new Vector2(center.X, center.Y + 200),
-                    "font2", true);
+                    new Vector2(center.X - 120, center.Y + 200),
+                    "font2", false);
+
+                canvas.DrawSprite(SpaceTexture,
+                    color * (MathHelper.Lerp(120, 250, glowtime) / 250),
+                    new Rectangle((int)center.X + 20, (int)center.Y + 190, SpaceTexture.Width/2, SpaceTexture.Height/2),
+                    new Rectangle(0, 0, SpaceTexture.Width, SpaceTexture.Height));
 
                 if (!glow_stopwatch.IsRunning) glow_stopwatch.Start();
                 if (glow_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
@@ -182,7 +193,7 @@ namespace Pathogenesis.Models
                     new Rectangle(0, 0, HealthBarTexture.Width, HealthBarTexture.Height));
             }
 
-            canvas.DrawText("Health", new Color(220, 200, 80),
+            canvas.DrawText("Health", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 15),
                 "font2", false);
             canvas.DrawSprite(HealthBarTexture, new Color(200, 50, 50, 250),
@@ -197,7 +208,7 @@ namespace Pathogenesis.Models
                 * */
                     
             // Infection points
-            canvas.DrawText("Infect", new Color(220, 200, 80),
+            canvas.DrawText("Infect", FONT_COLOR,
                 new Vector2(center.X - canvas.Width / 2 + 10, center.Y - canvas.Height / 2 + 55),
                 "font2", false);
             canvas.DrawSprite(HealthBarTexture, new Color(50, 50, 200, 250),
@@ -213,10 +224,10 @@ namespace Pathogenesis.Models
 
             if (player.Items.Count > 0)
             {
-                Stopwatch new_stopwatch = new Stopwatch();
-                popmsg_stopwatches.Add(new_stopwatch);
                 foreach (Item item in player.Items)
                 {
+                    Stopwatch new_stopwatch = new Stopwatch();
+                    popmsg_stopwatches.Add(new_stopwatch);
                     switch (item.Type)
                     {
                         case ItemType.PLASMID:
@@ -253,8 +264,8 @@ namespace Pathogenesis.Models
                             PopMsg.Add("wat");
                             break;
                     }
+                    new_stopwatch.Start();
                 }
-                new_stopwatch.Start();
             }
 
             if (PopMsg.Count > 0)
@@ -269,20 +280,22 @@ namespace Pathogenesis.Models
 
                     if (popmsg_stopwatches[i].ElapsedMilliseconds >= PLAYER_MSG_TIME)
                     {
-                        finished_stopwatches.Add(i);
+                        finished_stopwatches.Add(popmsg_stopwatches[i]);
                         finished_msgs.Add(i);
                     }
                 }
             }
 
-            foreach (int i in finished_stopwatches)
+            foreach (Stopwatch s in finished_stopwatches)
             {
-                popmsg_stopwatches.RemoveAt(i);
+                popmsg_stopwatches.Remove(s);
             }
             finished_stopwatches.Clear();
-            foreach (int i in finished_msgs)
+            finished_msgs.Sort();
+            finished_msgs.Reverse();
+            for (int i = 0; i < finished_msgs.Count; i++)
             {
-                PopMsg.RemoveAt(i);
+                PopMsg.RemoveAt(finished_msgs[i]);
             }
             finished_msgs.Clear();
 

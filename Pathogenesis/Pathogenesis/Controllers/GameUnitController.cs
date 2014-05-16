@@ -413,6 +413,7 @@ namespace Pathogenesis
             else
             {
                 Player.Infecting = null;
+                sound_controller.stop(SoundType.EFFECT, "infect");
             }
         }
 
@@ -424,7 +425,7 @@ namespace Pathogenesis
             if (Player.Infecting != null)
             {
                 if (Player.InfectionPoints > Player.InfectionRecovery &&
-                    Player.Infecting.InfectionVitality > 0 && 
+                    Player.Infecting.InfectionVitality > 0 &&
                     Player.Infecting.inRange(Player, Player.InfectionRange))
                 {
                     Player.Infecting.InfectionVitality -= INFECTION_SPEED;
@@ -439,7 +440,8 @@ namespace Pathogenesis
                 }
                 else
                 {
-                    Player.Infecting = null;                    
+                    Player.Infecting = null;
+                    sound_controller.stop(SoundType.EFFECT, "infect");
                 }
             }
         }
@@ -467,6 +469,7 @@ namespace Pathogenesis
             if (closestInRange != null && !Player.MaxAllies)
             {
                 Player.Infecting = closestInRange;
+                sound_controller.loop(SoundType.EFFECT, "infect");
             }
         }
 
@@ -1101,6 +1104,7 @@ namespace Pathogenesis
                 }
                 particle_engine.GenerateParticle(1, color, aggressor.Position, victim, aggressor.Faction,
                     false, true, aggressor.Attack, Particle.PROJECTILE_SIZE, 0, 5, 0, 100, 0, Vector2.Zero);
+                sound_controller.play(SoundType.EFFECT, "shoot");
             }
             else if(aggressor.Type == UnitType.BOSS)
             {
@@ -1152,6 +1156,7 @@ namespace Pathogenesis
                 }
                 else
                 {
+                    sound_controller.play(SoundType.EFFECT, "conversion");
                     ConvertedUnits.Add(unit);
                 }
             }

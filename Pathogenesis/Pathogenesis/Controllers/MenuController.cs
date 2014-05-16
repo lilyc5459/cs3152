@@ -4,9 +4,17 @@ using System.Linq;
 using System.Text;
 using Pathogenesis.Models;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace Pathogenesis.Controllers
 {
+    public enum MainMenuState
+    {
+        NORMAL,
+        INFECTING,
+        INFECTED
+    }
+
     public class MenuController
     {
         private Dictionary<MenuType, Menu> menus;
@@ -14,6 +22,7 @@ namespace Pathogenesis.Controllers
         public List<Menu> OpenMenus;
 
         // Returns the current menu
+        public String curSelection;
         public Menu CurMenu
         {
             get
@@ -25,6 +34,15 @@ namespace Pathogenesis.Controllers
         // Returns the current dialogue id
         public int CurDialogue { get; set; }
 
+        // Main menu data
+        public MainMenuState MainMenuState { get; set; }
+        public Stopwatch mainmenu_stopwatch { get; set; }
+        public Stopwatch mainfade_stopwatch { get; set; }
+
+        public const int MAIN_FADE_TIME = 1000;
+        public const int MAIN_INFECTING_TIME = 2300;
+        public const int MAIN_INFECTED_TIME = 1000;
+
         private SoundController sound_controller;
         private GameEngine engine;
 
@@ -33,6 +51,9 @@ namespace Pathogenesis.Controllers
             menus = factory.getMenus();
             dialogues = factory.getDialogues();
             OpenMenus = new List<Menu>();
+            mainmenu_stopwatch = new Stopwatch();
+            mainfade_stopwatch = new Stopwatch();
+
             this.sound_controller = sound_controller;
             this.engine = engine;
         }
@@ -51,6 +72,11 @@ namespace Pathogenesis.Controllers
                 }
             }
             OpenMenus.Add(menus[type]);
+            if (type == MenuType.MAIN)
+            {
+                CurMenu.SetAnimation("heart");
+                CurMenu.MASK_OPACITY = CurMenu.DEFAULT_MASK_OPACITY;
+            }
         }
 
         /*
@@ -66,29 +92,57 @@ namespace Pathogenesis.Controllers
         }
 
         /*
+         * Transitions from main menu with cool heart animation
+         */
+        public void StartMain(Menu menu)
+        {
+            MainMenuState = MainMenuState.INFECTING;
+            menu.SetAnimation("infectingheart");
+            mainmenu_stopwatch.Start();
+            mainfade_stopwatch.Start();
+        }
+
+        /*
          * Update menus
          */
         public void Update()
         {
             if (OpenMenus.Count == 0) return;
-            foreach(Menu menu in menus.Values)
+            
+            // Handle infected heart animation transition
+            if (mainmenu_stopwatch.IsRunning)
             {
-                if (menu.AnimatingIn)
+                CurMenu.MASK_OPACITY = MathHelper.Lerp(CurMenu.DEFAULT_MASK_OPACITY, 0,
+                    (float)mainfade_stopwatch.ElapsedMilliseconds/MAIN_FADE_TIME);
+                if (MainMenuState == MainMenuState.INFECTING &&
+                    mainmenu_stopwatch.ElapsedMilliseconds >= MAIN_INFECTING_TIME)
                 {
-                    menu.Frame++;
-                    if (menu.Frame >= menu.AnimationTime)
+                    MainMenuState = MainMenuState.INFECTED;
+                    CurMenu.SetAnimation("infectedheart");
+                    mainmenu_stopwatch.Restart();
+                }
+                else if (MainMenuState == MainMenuState.INFECTED &&
+                  mainmenu_stopwatch.ElapsedMilliseconds >= MAIN_INFECTED_TIME)
+                {
+                    mainmenu_stopwatch.Stop();
+                    mainmenu_stopwatch.Reset();
+                    mainfade_stopwatch.Stop();
+                    mainfade_stopwatch.Reset();
+                    switch (curSelection)
                     {
-                        menu.AnimatingIn = false;
+                        case "Play":
+                            engine.StartGame();
+                            break;
+                        case "Tutorial":
+                            engine.StartTutorial();
+                            break;
                     }
                 }
-                else if (menu.AnimatingOut)
-                {
-                    menu.Frame--;
-                    if (menu.Frame <= 0)
-                    {
-                        menu.AnimatingOut = false;
-                    }
-                }
+            }
+
+            foreach(Menu menu in OpenMenus)
+            {
+                menu.UpdateAnimation();
             }
             foreach (Menu menu in dialogues.Values)
             {
@@ -137,13 +191,13 @@ namespace Pathogenesis.Controllers
 
             // Handle secondary selection (left right)
             bool secondarySelected = false;
-            if (input_controller.LeftOnce)
+            if (input_controller.LeftOnce && option.Options.Count > 0)
             {
                 sound_controller.play(SoundType.EFFECT, "menu_move");
                 option.CurSelection = (int)MathHelper.Clamp(option.CurSelection - 1, 0, option.Options.Count - 1);
                 secondarySelected = true;
             }
-            if (input_controller.RightOnce)
+            if (input_controller.RightOnce && option.Options.Count > 0)
             {
                 sound_controller.play(SoundType.EFFECT, "menu_move");
                 option.CurSelection = (int)MathHelper.Clamp(option.CurSelection + 1, 0, option.Options.Count - 1);
@@ -194,7 +248,7 @@ namespace Pathogenesis.Controllers
             }
 
             // Handle option selection
-            String curSelection = option.Text;
+            curSelection = option.Text;
             if (input_controller.Enter)
             {
                 sound_controller.play(SoundType.EFFECT, "menu_select");
@@ -204,10 +258,12 @@ namespace Pathogenesis.Controllers
                         switch (curSelection)
                         {
                             case "Play":
-                                engine.StartGame();
+                                StartMain(menu);
+                                //engine.StartGame();
                                 break;
                             case "Tutorial":
-                                engine.StartTutorial();
+                                StartMain(menu);
+                                //engine.StartTutorial();
                                 break;
                             case "Load":
                                 engine.LoadGame("savetest.xml");
