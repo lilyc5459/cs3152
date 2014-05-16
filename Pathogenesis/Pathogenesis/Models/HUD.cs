@@ -17,6 +17,8 @@ namespace Pathogenesis.Models
 
         public const int PLAYER_MSG_TIME = 700;
         public const int FLASH_TIME = 100;
+        public const int WASD_DELAY_TIME = 1000;
+        public const int WASD_DISPLAY_TIME = 3000;
  
         public Texture2D InfectTexture { get; set; }
         public Texture2D HealthBarTexture { get; set; }
@@ -38,6 +40,8 @@ namespace Pathogenesis.Models
         private List<Stopwatch> finished_stopwatches;
         private Stopwatch flash_stopwatch;
         private Stopwatch glow_stopwatch;
+        private Stopwatch tip_stopwatch;
+        public static bool showWASD { get; set; }
 
         public HUD(Texture2D infect, Texture2D health, Texture2D conversion_texture,
             Texture2D space_texture, Texture2D wasd_texture)
@@ -57,6 +61,9 @@ namespace Pathogenesis.Models
             finished_stopwatches = new List<Stopwatch>();
             flash_stopwatch = new Stopwatch();
             glow_stopwatch = new Stopwatch();
+            tip_stopwatch = new Stopwatch();
+
+            showWASD = false;
         }
 
         public void Update(InputController input_controller)
@@ -79,6 +86,8 @@ namespace Pathogenesis.Models
             {
                 glowtime = 1 - ((float)glow_stopwatch.ElapsedMilliseconds - PLAYER_MSG_TIME / 2) / ((float)PLAYER_MSG_TIME / 2);
             }
+            // Glow color
+            Color color = Color.Lerp(Color.Wheat, new Color(220, 200, 130), glowtime);
 
             bool in_range = false;
 
@@ -94,10 +103,50 @@ namespace Pathogenesis.Models
                 }
             }
 
+            if (showWASD)
+            {
+                if (!tip_stopwatch.IsRunning)
+                {
+                    tip_stopwatch.Start();
+                }
+                if (!glow_stopwatch.IsRunning && tip_stopwatch.ElapsedMilliseconds >= WASD_DELAY_TIME)
+                {
+                    glow_stopwatch.Start();
+                    tip_stopwatch.Reset();
+                    tip_stopwatch.Start();
+                }
+                if (glow_stopwatch.IsRunning)
+                {
+                    // Draw WASD tip
+                    canvas.DrawText("Move ",
+                        color * (MathHelper.Lerp(120, 250, glowtime) / 250),
+                        new Vector2(center.X - 140, center.Y + 200),
+                        "font2", false);
+
+                    canvas.DrawSprite(WASDTexture,
+                        color * (MathHelper.Lerp(120, 250, glowtime) / 250),
+                        new Rectangle((int)center.X + 20, (int)center.Y + 160, SpaceTexture.Width, SpaceTexture.Height),
+                        new Rectangle(0, 0, SpaceTexture.Width, SpaceTexture.Height));
+
+                    if (glow_stopwatch.ElapsedMilliseconds >= PLAYER_MSG_TIME)
+                    {
+                        glow_stopwatch.Reset();
+                        glow_stopwatch.Start();
+                    }
+                    if (tip_stopwatch.ElapsedMilliseconds >= WASD_DISPLAY_TIME && glowtime < 0.1f)
+                    {
+                        showWASD = false;
+                        glow_stopwatch.Stop();
+                        glow_stopwatch.Reset();
+                        tip_stopwatch.Stop();
+                        tip_stopwatch.Reset();
+                    }
+                }
+            }
+
             if (in_range)
             {
-                Color color = new Color((int)MathHelper.Lerp(180, 220, glowtime), 200, 80);
-
+                // Draw infect tip
                 canvas.DrawText("Infect ",
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
                     new Vector2(center.X - 140, center.Y + 200),
@@ -105,7 +154,7 @@ namespace Pathogenesis.Models
 
                 canvas.DrawSprite(SpaceTexture,
                     color * (MathHelper.Lerp(120, 250, glowtime) / 250),
-                    new Rectangle((int)center.X + 20, (int)center.Y + 190, SpaceTexture.Width, SpaceTexture.Height),
+                    new Rectangle((int)center.X + 20, (int)center.Y + 160, SpaceTexture.Width, SpaceTexture.Height),
                     new Rectangle(0, 0, SpaceTexture.Width, SpaceTexture.Height));
 
                 if (!glow_stopwatch.IsRunning) glow_stopwatch.Start();
@@ -115,7 +164,7 @@ namespace Pathogenesis.Models
                     glow_stopwatch.Start();
                 }
             }
-            else
+            else if(!tip_stopwatch.IsRunning)
             {
                 glow_stopwatch.Reset();
                 glow_stopwatch.Stop();

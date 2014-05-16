@@ -347,7 +347,9 @@ namespace Pathogenesis.Controllers
                         break;
                     case MenuType.DIALOGUE:
                         switch(CurDialogue) {
-                            case 0:
+                            case 1:
+                                // OMG NO, but in the interest of time
+                                HUD.showWASD = true;
                                 break;
                             default:
                                 break;
