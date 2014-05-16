@@ -175,6 +175,12 @@
     <Content Include="Config\lvl2_spawn_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\lvl3_spawn_config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\lvl4_spawn_config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\menu_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

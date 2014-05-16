@@ -2,7 +2,8 @@
 num, 10
 0, tutorial1, The Basics
 1, tutorial2, A Bit Farther...
-2, shotthroughtheheart, Idk
-3, pather, The Spleen
-//2, lvl1, Level 1 baby
-//3, lvl2, Level 2 babay
+
+2, lvl1, Idk
+3, lvl2, The Spleen
+4, lvl3, Idk
+5, lvl4, The Spleen

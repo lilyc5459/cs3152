@@ -348,7 +348,10 @@ namespace Pathogenesis
 
                     //TODO change
                     level.TitleTexture = textures["solid"];
-                    level.BackgroundTexture = textures["background"];
+
+                    int number = int.Parse(strings[0].Trim());
+                    level.BackgroundTexture = textures["lvl" + number + "_background"];
+
                     List<Texture2D> wall_textures = new List<Texture2D>();
                     wall_textures.Add(textures["wall1"]);
                     wall_textures.Add(textures["wall2"]);
@@ -595,6 +598,7 @@ namespace Pathogenesis
                     }
                     animation_data = animations["flying1"];
                     unit.AnimateResting = true;
+                    unit.Level = 1;
                     break;
                 case UnitType.BOSS:
                     unit = new GameUnit(textures["boss1"], type, faction, level, immune);

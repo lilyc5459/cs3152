@@ -22,8 +22,13 @@ wall2, Backgrounds/3wall33
 wall3, Backgrounds/walltileneeeew
 
 //Backgrounds
-background, Backgrounds/background_long2
-//background, Backgrounds/lightbackground
+lvl0_background, Backgrounds/lvl0_background
+lvl1_background, Backgrounds/lvl1_background
+lvl2_background, Backgrounds/lvl2_background
+lvl3_background, Backgrounds/lvl3_background
+lvl4_background, Backgrounds/lvl4_background
+lvl5_background, Backgrounds/lvl5_background
+
 heart, Backgrounds/heart
 infectedheart, Backgrounds/infectedheart
 infectingheart, Backgrounds/infectingheart
