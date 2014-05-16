@@ -368,6 +368,7 @@ namespace Pathogenesis
                         {
                             //Code for adjacent tiles stuff
                             //Organized as such: TRBL in binary notaion
+                            /*
                             int top = 0, bot = 0, right = 0, left = 0;
                             if (level.Map.tiles[i][j] == 1)
                             {
@@ -441,6 +442,7 @@ namespace Pathogenesis
                                 default:
                                     break;
                             }
+                             */
                            
                             //Below is for loading various random things
                             if (level.Map.tiles[i][j] == 8)
