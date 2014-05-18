@@ -205,8 +205,19 @@ namespace Pathogenesis.Models
             {
                 Color fontDrawColor = fontColor * MathHelper.Lerp(0, 1, MASK_OPACITY / DEFAULT_MASK_OPACITY);
                 // Title
-                canvas.DrawText(title, fontDrawColor,
-                     new Vector2((int)center.X, (int)center.Y - canvas.Height / 2 + 100), "font3", true);
+                if (Type == MenuType.MAIN)
+                {
+                    canvas.DrawSprite(Textures["logo"], fontDrawColor,
+                        new Rectangle((int)(center.X - Textures["logo"].Width / 2),
+                            (int)(center.Y - Textures["logo"].Height / 2 - canvas.Height/2 + 100),
+                            Textures["logo"].Width, Textures["logo"].Height),
+                        new Rectangle(0, 0, Textures["logo"].Width, Textures["logo"].Height));
+                }
+                else
+                {
+                    canvas.DrawText(title, fontDrawColor,
+                         new Vector2((int)center.X, (int)center.Y - canvas.Height / 2 + 100), "font3", true);
+                }
 
                 for (int i = 0; i < Options.Count; i++)
                 {

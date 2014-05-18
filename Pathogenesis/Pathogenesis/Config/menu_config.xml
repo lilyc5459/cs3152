@@ -19,19 +19,14 @@
       <YOffset>-30</YOffset>
     </Option>
     <Option>
-      <Text>Load</Text>
+      <Text>Options</Text>
       <XOffset>0</XOffset>
       <YOffset>30</YOffset>
     </Option>
     <Option>
-      <Text>Options</Text>
-      <XOffset>0</XOffset>
-      <YOffset>90</YOffset>
-    </Option>
-    <Option>
       <Text>Quit</Text>
       <XOffset>0</XOffset>
-      <YOffset>150</YOffset>
+      <YOffset>90</YOffset>
     </Option>
   </Menu>
 
@@ -54,24 +49,14 @@
       <YOffset>-90</YOffset>
     </Option>
     <Option>
-      <Text>Save</Text>
+      <Text>Options</Text>
       <XOffset>0</XOffset>
       <YOffset>-30</YOffset>
     </Option>
     <Option>
-      <Text>Load</Text>
-      <XOffset>0</XOffset>
-      <YOffset>30</YOffset>
-    </Option>
-    <Option>
-      <Text>Options</Text>
-      <XOffset>0</XOffset>
-      <YOffset>90</YOffset>
-    </Option>
-    <Option>
       <Text>Quit to Menu</Text>
       <XOffset>0</XOffset>
-      <YOffset>150</YOffset>
+      <YOffset>90</YOffset>
     </Option>
   </Menu>
 

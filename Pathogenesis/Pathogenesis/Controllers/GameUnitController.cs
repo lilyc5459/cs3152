@@ -87,6 +87,8 @@ namespace Pathogenesis
 
         // Random number generator. Must use the same instance or number generated in quick succession will be the same
         private Random rand;
+
+        private bool stop_all;
         #endregion
 
         #region Initialization
@@ -104,6 +106,7 @@ namespace Pathogenesis
             PreviousPositions = new Dictionary<int, Vector2>();
 
             rand = new Random();
+            stop_all = false;
         }
 
         public void Reset()
@@ -112,6 +115,7 @@ namespace Pathogenesis
             DeadUnits.Clear();
             ConvertedUnits.Clear();
             SpawnedUnits.Clear();
+            stop_all = false;
         }
 
         /*
@@ -122,6 +126,10 @@ namespace Pathogenesis
             if (unit.Region != null)
             {
                 unit.Region.NumUnits++;
+            }
+            if (unit.Type == UnitType.FLYING)
+            {
+                unit.Level = 1;
             }
             Units.Add(unit);
         }
@@ -186,29 +194,42 @@ namespace Pathogenesis
             {
                 if (r.NumUnits >= r.MaxUnits) continue;
 
-                foreach (SpawnPoint sp in r.SpawnPoints)
+                int i = 0;
+                while (r.NumUnits < r.MaxUnits / 2 && i < 10)
                 {
-                    UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
-                    int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
-                    immune_spawn_prob = sp.ImmumeProbability;
-
-                    if (type != null && unit_lvl != null)
+                    i++;
+                    foreach (SpawnPoint sp in r.SpawnPoints)
                     {
-                        // Create new unit
-                        GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
-                            sp.Pos * Map.TILE_SIZE +
-                            new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
-                                        (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
-                                        rand.NextDouble() < immune_spawn_prob);
-                        if (unit != null)
+                        UnitType? type = selectTypeWithProbability(sp.UnitProbabilities);
+                        int? unit_lvl = selectIntWithProbability(sp.LevelProbabilities);
+                        immune_spawn_prob = sp.ImmumeProbability;
+
+                        if (type != null && unit_lvl != null)
                         {
-                            unit.Region = r;
-                            AddUnit(unit);
+                            // Create new unit
+                            GameUnit unit = factory.createUnit((UnitType)type, UnitFaction.ENEMY, (int)unit_lvl,
+                                sp.Pos * Map.TILE_SIZE +
+                                new Vector2((float)rand.NextDouble() * RANDOM_SPAWN_DIST,
+                                            (float)rand.NextDouble() * RANDOM_SPAWN_DIST),
+                                            rand.NextDouble() < immune_spawn_prob);
+                            if (unit != null && !unit.inRange(Player, 500))
+                            {
+                                unit.Region = r;
+                                AddUnit(unit);
+                            }
                         }
                     }
                 }
             }
 
+        }
+
+        /*
+         * Stop all units from moving
+         */
+        public void StopAllUnits()
+        {
+            stop_all = true;
         }
         #endregion
 
@@ -958,6 +979,8 @@ namespace Pathogenesis
          */ 
         private void moveUnit(GameUnit unit)
         {
+            if (stop_all) return;
+
             // Damping
             Vector2 vel = unit.Vel;
 
@@ -1146,6 +1169,7 @@ namespace Pathogenesis
                 if (unit.Type == UnitType.BOSS)
                 {
                     level.BossDefeated = true;
+                    DeadUnits.Add(unit);
                     unit.Exists = false;
                     particle_engine.GenerateParticle(20, Color.Red, unit.Position, null, UnitFaction.ALLY,
                         false, false, 0, 12, 7, 10, 5);

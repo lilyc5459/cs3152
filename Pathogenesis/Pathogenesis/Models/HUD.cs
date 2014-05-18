@@ -225,7 +225,7 @@ namespace Pathogenesis.Models
                                         new Rectangle((int)unit.Position.X - HealthBarTexture.Width / 2, (int)unit.Position.Y - 50, (int)MathHelper.Lerp(50, 0, unit.InfectionVitality/unit.max_infection_vitality), 8),
                                         new Rectangle(0, 0, HealthBarTexture.Width, (int)(HealthBarTexture.Height * 0.8)));
                 }
-                */
+                 * */
             }
             if (player == null) return;
 

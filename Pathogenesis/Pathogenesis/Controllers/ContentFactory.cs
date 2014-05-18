@@ -199,6 +199,7 @@ namespace Pathogenesis
                             menu_textures.Add("heart", textures["heart"]);
                             menu_textures.Add("infectedheart", textures["infectedheart"]);
                             menu_textures.Add("infectingheart", textures["infectingheart"]);
+                            menu_textures.Add("logo", textures["logo"]);
 
                             menu_animations = new Dictionary<string, Dictionary<string, int>>();
                             menu_animations.Add("heart", animations["heart"]);
@@ -287,14 +288,13 @@ namespace Pathogenesis
                 if (strings.Length < 2) continue;
 
                 Level level = null;
-                using (FileStream stream = new FileStream(strings[1].Trim() + ".xml", FileMode.Open))
+                StreamReader sr2 = new StreamReader("Levels/" + strings[1].Trim() + ".xml");
+                using (XmlReader reader = XmlReader.Create(sr2))
                 {
-                    using (XmlReader reader = XmlReader.Create(stream))
-                    {
-                        XmlSerializer x = new XmlSerializer(typeof(Level));
-                        level = (Level)x.Deserialize(reader);
-                    }
+                    XmlSerializer x = new XmlSerializer(typeof(Level));
+                    level = (Level)x.Deserialize(reader);
                 }
+
                 if (level != null)
                 {
                     // Load dialogue data
@@ -690,6 +690,14 @@ namespace Pathogenesis
             {
                 return levels[levels.Count-1].Clone();
             }
+        }
+
+        /*
+         * Returns the number of levels in the game
+         */
+        public int GetNumLevels()
+        {
+            return levels.Count;
         }
 
         /*

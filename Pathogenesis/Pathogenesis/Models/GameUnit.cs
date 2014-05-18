@@ -198,13 +198,14 @@ namespace Pathogenesis
             {
                 AttackRange = 200;
                 AttackLockRange = 300;
+                Attack = 10;
             }
             if (Type == UnitType.BOSS)
             {
                 Size = 100;
                 Speed = 3;
                 Mass = 100f;
-                Attack = 50;
+                Attack = 20;
                 max_attack_cooldown = 200;
                 AttackRange = 200;
                 Invulnerable = true;
@@ -306,11 +307,10 @@ namespace Pathogenesis
             {
                 color = Color.Gray;
             }
-            if (Type == UnitType.BOSS)
+            if (Type == UnitType.BOSS || Type == UnitType.ORGAN)
             {
                 color = Color.Lerp(new Color(50, 100, 50), Color.White, InfectionVitality/max_infection_vitality);
             }
-
 
             if (AnimateAttack)
             {

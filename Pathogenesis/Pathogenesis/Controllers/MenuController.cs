@@ -43,10 +43,12 @@ namespace Pathogenesis.Controllers
         public const int MAIN_INFECTING_TIME = 2300;
         public const int MAIN_INFECTED_TIME = 1000;
 
+        public LevelController level_controller;
         private SoundController sound_controller;
         private GameEngine engine;
 
-        public MenuController(GameEngine engine, ContentFactory factory, SoundController sound_controller)
+        public MenuController(GameEngine engine, ContentFactory factory,
+            SoundController sound_controller)
         {
             menus = factory.getMenus();
             dialogues = factory.getDialogues();
@@ -330,7 +332,14 @@ namespace Pathogenesis.Controllers
                         switch (curSelection)
                         {
                             case "Continue":
-                                engine.fadeTo(GameState.LOADING, 50, 80);
+                                if (level_controller.CurLevelNum == level_controller.NumLevels - 1)
+                                {
+                                    engine.fadeTo(GameState.WIN_GAME);
+                                }
+                                else
+                                {
+                                    engine.fadeTo(GameState.LOADING, 50, 80);
+                                }
                                 break;
                         }
                         break;

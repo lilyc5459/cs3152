@@ -27,6 +27,7 @@ namespace Pathogenesis
         MENU,       // Player is in a menu
         IN_GAME,    // Player is playing the game
         VICTORY,    // Player has completed the level
+        WIN_GAME,   // Player has completed the whole freakin game!
         LOSE,       // Player has died
         PAUSED,      // Game is paused
         LOADING     // Game or level is loading
@@ -59,6 +60,11 @@ namespace Pathogenesis
         private Stopwatch transition_timer;
         private const int LEVEL_TRANSITION_TIME = 3000;
 
+        // Delay after winning a level
+        private Stopwatch victory_timer;
+        private const int VICTORY_DELAY_TIME = 2000;
+        private const int VICTORY_SCREEN_TIME = 8800;
+
         // Game operation controllers
         private InputController input_controller;
         private SoundController sound_controller;
@@ -85,6 +91,7 @@ namespace Pathogenesis
             camera = new Camera(canvas.Width, canvas.Height);
             fader = new Fader();
             transition_timer = new Stopwatch();
+            victory_timer = new Stopwatch();
         }
 
         /// <summary>
@@ -108,7 +115,9 @@ namespace Pathogenesis
             item_controller = new ItemController(factory);
             unit_controller = new GameUnitController(factory, sound_controller, particle_engine, item_controller);
             menu_controller = new MenuController(this, factory, sound_controller);
-            level_controller = new LevelController(this, factory, unit_controller, item_controller, sound_controller, menu_controller);
+            level_controller = new LevelController(this, factory, unit_controller, item_controller,
+                sound_controller, menu_controller, factory.getTexture("solid"));
+            menu_controller.level_controller = level_controller;
 
             // Game starts at the main menu
             game_state = GameState.MENU;
@@ -200,6 +209,7 @@ namespace Pathogenesis
                     /* TODO: Remove DEBUG CODE HERE (remove later)
                      * 
                      */
+                    /*
                     if (input_controller.Spawn_Enemy)
                     {
                         unit_controller.AddUnit(factory.createUnit(UnitType.TANK, UnitFaction.ENEMY, 1,
@@ -215,10 +225,12 @@ namespace Pathogenesis
                         item_controller.AddItem(factory.createItem(new Vector2(rand.Next(level_controller.CurLevel.Width), rand.Next(level_controller.CurLevel.Height)),
                             ItemType.PLASMID));
                     }
+                     
                     //Auto win
                     if (input_controller.Enter)
                     {
                         victory = true;
+                        level_controller.CurLevelNum = 5;
                     }
                     //**/
 
@@ -246,8 +258,18 @@ namespace Pathogenesis
                     
                     if (victory)
                     {
-                        game_state = GameState.VICTORY;
-                        menu_controller.LoadMenu(MenuType.WIN);
+                        if (!victory_timer.IsRunning)
+                        {
+                            victory_timer.Start();
+                            unit_controller.StopAllUnits();
+                        }
+                        if (victory_timer.ElapsedMilliseconds >= VICTORY_DELAY_TIME)
+                        {
+                            game_state = GameState.VICTORY;
+                            menu_controller.LoadMenu(MenuType.WIN);
+                            victory_timer.Stop();
+                            victory_timer.Reset();
+                        }
                     }
                     if (unit_controller.Player == null)
                     {
@@ -277,6 +299,14 @@ namespace Pathogenesis
                         transition_timer.Stop();
                         transition_timer.Reset();
                         fadeTo(GameState.IN_GAME, 50, 50);
+                    }
+                    break;
+                case GameState.WIN_GAME:
+                    if (input_controller.Enter || transition_timer.ElapsedMilliseconds >= VICTORY_SCREEN_TIME)
+                    {
+                        transition_timer.Stop();
+                        transition_timer.Reset();
+                        fadeTo(GameState.MENU, 50, 50);
                     }
                     break;
             }
@@ -368,6 +398,9 @@ namespace Pathogenesis
                     }
                     transition_timer.Start();
                     break;
+                case GameState.WIN_GAME:
+                    transition_timer.Start();
+                    break;
             }
             game_state = state;
         }
@@ -447,6 +480,9 @@ namespace Pathogenesis
                     break;
                 case GameState.LOADING:
                     level_controller.DrawTitle(canvas, camera.Position);
+                    break;
+                case GameState.WIN_GAME:
+                    level_controller.DrawWinTitle(canvas, camera.Position);
                     break;
             }
 

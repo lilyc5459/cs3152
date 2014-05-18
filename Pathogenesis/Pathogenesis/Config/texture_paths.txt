@@ -6,6 +6,7 @@ infect_plasmid, Environment/plaz2
 health_plasmid, Environment/plaz1
 other_plasmid, Environment/plaz3
 conversion_sheet, Environment/conversion_sheet
+logo, Environment/logo
 
 bar_border, Environment/bar-border
 health_bar, Environment/health-bar

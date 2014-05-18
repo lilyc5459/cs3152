@@ -3,7 +3,7 @@ num, 10
 0, tutorial1, The Basics
 1, tutorial2, A Bit Farther...
 
-2, lvl1, Idk
-3, lvl2, The Spleen
-4, lvl3, Idk
-5, lvl4, The Spleen
+2, lvl1, The BloodStream
+3, lvl2, The Intestines
+4, lvl3, The Stomach
+5, lvl4, The Brain

@@ -6,6 +6,7 @@ using Pathogenesis.Models;
 using Microsoft.Xna.Framework;
 using Pathogenesis.Controllers;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Pathogenesis
 {
@@ -14,6 +15,7 @@ namespace Pathogenesis
         #region Fields
         private const int TUTORIAL2_FREE_ALLIES = 6;
         private const int TUTORIAL_START_DELAY = 1500;
+        private const int CREDITS_ROLL_TIME = 10000;
 
         public Level CurLevel { get; set; }     // Stores Current Level Object
         public int CurLevelNum { get; set; }    // Stores Current Level Number
@@ -26,10 +28,17 @@ namespace Pathogenesis
         private MenuController menu_controller;
 
         private Stopwatch tutorial_stopwatch;
+        private Stopwatch credits_timer;
+
+        private Texture2D WinBackground;
+
+        public int NumLevels;
+
         #endregion
 
         public LevelController(GameEngine engine, ContentFactory factory, GameUnitController unit_controller,
-            ItemController item_controller, SoundController sound_controller, MenuController menu_controller)
+            ItemController item_controller, SoundController sound_controller, MenuController menu_controller,
+            Texture2D win_background)
         {
             this.engine = engine;
             this.factory = factory;
@@ -38,8 +47,12 @@ namespace Pathogenesis
             this.sound_controller = sound_controller;
             this.menu_controller = menu_controller;
 
-            this.tutorial_stopwatch = new Stopwatch();
+            tutorial_stopwatch = new Stopwatch();
+            credits_timer = new Stopwatch();
 
+            WinBackground = win_background;
+
+            NumLevels = factory.GetNumLevels();
             CurLevelNum = -1;
         }
 
@@ -188,6 +201,7 @@ namespace Pathogenesis
          */
         public void StartLevel(SoundController sound_controller)
         {
+            /*
             switch (CurLevelNum)
             {
                 case 0:
@@ -196,6 +210,7 @@ namespace Pathogenesis
                 default:
                     break;
             }
+            */
             sound_controller.loop(SoundType.MUSIC, "music1");
         }
 
@@ -264,6 +279,40 @@ namespace Pathogenesis
         public void DrawTitle(GameCanvas canvas, Vector2 center)
         {
             CurLevel.DrawTitle(canvas, center);
+        }
+
+        public void DrawWinTitle(GameCanvas canvas, Vector2 center)
+        {
+            canvas.DrawSprite(WinBackground, new Color(90, 0, 0),
+                new Rectangle((int)(center.X - canvas.Width / 2), (int)(center.Y - canvas.Height / 2),
+                    canvas.Width, canvas.Height),
+                new Rectangle(0, 0, WinBackground.Width, WinBackground.Height));
+            canvas.DrawText("YOU WIN THE WHOLE GAME!", Menu.fontColor, new Vector2(center.X, center.Y - 100), "font3", true);
+
+            if (!credits_timer.IsRunning)
+            {
+                credits_timer.Reset();
+                credits_timer.Start();
+            }
+            else
+            {
+                int dist = (int)MathHelper.Lerp(-canvas.Height/2, 1700, (float)credits_timer.ElapsedMilliseconds/CREDITS_ROLL_TIME);
+                canvas.DrawText("PATHOGENESIS", Menu.fontColor, new Vector2(center.X, center.Y - dist), "font2", true);
+                canvas.DrawText("Programmers:", Color.Black, new Vector2(center.X, center.Y - dist + 200), "font2", true);
+                canvas.DrawText("Michael Wang", Color.Black, new Vector2(center.X, center.Y - dist + 300), "font2", true);
+                canvas.DrawText("Neil Parker", Color.Black, new Vector2(center.X, center.Y - dist + 350), "font2", true);
+                canvas.DrawText("Suraj Bhatia", Color.Black, new Vector2(center.X, center.Y - dist + 400), "font2", true);
+                canvas.DrawText("Artwork:", Color.Black, new Vector2(center.X, center.Y - dist + 600), "font2", true);
+                canvas.DrawText("Lilian Chen", Color.Black, new Vector2(center.X, center.Y - dist + 700), "font2", true);
+                canvas.DrawText("Marissa Lucey", Color.Black, new Vector2(center.X, center.Y - dist + 750), "font2", true);
+                canvas.DrawText("Music:", Color.Black, new Vector2(center.X, center.Y - dist + 950), "font2", true);
+                canvas.DrawText("Michael Wang", Color.Black, new Vector2(center.X, center.Y - dist + 1050), "font2", true);
+
+                if (credits_timer.ElapsedMilliseconds >= CREDITS_ROLL_TIME)
+                {
+                    credits_timer.Stop();
+                }
+            }
         }
     }
 }
